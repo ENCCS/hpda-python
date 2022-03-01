@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = "HPDA-Python"
-copyright = "2022, HPDA-Python and individual contributors."
-author = "HPDA-Python and individual contributors."
+copyright = "2022, ENCCS and individual contributors."
+author = "ENCCS and individual contributors."
 github_user = "ENCCS"
 github_repo_name = "HPDA-Python"
 github_version = "main"

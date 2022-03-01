@@ -1,5 +1,5 @@
-HPDA-Python
-===========
+High Performance Data Analytics in Python
+=========================================
 
 
 Intro
@@ -8,7 +8,8 @@ Intro
 
 .. prereq::
 
-   prerequisites
+   - Basic experience with Python
+   - Basic experience in working in a Linux-like terminal
 
 
 
@@ -16,12 +17,22 @@ Intro
    :widths: auto
    :delim: ;
 
-   20 min ; :doc:`filename`
+   20 min ; :doc:`introduction`
 
 
 .. toctree::
    :maxdepth: 1
    :caption: The lesson
+
+   introduction
+   scientific-data
+   numpy
+   pandas
+   preprocessing
+   performance-engineering
+   parallel-computing
+   GPU-computing
+
 
 
 .. toctree::

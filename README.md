@@ -1,4 +1,4 @@
-# HPDA-Python
+# High-Performance Data Analytics in Python
 
 Teaching material for ENCCS workshop
 
