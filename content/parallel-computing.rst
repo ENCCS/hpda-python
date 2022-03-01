@@ -43,7 +43,7 @@ MPI4Py
 
 
 
-.. key-points::
+.. keypoints::
 
    - 1
    - 2

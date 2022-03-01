@@ -14,7 +14,7 @@ Types of scientific data
 
 
 
-.. key-points::
+.. keypoints::
 
    - 1
    - 2

@@ -35,7 +35,7 @@ Numerical computing
 
 
 
-.. key-points::
+.. keypoints::
 
    - 1
    - 2

@@ -20,7 +20,7 @@ Pandas
 
 
 
-.. key-points::
+.. keypoints::
 
    - 1
    - 2

@@ -26,7 +26,7 @@ Common use cases
 
 
 
-.. key-points::
+.. keypoints::
 
    - 1
    - 2
