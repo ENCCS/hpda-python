@@ -16,7 +16,13 @@ Common use cases
 
 
 
+Comparison to Spark
+-------------------
 
+Dask has much in common with the 
+[Apache Spark](https://spark.apache.org/).
+
+- ref: https://docs.dask.org/en/stable/spark.html
 
 
 
