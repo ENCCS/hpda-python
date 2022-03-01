@@ -1,15 +1,38 @@
 High Performance Data Analytics in Python
 =========================================
 
+Scientists, engineers and professionals from many sectors are seeing an enormous 
+growth in the size and number of datasets relevant to their domains. 
+Professional titles have emerged to describe specialists working with data, 
+such as data scientists and data engineers, but also other experts are finding 
+it necessary to learn tools and techniques to work with big data. Typical tasks 
+include preprocessing, analysing, modeling and visualising data.
 
-Intro
+Python is an industry-standard programming language for working with data on 
+all levels of the data analytics pipeline. This is in large part because of the rich 
+ecosystem of libraries ranging from generic numerical libraries to 
+special-purpose and/or domain-specific packages, often supported by large developer 
+communities and stable funding sources.
 
+This lesson is meant to give an overview of working with research data in 
+Python using general libraries for storing, processing and analysing and sharing data. 
+The focus is on high performance. After covering tools for performant 
+processing on single workstations the focus shifts to parallel and distributed 
+computing.
+
+Target audience
+---------------
+
+This material is for all researchers and engineers who work with large or small 
+datasets and who want to learn powerful tools and best practices for writing more 
+performant, parallelised, robust and reproducible data analysis pipelines.
 
 
 .. prereq::
 
    - Basic experience with Python
    - Basic experience in working in a Linux-like terminal
+   - Some prior experience in working with large or small datasets
 
 
 
@@ -33,6 +56,7 @@ Intro
    parallel-computing
    dask
    GPU-computing
+   sharing
 
 
 

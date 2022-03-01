@@ -1,5 +1,5 @@
-Parallel computing in Python
-============================
+Parallel computing
+==================
 
 .. objectives::
 

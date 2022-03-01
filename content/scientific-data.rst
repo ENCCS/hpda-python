@@ -11,7 +11,11 @@ Scientific data
 Types of scientific data
 ------------------------
 
-
+- CSV
+- JSON
+- HDF5
+- NetCDF
+- 
 
 
 .. keypoints::

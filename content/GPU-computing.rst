@@ -1,5 +1,5 @@
-GPU computing in Python
-=======================
+GPU computing
+=============
 
 .. objectives::
 
