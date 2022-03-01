@@ -31,6 +31,7 @@ Intro
    preprocessing
    performance-engineering
    parallel-computing
+   dask
    GPU-computing
 
 
