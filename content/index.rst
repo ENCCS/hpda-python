@@ -40,7 +40,7 @@ Intro
    :maxdepth: 1
    :caption: Reference
 
-   quick-reference
+   setup
    guide
 
 
@@ -77,6 +77,13 @@ The lesson file structure and browsing layout is inspired by and derived from
 <https://coderefinery.org/>`_ licensed under the `MIT license
 <http://opensource.org/licenses/mit-license.html>`__. We have copied and adapted
 most of their license text.
+
+Several examples and formulations are inspired by other open source 
+educational material, in particular:
+
+- `Python for Scientific Computing <https://aaltoscicomp.github.io/python-for-scicomp/>`__
+- `Data analysis workflows with R and Python <https://aaltoscicomp.github.io/data-analysis-workflows-course/>`__
+- `Python in High Performance Computing <https://github.com/csc-training/hpc-python>`__
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
