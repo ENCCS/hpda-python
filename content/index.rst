@@ -26,8 +26,7 @@ Intro
 
    motivation
    scientific-data
-   numpy
-   pandas
+   numpy-pandas
    preprocessing
    performance-engineering
    numba-cython
