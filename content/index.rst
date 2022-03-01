@@ -17,19 +17,20 @@ Intro
    :widths: auto
    :delim: ;
 
-   20 min ; :doc:`introduction`
+   20 min ; :doc:`motivation`
 
 
 .. toctree::
    :maxdepth: 1
    :caption: The lesson
 
-   introduction
+   motivation
    scientific-data
    numpy
    pandas
    preprocessing
    performance-engineering
+   numba-cython
    parallel-computing
    dask
    GPU-computing
@@ -75,7 +76,7 @@ Credits
 The lesson file structure and browsing layout is inspired by and derived from
 `work <https://github.com/coderefinery/sphinx-lesson>`_ by `CodeRefinery
 <https://coderefinery.org/>`_ licensed under the `MIT license
-<http://opensource.org/licenses/mit-license.html>`_. We have copied and adapted
+<http://opensource.org/licenses/mit-license.html>`__. We have copied and adapted
 most of their license text.
 
 Instructional Material
