@@ -20,12 +20,6 @@ The focus is on high performance. After covering tools for performant
 processing on single workstations the focus shifts to parallel and distributed 
 computing.
 
-Target audience
----------------
-
-This material is for all researchers and engineers who work with large or small 
-datasets and who want to learn powerful tools and best practices for writing more 
-performant, parallelised, robust and reproducible data analysis pipelines.
 
 
 .. prereq::
@@ -74,6 +68,9 @@ performant, parallelised, robust and reproducible data analysis pipelines.
 Who is the course for?
 ----------------------
 
+This material is for all researchers and engineers who work with large or small 
+datasets and who want to learn powerful tools and best practices for writing more 
+performant, parallelised, robust and reproducible data analysis pipelines.
 
 
 
@@ -81,7 +78,15 @@ Who is the course for?
 About the course
 ----------------
 
-
+This lesson material is developed by the `EuroCC National Competence Center
+Sweden (ENCCS) <https://enccs.se/>`_ and taught in ENCCS workshops. 
+Each lesson episode has clearly defined objectives that will be addressed and 
+includes multiple exercises along with solutions, and is therefore also useful for
+self-learning. The lesson material is licensed under `CC-BY-4.0
+<https://creativecommons.org/licenses/by/4.0/>`_ and can be reused in any form
+(with appropriate credit) in other courses and workshops.
+Instructors who wish to teach this lesson can refer to the :doc:`guide` for
+practical advice.
 
 
 
@@ -108,6 +113,7 @@ educational material, in particular:
 - `Python for Scientific Computing <https://aaltoscicomp.github.io/python-for-scicomp/>`__
 - `Data analysis workflows with R and Python <https://aaltoscicomp.github.io/data-analysis-workflows-course/>`__
 - `Python in High Performance Computing <https://github.com/csc-training/hpc-python>`__
+- `Code examples from High Performance Python <https://github.com/mynameisfiber/high_performance_python_2e>`
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
