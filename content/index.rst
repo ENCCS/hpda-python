@@ -43,10 +43,8 @@ computing.
 
    motivation
    scientific-data
-   numpy-pandas
-   preprocessing
-   performance-engineering
-   numba-cython
+   stack
+   performance
    parallel-computing
    dask
    GPU-computing
