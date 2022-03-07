@@ -662,7 +662,8 @@ When it comes to data analysis using pandas, the tidy format is recommended:
 
 .. note:: 
 
-The name "tidy data" comes from Wickham’s paper (2014) which describes the ideas in great detail.
+   The name "tidy data" comes from Wickham’s paper (2014) which describes 
+   the ideas in great detail.
 
 
 data pre-processing

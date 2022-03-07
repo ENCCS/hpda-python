@@ -8,8 +8,8 @@ Once your code is working reliably, you can start thinking of optimizing it.
 
 .. warning::
 
-Always measure the code before you start optimization. Don't base your optimization 
-on theoretical consideration, otherwise you'll have surprises. 
+   Always measure the code before you start optimization. Don't base your optimization 
+   on theoretical consideration, otherwise you'll have surprises. 
 
 
 Profilers 
@@ -333,7 +333,8 @@ Temporary arrays
     - Input data is M x 3 array
     - Output is M x M array containing the distance between points i
       and j
-	- There is a temporary 1000 x 1000 x 3 array
+	
+       - There is a temporary 1000 x 1000 x 3 array
 
 .. code-block:: python
 
@@ -346,6 +347,7 @@ Numexpr
 
 - Evaluation of complex expressions with one operation at a time can lead
   also into suboptimal performance
+    
     - Effectively, one carries out multiple *for* loops in the NumPy
       C-code
 
