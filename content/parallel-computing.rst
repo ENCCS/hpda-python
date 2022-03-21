@@ -4,6 +4,7 @@ Parallel computing
 .. objectives::
 
    - Understand the Global Interpreter Lock in Python
+   - Understand concurrency
    - Understand the difference between multithreading and multiprocessing
    - Learn the basics of *multiprocessing*, *threading*, *ipyparallel* and *MPI4Py*
 
@@ -22,6 +23,7 @@ simultaneously.  There are three main models:
   - Parallel threads do separate work and communicate via the same memory and write to shared variables.
   - Multiple threads in a single Python program cannot execute at the same time (see GIL below)
   - Running multiple threads is *only effective for I/O-bound tasks*
+  - By calling external libraries in other languages (e.g. C) it's possible to lift the GIL
 
 - **Distributed memory parallelism (multiprocessing):** Different processes manage their own memory segments and 
   share data by communicating (passing messages) as needed.
@@ -34,6 +36,8 @@ simultaneously.  There are three main models:
 In the next episode we will look at `Dask <https://dask.org/>`__, an array model extension and task scheduler, 
 which goes beyond these three approaches.
 
+In the Python world, it is common to see the word `concurrency` denoting any type of simultaneous 
+processing, including using *threads*, *tasks* and *processes*.
 
 .. warning::
 
@@ -180,7 +184,81 @@ results (targets). This is how the Snakefile looks:
 Multithreading
 --------------
 
-TODO: write about how to multithread I/O
+Due to the GIL only one thread can execute Python code at once, and this makes 
+threading rather useless for compute-bound problems. However, threading is 
+still an appropriate model for running *multiple I/O-bound tasks simultaneously*.
+
+
+The [``threading`` library](https://docs.python.org/dev/library/threading.html#) 
+provides an API for working 
+
+
+.. type-along:: Multithreading file I/O
+
+   We continue with the word-count project and explore how we can use multithreading 
+   for I/O. After running ``snakemake -j 1`` we should have 64 ``.dat`` files in the 
+   ``processed_data`` directory. Let's say we want to convert them all to csv format.
+
+   Here is code to accomplish this:
+
+   .. code-block:: python
+
+      import glob
+      import time
+      
+      def csvify_file(file):
+          with open(file, 'r') as f:
+              lines = f.readlines()
+          with open(file.replace('.dat', '.csv'), 'w') as f:
+              for line in lines:
+                  f.write(line.replace(' ', ','))
+      
+      def csvify_all_files(files):
+          for file in files:
+              csvify_file(file)
+              #break
+              
+      if __name__ == '__main__':
+          files = glob.glob("processed_data/*.dat")
+          start_time = time.time()
+          csvify_all_files(files)
+          duration = time.time() - start_time
+          print(f"Read {len(files)} in {duration} seconds")   
+
+
+   The easiest way to multithread this code is to use the ``ThreadPoolExecutor``
+   from ``concurrent.futures``:
+
+   .. code-block:: python
+
+      import glob
+      import concurrent.futures
+      import time
+      
+      def csvify_file(file):
+          with open(file, 'r') as f:
+              lines = f.readlines()
+          with open(file.replace('.dat', '.csv'), 'w') as f:
+              for line in lines:
+                  f.write(line.replace(' ', ','))        
+      
+      def csvify_all_files(files):
+          with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+              executor.map(read_file, files)
+              
+      if __name__ == '__main__':
+          files = glob.glob("processed_data/*.dat")
+          start_time = time.time()
+          csvify_all_files(files)
+          duration = time.time() - start_time
+          print(f"Read {len(files)} in {duration} seconds")      
+
+   Tasks:
+
+   1. Run these codes and observe the timing information.
+   2. You will likely not see a speedup. Try increasing the I/O by multiplying the data before writing 
+      it to file, i.e. insert ``line *= 100`` just before ``f.write(...)``. Does multithreading now pay off?
+  
 
 Multiprocessing
 ---------------
@@ -308,6 +386,7 @@ See also
 
 - `More on the global interpreter lock
   <https://wiki.python.org/moin/GlobalInterpreterLock>`__
+- `RealPython threading tutorial <https://realpython.com/intro-to-python-threading/>`__
 - `Parallel programming in Python: multiprocessing <https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/>`__
 - `Parallel programming in Python: mpi4py <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
 
