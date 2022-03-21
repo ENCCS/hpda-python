@@ -61,6 +61,122 @@ At first glance, this is bad for parallelism.  *But it's not all bad!:*
 - There are several Python libraries that side-step the GIL, e.g. by using 
   *subprocesses* instead of threads.
 
+
+Parallel workflows with Snakemake
+---------------------------------
+
+Many scientific problems involve complicated workflows with multiple interdependent steps.
+If the workflow involves performing the same analysis on many different datasets we can 
+use the inherent ("embarrassing") parallelism of the problem and perform these simultaneously.
+
+Let us have a look at a toy example which many of us can hopefully relate to. 
+
+.. type-along:: The word-count project
+
+   Head over to https://github.com/enccs/word-count-hpda and clone the repository:
+
+   .. code-block:: bash
+
+      git clone git@github.com:ENCCS/word-count-hpda.git
+
+   This toy project is about analyzing the frequency of words in texts. The ``data``
+   directory contains 64 public domain books from Project Gutenberg and source files 
+   under ``source`` can be used to count words:
+
+   .. code-block:: bash
+
+      # count words in two books
+      python source/wordcount.py data/pg10.txt > processed_data/pg10.dat
+      python source/wordcount.py data/pg65.txt > processed_data/pg65.dat
+      
+      # (optionally) create plots
+      python source/plotcount.py processed_data/pg10.dat results/pg10.png
+      python source/plotcount.py processed_data/pg65.dat results/pg65.png
+      
+      # print frequency of 10 most frequent words in both books to file
+      python source/zipf_test.py 10 pg10.dat pg65.dat > results.txt
+      
+   This workflow is encoded in the ``Snakefile`` which can be used to run
+   through all data files:
+
+   .. code-block:: bash
+
+      # run workflow in serial
+      snakemake -j 1      
+
+
+   The workflow can be visualised in a directed-acyclic graph:
+
+   .. code-block:: bash
+
+      # requires dot from Graphviz
+      snakemake -j 1 --dag | dot -Tpng  > dag.png
+
+   .. figure:: img/dag.png
+      :align: center
+      :scale: 80 %
+
+   The workflow can be parallelized to utilize multiple cores:
+
+   .. code-block:: bash
+
+      # first clear all output
+      snakemake -j 1 --delete-all-output      
+      # run in parallel on 4 processes
+      snakemake -j 4
+
+The Snakefile describes the workflow in declarative style, i.e. we describe 
+the dependencies but let Snakemake figure out the series of steps to produce 
+results (targets). This is how the Snakefile looks:
+
+.. code-block:: python
+
+   # a list of all the books we are analyzing
+   DATA = glob_wildcards('data/{book}.txt').book
+   
+   # the default rule
+   rule all:
+       input:
+           'results/results.txt'
+   
+   # count words in one of our books
+   # logfiles from each run are put in .log files"
+   rule count_words:
+       input:
+           wc='source/wordcount.py',
+           book='data/{file}.txt'
+       output: 'processed_data/{file}.dat'
+       log: 'processed_data/{file}.log'
+       shell:
+           '''
+               python {input.wc} {input.book} {output} >> {log} 2>&1
+           '''
+   
+   # create a plot for each book
+   rule make_plot:
+      input:
+          plotcount='source/plotcount.py',
+          book='processed_data/{file}.dat'
+      output: 'results/{file}.png'
+      shell: 'python {input.plotcount} {input.book} {output}'
+   
+   # generate results table
+   rule zipf_test:
+       input:
+           zipf='source/zipf_test.py',
+           books=expand('processed_data/{book}.dat', book=DATA)
+       params:
+           nwords = 10
+       output: 'results/results.txt'
+       shell:  'python {input.zipf} {params.nwords} {input.books} > {output}'
+   
+
+.. exercise:: Measure the speedup in parallel workflow
+
+   Compare the timing when running Snakemake in serial and in parallel!
+
+
+
 Multithreading
 --------------
 
@@ -69,9 +185,24 @@ TODO: write about how to multithread I/O
 Multiprocessing
 ---------------
 
+The ``multiprocessing`` module in Python supports spawning processes using an API 
+similar to the ``threading`` module. It effectively side-steps the GIL by using 
+*subprocesses* instead of threads. 
+
 - https://aaltoscicomp.github.io/python-for-scicomp/parallel/#multiprocessing
 - https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/
 
+
+Functionality within multiprocessing requires that the ``__main__`` module be importable by children processes. 
+This means that for example multiprocessing.Pool will not work in the interactive interpreter.
+
+.. exercise:: Parallelize the word-count problem
+
+   First load the results from the word-count problem:
+
+   .. code-block:: python
+
+      df = pd.read_csv("results.txt")
 
 ipyparallel
 -----------
