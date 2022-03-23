@@ -22,8 +22,8 @@ simultaneously.  There are three main models:
  
   - Parallel threads do separate work and communicate via the same memory and write to shared variables.
   - Multiple threads in a single Python program cannot execute at the same time (see GIL below)
-  - Running multiple threads is *only effective for I/O-bound tasks*
-  - By calling external libraries in other languages (e.g. C) it's possible to lift the GIL
+  - Running multiple threads in Python is *only effective for I/O-bound tasks*
+  - External libraries in other languages (e.g. C) which are called from Python can still use multithreading
 
 - **Distributed memory parallelism (multiprocessing):** Different processes manage their own memory segments and 
   share data by communicating (passing messages) as needed.
@@ -37,7 +37,7 @@ In the next episode we will look at `Dask <https://dask.org/>`__, an array model
 which goes beyond these three approaches.
 
 In the Python world, it is common to see the word `concurrency` denoting any type of simultaneous 
-processing, including using *threads*, *tasks* and *processes*.
+processing, including *threads*, *tasks* and *processes*.
 
 .. warning::
 
@@ -129,6 +129,10 @@ Let us have a look at a toy example which many of us can hopefully relate to.
       # run in parallel on 4 processes
       snakemake -j 4
 
+   **Task:**
+
+   - Compare the execution time when using 1, 2 and 4 processes
+
 The Snakefile describes the workflow in declarative style, i.e. we describe 
 the dependencies but let Snakemake figure out the series of steps to produce 
 results (targets). This is how the Snakefile looks:
@@ -173,12 +177,6 @@ results (targets). This is how the Snakefile looks:
            nwords = 10
        output: 'results/results.txt'
        shell:  'python {input.zipf} {params.nwords} {input.books} > {output}'
-   
-
-.. exercise:: Measure the speedup in parallel workflow
-
-   Compare the timing when running Snakemake in serial and in parallel!
-
 
 
 Multithreading
@@ -188,9 +186,18 @@ Due to the GIL only one thread can execute Python code at once, and this makes
 threading rather useless for compute-bound problems. However, threading is 
 still an appropriate model for running *multiple I/O-bound tasks simultaneously*.
 
+This is how an I/O-bound application might look.
 
-The [``threading`` library](https://docs.python.org/dev/library/threading.html#) 
-provides an API for working 
+.. figure:: img/IOBound.png
+   :align: center
+   :scale: 50 %
+
+   From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
+
+The `threading library <https://docs.python.org/dev/library/threading.html#>`__ 
+provides an API for creating and working with threads. We restrict our discussion 
+here to using the ``ThreadPoolExecutor`` class to multithread reading and writing 
+to files. For further details on ``threading`` refer to the **See also** section below.
 
 
 .. type-along:: Multithreading file I/O
@@ -259,6 +266,14 @@ provides an API for working
    2. You will likely not see a speedup. Try increasing the I/O by multiplying the data before writing 
       it to file, i.e. insert ``line *= 100`` just before ``f.write(...)``. Does multithreading now pay off?
   
+The speedup gained from multithreading our problem can be understood from the following image.
+
+.. figure:: img/Threading.png
+  :align: center
+  :scale: 50 %
+
+  From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
+
 
 Multiprocessing
 ---------------
@@ -386,6 +401,7 @@ See also
 
 - `More on the global interpreter lock
   <https://wiki.python.org/moin/GlobalInterpreterLock>`__
+- `RealPython concurrency overview <https://realpython.com/python-concurrency/>`__
 - `RealPython threading tutorial <https://realpython.com/intro-to-python-threading/>`__
 - `Parallel programming in Python: multiprocessing <https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/>`__
 - `Parallel programming in Python: mpi4py <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
