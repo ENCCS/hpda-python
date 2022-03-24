@@ -190,7 +190,7 @@ This is how an I/O-bound application might look.
 
 .. figure:: img/IOBound.png
    :align: center
-   :scale: 50 %
+   :scale: 40 %
 
    From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
 
@@ -280,22 +280,62 @@ Multiprocessing
 
 The ``multiprocessing`` module in Python supports spawning processes using an API 
 similar to the ``threading`` module. It effectively side-steps the GIL by using 
-*subprocesses* instead of threads. 
+*subprocesses* instead of threads, where each subprocess is an independent Python 
+process.
 
-- https://aaltoscicomp.github.io/python-for-scicomp/parallel/#multiprocessing
-- https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/
+.. callout:: Interactive environments
+
+   Functionality within multiprocessing requires that the ``__main__`` module be 
+   importable by children processes. This means that for example ``multiprocessing.Pool`` 
+   will not work in the interactive interpreter. A fork of multiprocessing, called 
+   ``multiprocess``, can be used in interactive environments like IPython sessions.
 
 
-Functionality within multiprocessing requires that the ``__main__`` module be importable by children processes. 
-This means that for example multiprocessing.Pool will not work in the interactive interpreter.
+One of the simplest ways to use ``multiprocessing`` is via ``Pool`` objects and 
+the parallel ``Pool.map`` function. In the following code, we define a ``square`` 
+function, call the ``cpu_count`` method to get the number of CPUs on the machine,
+and then initialize a Pool object in a context manager and inside of it call the 
+``Pool.map`` method to parallelize the computation:
 
-.. exercise:: Parallelize the word-count problem
+.. code-block:: python
 
-   First load the results from the word-count problem:
+   import multiprocessing as mp
+   
+   def square(x):
+       return x * x
+   
+   if __name__ == '__main__':
+       nprocs = mp.cpu_count()
+       print(f"Number of CPU cores: {nprocs}")
+   
+       # use context manager to allocate and release the resources automatically
+       with mp.Pool(processes=nprocs) as pool:
+           result = pool.map(square, range(20))    
+       print(result)
+ 
+For functions that take multiple arguments one can instead use the ``Pool.starmap`` 
+function:
 
-   .. code-block:: python
+.. code-block:: python
 
-      df = pd.read_csv("results.txt")
+   def power_n(x, n):
+       return x ** n
+
+   with mp.Pool(processes=nprocs) as pool:
+       result = pool.starmap(power_n, [(x, 2) for x in range(20)])
+   print(result)
+
+``multiprocessing`` has a number of other methods which can be useful for certain 
+use cases, including ``Process`` and ``Queue`` which makes it possible to have direct 
+control over individual processes. Refer to the `See also`_ section below for a list 
+of external resources.
+
+We now turn our attention back to the word-count problem.
+
+.. type-along:: Word-autocorrelation: parallelizing word-count with multiprocessing
+
+   
+
 
 ipyparallel
 -----------
@@ -395,6 +435,7 @@ Exercises
 
 
 
+.. _See also:
 
 See also
 --------
@@ -403,7 +444,9 @@ See also
   <https://wiki.python.org/moin/GlobalInterpreterLock>`__
 - `RealPython concurrency overview <https://realpython.com/python-concurrency/>`__
 - `RealPython threading tutorial <https://realpython.com/intro-to-python-threading/>`__
-- `Parallel programming in Python: multiprocessing <https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/>`__
+- Parallel programming in Python with multiprocessing, 
+  `part 1 <https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/>`__
+  and `part 2 <https://www.kth.se/blogs/pdc/2019/03/parallel-programming-in-python-multiprocessing-part-2/>`__
 - `Parallel programming in Python: mpi4py <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
 
 
