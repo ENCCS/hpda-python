@@ -193,11 +193,38 @@ In such cases, vectorization is key for better performance.
 
 
 So one should consider use "vectorized" operations whenever possible.
+For universal functions (or ufunc for short), NumPy provides the vectorize function.
 
-For user-defined functions, one can use e.g. numba. 
-XXXX add one example
+Let's define a simple function f which is defined for scalars only, 
+
+.. code-block:: python
+
+   import math
+
+   def f(x, y):
+    return x**3 + 4*math.sin(y) 
+
+In order to pass an numpy array, we have to vectorize it
+
+.. code-block:: python
+
+   f_vec = np.vectorize(f)
+
+   # benchmark
+   import numpy as np
+   x = np.ones(10000, dtype='int8')
+   %timeit f_vec(x,x)
 
 
+.. note:: 
+   
+   As stated in the NumPy document: 
+   The vectorize function is provided primarily for convenience, not for performance. The implementation is essentially a for loop.
+
+
+
+Another way to generate vectorzed function is to use Numba. 
+Adding the decorator in a function, Numba will figure out the rest for you. 
 
 
 Memory usage optimization
@@ -456,9 +483,13 @@ Consider the following pure Python code:
 
 
 
-   .. tabs:: benchmark
+	test benchmark
 
-	.. code-block:: python
+   .. tabs:: 
+
+      .. tab:: benchmark
+
+	.. code-block:: 
 
 	  df = pd.DataFrame(
   		  {
@@ -527,7 +558,7 @@ Long stroy short, in the worse case, the time Bubblesort algorithm takes is roug
 
 
 
-.. note:
+.. note::
 
 Note that the relative results also depend on what version of Python, Cython, Numba, and NumPy you are using. Also, the compiler choice for installing NumPy can account for differences in the results.
 NumPy is really good at what it does. For simple operations, Numba is not going to outperform it, but when things get more complex Numba will save the day. 
