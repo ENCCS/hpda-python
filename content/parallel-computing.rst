@@ -338,30 +338,13 @@ We now turn our attention back to the word-count problem.
    `dynamic correlations of words in written text <https://www.scirp.org/journal/paperinformation.aspx?paperid=92643>`__,
    we decide to investigate autocorrelations of words in our database of book texts.
 
-   We add a file to the `word_count_hpda/source` directory called `autocorrelation.py`:
+   A serial version of the code is available in the 
+   `source/autocorrelation.py <https://github.com/ENCCS/word-count-hpda/blob/main/source/autocorrelation.py>`__
+   script in the word-count repository. The full script can be viewed below, but we focus on the ``word_autocorr``
+   and ``word_autocorr_average`` functions:
 
    .. code-block:: python
-
-      import sys
-      import numpy as np
-      from wordcount import load_word_counts, load_text, DELIMITERS
-      import time
-      
-      def preprocess_text(text):
-          """
-          Remove delimiters, split lines into words and remove whitespaces, 
-          and make lowercase. Return list of all words in the text.
-          """
-          clean_text = []
-          for line in text:
-              for purge in DELIMITERS:
-                  line = line.replace(purge, " ")    
-              words = line.split()
-              for word in words:
-                  word = word.lower().strip()
-                  clean_text.append(word)
-          return clean_text
-      
+         
       def word_autocorr(word, text, timesteps):
           """
           Calculate word-autocorrelation function for given word 
@@ -386,36 +369,93 @@ We now turn our attention back to the word-count problem.
           for n, word in enumerate(words):
               acf[n, :] = word_autocorr(word, text, timesteps)
           return np.average(acf, axis=0)
-      
-      if __name__ == '__main__':          
-          # load book text and preprocess it
-          book = sys.argv[1]
-          text = load_text(book)
-          clean_text = preprocess_text(text)
-          # load precomputed word counts and select top 10 words
-          wc_book = sys.argv[2]
-          nwords = 10
-          word_count = load_word_counts(wc_book)
-          top_words = [w[0] for w in word_count[:nwords]]
-          # number of "timesteps" to use in autocorrelation function
-          timesteps = 100
-          # compute average autocorrelation and time the execution
-          t0 = time.time()
-          acf_ave = word_autocorr_average(top_words, clean_text, timesteps=100)
-          t1 = time.time()        
-          print(f"serial time: {t1-t0}")
-          # save results to csv file
-          np.savetxt(sys.argv[3], np.vstack((np.arange(1,timesteps+1), acf_ave)).T, delimiter=',')
 
+
+   .. solution:: Full script
+
+      .. code-block:: python
+   
+         import sys
+         import numpy as np
+         from wordcount import load_word_counts, load_text, DELIMITERS
+         import time
+         
+         def preprocess_text(text):
+             """
+             Remove delimiters, split lines into words and remove whitespaces, 
+             and make lowercase. Return list of all words in the text.
+             """
+             clean_text = []
+             for line in text:
+                 for purge in DELIMITERS:
+                     line = line.replace(purge, " ")    
+                 words = line.split()
+                 for word in words:
+                     word = word.lower().strip()
+                     clean_text.append(word)
+             return clean_text
+         
+         def word_autocorr(word, text, timesteps):
+             """
+             Calculate word-autocorrelation function for given word 
+             in a text. Each word in the text corresponds to one "timestep".
+             """
+             acf = np.zeros((timesteps,))
+             mask = [w==word for w in text]
+             nwords_chosen = np.sum(mask)
+             nwords_total = len(text)
+             for t in range(timesteps):
+                 for i in range(1,nwords_total-t):
+                     acf[t] += mask[i]*mask[i+t]
+                 acf[t] /= nwords_chosen      
+             return acf
+             
+         def word_autocorr_average(words, text, timesteps=100):
+             """
+             Calculate an average word-autocorrelation function 
+             for a list of words in a text.
+             """
+             acf = np.zeros((len(words), timesteps))
+             for n, word in enumerate(words):
+                 acf[n, :] = word_autocorr(word, text, timesteps)
+             return np.average(acf, axis=0)
+         
+         if __name__ == '__main__':          
+             # load book text and preprocess it
+             book = sys.argv[1]
+             text = load_text(book)
+             clean_text = preprocess_text(text)
+             # load precomputed word counts and select top 10 words
+             wc_book = sys.argv[2]
+             nwords = 10
+             word_count = load_word_counts(wc_book)
+             top_words = [w[0] for w in word_count[:nwords]]
+             # number of "timesteps" to use in autocorrelation function
+             timesteps = 100
+             # compute average autocorrelation and time the execution
+             t0 = time.time()
+             acf_ave = word_autocorr_average(top_words, clean_text, timesteps=100)
+             t1 = time.time()        
+             print(f"serial time: {t1-t0}")
+             # save results to csv file
+             np.savetxt(sys.argv[3], np.vstack((np.arange(1,timesteps+1), acf_ave)).T, delimiter=',')
+
+      
 
    - ``word_autocorr`` computes the autocorrelation in a text for a given word
-   - ``word_autocorr_average``` loops over a list of words and computes their average autocorrelation
-   - To run this code: ``python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv``
+   - ``word_autocorr_average`` loops over a list of words and computes their average autocorrelation
+   - To run this code: 
+
+     .. code-block:: bash
+
+        python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
 
    .. discussion:: Where to parallelise?
 
       Think about what this code is doing and try to find a good place to parallelize it using 
-      a pool of processes.
+      a pool of processes. With or without having a look at the hints below, try to parallelize 
+      the code using ``multiprocessing`` and use ``time.time()`` to measure the speedup when running 
+      it for one book.
 
    .. solution:: Hints
  
@@ -440,7 +480,7 @@ We now turn our attention back to the word-count problem.
              results = p.starmap(word_autocorr, [(i,j,k) for i,j,k in zip(words, 10*[text], 10*[timestep])]
 
       But this might be somewhat inefficient because ``10*[text]`` might take up quite a lot of memory.
-      A workaround is to use the `partial` method from ``functools`` which returns a new function with 
+      A workaround is to use the ``partial`` method from ``functools`` which returns a new function with 
       partial application of the given arguments:
 
       .. code-block:: python
