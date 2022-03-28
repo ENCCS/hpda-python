@@ -321,9 +321,13 @@ function:
    def power_n(x, n):
        return x ** n
 
-   with mp.Pool(processes=nprocs) as pool:
-       result = pool.starmap(power_n, [(x, 2) for x in range(20)])
-   print(result)
+   if __name__ == '__main__':
+       nprocs = mp.cpu_count()
+       print(f"Number of CPU cores: {nprocs}")
+  
+       with mp.Pool(processes=nprocs) as pool:
+           result = pool.starmap(power_n, [(x, 2) for x in range(20)])
+       print(result)
 
 ``multiprocessing`` has a number of other methods which can be useful for certain 
 use cases, including ``Process`` and ``Queue`` which make it possible to have direct 
@@ -588,80 +592,154 @@ ipyparallel
 MPI
 ---
 
-The message passing interface (MPI) approach to parallelization
-is that:
+The message passing interface (MPI) is a standard workhorse of parallel computing. Nearly 
+all major scientific HPC applications use MPI. Like ``multiprocessing``, MPI belongs to the 
+distributed-memory paradigm.
 
-- Tasks (cores) have a rank and are numbered 0, 1, 2, 3, ...
-- Each task (core) manages its own memory
+The idea behind MPI is that:
+
+- Tasks have a rank and are numbered 0, 1, 2, 3, ...
+- Each task manages its own memory
+- Each task can run multiple threads
 - Tasks communicate and share data by sending messages.
 - Many higher-level functions exist to distribute information to other tasks
   and gather information from other tasks.
-- All tasks typically run the entire code and we have to be careful to avoid
+- All tasks typically *run the entire code* and we have to be careful to avoid
   that all tasks do the same thing.
 
-Those who use MPI in C, C++, Fortran, will probably understand the steps in the
-following example. For learners new to MPI, we can explore this example
-together.
-
-Here we reuse the example of approximating *pi* with a stochastic
-algorithm from above, and we have highlighted the lines which are important
-to get this MPI example to work:
+``mpi4py`` provides Python bindings for the Message Passing Interface (MPI) standard.
+This is how a hello world MPI program looks like in Python:
 
 .. code-block:: python
-   :emphasize-lines: 3,23-25,29,39,42
-
-   import random
-   import time
+ 
    from mpi4py import MPI
 
-
-   def sample(n):
-       """Make n trials of points in the square.  Return (n, number_in_circle)
-
-       This is our basic function.  By design, it returns everything it 
-       needs to compute the final answer: both n (even though it is an input
-       argument) and n_inside_circle.  To compute our final answer, all we
-       have to do is sum up the n:s and the n_inside_circle:s and do our
-       computation"""
-       n_inside_circle = 0
-       for i in range(n):
-           x = random.random()
-           y = random.random()
-           if x ** 2 + y ** 2 < 1.0:
-               n_inside_circle += 1
-       return n, n_inside_circle
-
-
    comm = MPI.COMM_WORLD
-   size = comm.Get_size()
    rank = comm.Get_rank()
+   size = comm.Get_size()
+   
+   print('Hello from process {} out of {}'.format(rank, size))
 
-   n = 10 ** 7
+- ``MPI.COMM_WORLD`` is the `communicator` - a group of processes that can talk to each other
+- ``Get_rank`` returns the individual rank (0, 1, 2, ...) for each task that calls it
+- ``Get_size`` returns the total number of ranks.
 
-   if size > 1:
-       n_task = int(n / size)
-   else:
-       n_task = n
+To run this code with a specific number of processes we use the ``mpirun`` command which 
+comes with the MPI library:
 
-   t0 = time.perf_counter()
-   _, n_inside_circle = sample(n_task)
-   t = time.perf_counter() - t0
+.. code-block:: bash
 
-   print(f"before gather: rank {rank}, n_inside_circle: {n_inside_circle}")
-   n_inside_circle = comm.gather(n_inside_circle, root=0)
-   print(f"after gather: rank {rank}, n_inside_circle: {n_inside_circle}")
+   # on some HPC systems you might need 'srun -n 4' instead of 'mpirun -np 4'  
+   mpirun -np 4 hello.py
 
-   if rank == 0:
-       pi_estimate = 4.0 * sum(n_inside_circle) / n
-       print(
-           f"\nnumber of darts: {n}, estimate: {pi_estimate}, time spent: {t:.2} seconds"
-       )
+A number of available MPI libraries have been developed (`OpenMPI <https://www.open-mpi.org/>`__, 
+`MPICH <https://www.mpich.org/>`__, `IntelMPI <https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html#gs.up6uyn>`__, 
+`MVAPICH <http://mvapich.cse.ohio-state.edu/>`__) and HPC centers normally offer one or more of these for users 
+to compile/run their own code.
 
 
+Point-to-point and collective communication
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. figure:: img/send-recv.png
+   :align: center
+   :scale: 100 %
+
+   ``send`` and ``recv``: blocking point-to-point communication between two ranks.    
+   ``isend`` and ``irecv``: non-blocking point-to-point communication between two ranks.
+
+.. figure:: img/gather.png
+   :align: right
+   :scale: 80 %
+
+   ``gather``: all ranks send data to one rank.
+
+.. figure:: img/scatter.png
+   :align: center
+   :scale: 80 %
+
+   ``scatter``: one rank sends data to all the other ranks.
+
+
+.. figure:: img/broadcast.png
+   :align: left
+   :scale: 80 %
+
+   ``broadcast``: WRITEME
+
+
+.. figure:: img/reduction.png
+   :align: center
+   :scale: 100 %
+
+   ``reduce``: WRITEME
+
+
+
+
+.. type-along:: MPI version of word-autocorrelation
+
+   MPI really excels for problems which can be divided up into some sort of subdomains and 
+   communication is required between the subdomains between e.g. timesteps or iterations.
+   The word-count problem is simpler than that and MPI is a bit overkill, but let us nonetheless 
+   see how we can apply MPI to it! For simplicity we will restrict ourselves to point-to-point 
+   communication.
+
+   Just like with ``multiprocessing``, we will parallelize over the words that we compute 
+   the word-autocorrelation for. In contrary to what we did before, we will now work in the main 
+   part of the script. 
+   We start by standard boilerplate:
+
+   .. code-block:: python
+
+      # this goes at the top
+      from mpi4py import MPI
+
+      if __name__ == '__main__':
+          # load book text and preprocess it
+          book = sys.argv[1]
+          text = load_text(book)
+          clean_text = preprocess_text(text)
+          # load precomputed word counts and select top 10 words
+          wc_book = sys.argv[2]
+          nwords = 10
+          word_count = load_word_counts(wc_book)
+          top_words = [w[0] for w in word_count[:nwords]]
+          # number of "timesteps" to use in autocorrelation function
+          timesteps = 100
+      
+          # initialize MPI
+          comm = MPI.COMM_WORLD
+          rank = comm.Get_rank()
+          n_ranks = comm.Get_size()    
+      
+   We now need to split the problem up between ``N`` ranks. The method needs to be general 
+   enough to handle cases where the number of words is not a multiple of the number of ranks.
+   Here's a standard algorithm to do this:
+
+   .. code-block:: python
+      
+      #
+          # distribute words among MPI tasks
+          count = nwords // n_ranks
+          remainder = nwords % n_ranks
+          # first 'remainder' ranks get 'count + 1' tasks each
+          if rank < remainder:
+              first = rank * (count + 1)
+              last = first + count + 1
+          # remaining 'nwords - remainder' ranks get 'count' task each
+          else:
+              first = rank * count + remainder
+              last = first + count 
+          # each rank gets unique words
+          my_words = top_words[first:last]
+          print(f"My rank number is {rank} and first, last = {first}, {last}")
+   
 
 Exercises
 ---------
-
+    
 .. exercise:: Using MPI
 
    We can do this as **exercise or as demo**. Note that this example requires ``mpi4py`` and a
@@ -673,6 +751,12 @@ Exercises
    - Why do we have the if-statement ``if rank == 0`` at the end?
    - Why did we use ``_, n_inside_circle = sample(n_task)`` and not ``n, n_inside_circle = sample(n_task)``?
 
+
+.. exercise:: Extend the Snakefile
+
+   Extend the Snakefile in the word-count repository to compute the autocorrelation function for all 
+   books! If you are running on a cluster you can add e.g. ``threads: 4`` to the rule and run a parallel 
+   version of the ``autocorrelation.py`` script.
 
 .. exercise:: Profile the word-autocorrelation code
 
@@ -694,7 +778,8 @@ See also
 - Parallel programming in Python with multiprocessing, 
   `part 1 <https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/>`__
   and `part 2 <https://www.kth.se/blogs/pdc/2019/03/parallel-programming-in-python-multiprocessing-part-2/>`__
-- `Parallel programming in Python: mpi4py <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
+- Parallel programming in Python with mpi4py, `part 1 <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
+  and `part 2 <https://www.kth.se/blogs/pdc/2019/11/parallel-programming-in-python-mpi4py-part-2/>`__
 
 
 
