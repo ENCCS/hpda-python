@@ -689,9 +689,10 @@ Point-to-point and collective communication
    Just like with ``multiprocessing``, we will parallelize over the words that we compute 
    the word-autocorrelation for. In contrary to what we did before, we will now work in the main 
    part of the script. 
-   We start by standard boilerplate:
+   We start by standard boilerplate code:
 
    .. code-block:: python
+      :emphasize-lines: 2, 18-20
 
       # this goes at the top
       from mpi4py import MPI
@@ -719,7 +720,8 @@ Point-to-point and collective communication
    Here's a standard algorithm to do this:
 
    .. code-block:: python
-      
+      :emphasize-lines: 3-4, 6-8, 10-12
+
       #
           # distribute words among MPI tasks
           count = nwords // n_ranks
@@ -735,7 +737,55 @@ Point-to-point and collective communication
           # each rank gets unique words
           my_words = top_words[first:last]
           print(f"My rank number is {rank} and first, last = {first}, {last}")
-   
+
+   We now define a container array on rank 0 to receive data from other ranks, and compute 
+   the word-autocorrelation on all ranks:
+
+   .. code-block:: python
+
+      #
+          # only rank 0 will collect all acfs
+          if rank == 0:
+             acf_all = np.zeros((nwords, timesteps))
+          # each rank computes own set of acfs
+          my_acfs = np.zeros((len(my_words), timesteps))
+          for i, word in enumerate(my_words):
+             my_acfs[i,:] = word_autocorr(word, clean_text, timesteps)
+
+   After individual work on all ranks it's time to communicate:
+
+   .. code-block:: python
+
+      #
+          # rank 0 receives data from other ranks
+          if rank == 0:
+             # first copy own my_acfs to acf_all
+             for n, i in enumerate(range(first, last)):
+                acf_all[i,:] = my_acfs[n,:]
+             # then receive from other workers
+             for sender in range(1, n_ranks):
+                # first receive indices
+                rec_first, rec_last = comm.recv(source=sender, tag=10)
+                # then receive data
+                acf_all[rec_first:rec_last,:] = comm.recv(source=sender, tag=12)
+          else:
+             # first send indices
+             comm.send([first, last], dest=0, tag=10)
+             # then send data
+             comm.send(my_acfs, dest=0, tag=12)
+    
+   Finally rank 0 computes the average and prints it to file:
+
+   .. code-block:: python
+
+      #
+          # rank 0 computes average and saves result
+          if rank == 0:
+              acf_ave = np.average(acf_all, axis=0)
+              np.savetxt(sys.argv[3], np.vstack((np.arange(1,101), acf_ave)).T, delimiter=',')
+      
+      
+
 
 Exercises
 ---------
