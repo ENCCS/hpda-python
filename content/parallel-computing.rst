@@ -641,62 +641,137 @@ to compile/run their own code.
 Point-to-point and collective communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The MPI standard contains a `lot of functionality <https://mpi4py.readthedocs.io/en/stable/index.html>`__, 
+but in principle one can get away with only point-to-point communication (`MPI.COMM_WORLD.send` and 
+`MPI.COMM_WORLD.recv`). However, collective communication can sometimes require less effort as you 
+will learn in an exercise below.
+In any case, it is good to have a mental model of different communication patterns in MPI.
 
 .. figure:: img/send-recv.png
    :align: center
    :scale: 100 %
 
    ``send`` and ``recv``: blocking point-to-point communication between two ranks.    
-   ``isend`` and ``irecv``: non-blocking point-to-point communication between two ranks.
 
 .. figure:: img/gather.png
    :align: right
    :scale: 80 %
 
-   ``gather``: all ranks send data to one rank.
+   ``gather``: all ranks send data to rank ``root``.
 
 .. figure:: img/scatter.png
    :align: center
    :scale: 80 %
 
-   ``scatter``: one rank sends data to all the other ranks.
+   ``scatter``: data on rank 0 is split into chunks and sent to other ranks
 
 
 .. figure:: img/broadcast.png
    :align: left
    :scale: 80 %
 
-   ``broadcast``: WRITEME
+   ``bcast``: broadcast message to all ranks
 
 
 .. figure:: img/reduction.png
    :align: center
    :scale: 100 %
 
-   ``reduce``: WRITEME
+   ``reduce``: ranks send data which are reduced on rank ``root``
 
 
+Examples
+~~~~~~~~
 
+.. tabs::
+ 
+   .. tab:: send/recv
 
-.. type-along:: MPI version of word-autocorrelation
+      .. code-block:: python
 
-   MPI really excels for problems which can be divided up into some sort of subdomains and 
+         from mpi4py import MPI
+   
+         comm = MPI.COMM_WORLD
+         # Get my rank and the number of ranks
+         rank = comm.Get_rank()
+         n_ranks = comm.Get_size()
+   
+         if rank != 0:
+             # All ranks other than 0 should send a message
+             message = "Hello World, I'm rank {:d}".format(rank)
+             comm.send(message, dest=0, tag=0)
+   
+         else:
+             # Rank 0 will receive each message and print them
+             for sender in range(1, n_ranks):
+                 message = comm.recv(source=sender, tag=0)
+                 print(message)      
+
+   .. tab:: broadcast
+
+      .. code-block:: python
+            
+         from mpi4py import MPI
+   
+         comm = MPI.COMM_WORLD
+         # Get my rank and the number of ranks
+         rank = comm.Get_rank()
+         n_ranks = comm.Get_size()
+   
+         # Rank 0 will broadcast message to all other ranks
+         if rank == 0:
+             send_message = "Hello World from rank 0"
+         else:
+             send_message = None
+   
+         receive_message = comm.bcast(send_message, root=0)
+   
+         if rank != 0:
+             print(f"rank {rank} received message: {receive_message}")       
+
+   .. tab:: gather
+      
+      .. code-block:: python
+         
+         from mpi4py import MPI
+   
+         comm = MPI.COMM_WORLD
+         # Get my rank and the number of ranks
+         rank = comm.Get_rank()
+         n_ranks = comm.Get_size()
+   
+         # Use gather to send all messages to rank 0
+         send_message = "Hello World, I'm rank {:d}".format(rank)
+         receive_message = comm.gather(send_message, root=0)
+   
+         if rank == 0:
+             for i in range(n_ranks):
+                 print(receive_message[i])     
+   
+   MPI excels for problems which can be divided up into some sort of subdomains and 
    communication is required between the subdomains between e.g. timesteps or iterations.
-   The word-count problem is simpler than that and MPI is a bit overkill, but let us nonetheless 
-   see how we can apply MPI to it! For simplicity we will restrict ourselves to point-to-point 
-   communication.
+   The word-count problem is simpler than that and MPI is somewhat overkill, but in an exercise 
+   below you will learn to use point-to-point communication to parallelize it.
 
-   Just like with ``multiprocessing``, we will parallelize over the words that we compute 
-   the word-autocorrelation for. In contrary to what we did before, we will now work in the main 
-   part of the script. 
-   We start by standard boilerplate code:
+
+Exercises
+---------
+
+.. exercise:: MPI version of word-autocorrelation
+
+   Just like with ``multiprocessing``, the most natural MPI solution parallelizes over the words used 
+   to compute the word-autocorrelation.  
+   For educational purposes, both point-to-point and collective communication implementations will be demonstrated.
+
+   Start by standard boilerplate code in the ``__main__`` module:
 
    .. code-block:: python
       :emphasize-lines: 2, 18-20
 
-      # this goes at the top
+      # this should go at the top of the script
       from mpi4py import MPI
 
+      # this is at the bottom
       if __name__ == '__main__':
           # load book text and preprocess it
           book = sys.argv[1]
@@ -715,9 +790,9 @@ Point-to-point and collective communication
           rank = comm.Get_rank()
           n_ranks = comm.Get_size()    
       
-   We now need to split the problem up between ``N`` ranks. The method needs to be general 
+   You now need to split the problem up between ``N`` ranks. The method needs to be general 
    enough to handle cases where the number of words is not a multiple of the number of ranks.
-   Here's a standard algorithm to do this:
+   Here's a standard algorithm to accomplish this. Again edit the ``__main__`` module:
 
    .. code-block:: python
       :emphasize-lines: 3-4, 6-8, 10-12
@@ -738,70 +813,98 @@ Point-to-point and collective communication
           my_words = top_words[first:last]
           print(f"My rank number is {rank} and first, last = {first}, {last}")
 
-   We now define a container array on rank 0 to receive data from other ranks, and compute 
-   the word-autocorrelation on all ranks:
+   With the ``top_words`` list split between the ranks, the ranks can now perform their job independently.
+
+   .. discussion:: What type of communication can we use?
+
+      Each rank has now computed word-autocorrelation functions for several texts.
+      The end result should be an average of all the word-autocorrelation functions. 
+      What type of communication can be used to collect the results on one rank which 
+      computes the average and prints it to file?
+
+   Study the two "faded" MPI function implementations below, one using point-to-point communication and the other using 
+   collective communication. Try to figure out what you should replace the ``____`` with.
+
+   .. tabs:: 
+
+      .. tab:: Point-to-point
+
+         .. code-block:: python
+
+            def word_count_average_mpi_p2p(my_words, text, rank, n_ranks, timesteps=100):
+                # each rank computes its own set of acfs
+                my_acfs = np.zeros((len(____), timesteps))
+                for i, word in enumerate(my_words):
+                    my_acfs[i,:] = word_autocorr(word, text, timesteps)
+            
+                if ____ == ____:
+                    results = []
+                    # append own results
+                    results.append(my_acfs)
+                    # receive data from other ranks and append to results
+                    for sender in range(1, ____):
+                        results.append(comm.recv(source=____, tag=12))
+                    # compute average and write to file
+                    acf_tot = np.zeros((timesteps,))
+                    for i in range(____):
+                        for j in range(len(results[i])):
+                            acf_tot += results[i][j]
+                    acf_ave = acf_tot / nwords
+                    return acf_ave
+                else:
+                    # send data
+                    comm.send(my_acfs, dest=____, tag=12)
+
+      .. tab:: Collective
+
+         .. code-block:: python
+
+            def word_count_average_mpi_collective(my_words, text, rank, n_ranks, timesteps=100):
+                # each rank computes its own set of acfs
+                my_acfs = np.zeros((len(____), timesteps))
+                for i, word in enumerate(my_words):
+                    my_acfs[i,:] = word_autocorr(word, text, timesteps)
+
+                # gather results on rank 0
+                results = comm.gather(____, root=0)
+                # loop over ranks and results. result is a list of lists of ACFs
+                if ____ == ____:
+                    acf_tot = np.zeros((timesteps,))
+                    for i in range(____):
+                        for j in range(len(results[i])):
+                            acf_tot += results[i][j]
+                    # compute average and write to file
+                    acf_ave = acf_tot / nwords
+                    return acf_ave
+
+   To call these functions and write results to disk in the ``__main__`` module, you can do:
 
    .. code-block:: python
 
-      #
-          # only rank 0 will collect all acfs
-          if rank == 0:
-             acf_all = np.zeros((nwords, timesteps))
-          # each rank computes own set of acfs
-          my_acfs = np.zeros((len(my_words), timesteps))
-          for i, word in enumerate(my_words):
-             my_acfs[i,:] = word_autocorr(word, clean_text, timesteps)
-
-   After individual work on all ranks it's time to communicate:
-
-   .. code-block:: python
-
-      #
-          # rank 0 receives data from other ranks
-          if rank == 0:
-             # first copy own my_acfs to acf_all
-             for n, i in enumerate(range(first, last)):
-                acf_all[i,:] = my_acfs[n,:]
-             # then receive from other workers
-             for sender in range(1, n_ranks):
-                # first receive indices
-                rec_first, rec_last = comm.recv(source=sender, tag=10)
-                # then receive data
-                acf_all[rec_first:rec_last,:] = comm.recv(source=sender, tag=12)
-          else:
-             # first send indices
-             comm.send([first, last], dest=0, tag=10)
-             # then send data
-             comm.send(my_acfs, dest=0, tag=12)
-    
-   Finally rank 0 computes the average and prints it to file:
-
-   .. code-block:: python
-
-      #
-          # rank 0 computes average and saves result
-          if rank == 0:
-              acf_ave = np.average(acf_all, axis=0)
-              np.savetxt(sys.argv[3], np.vstack((np.arange(1,101), acf_ave)).T, delimiter=',')
+      # 
+          # use collective version
+          #acf_ave = word_count_average_mpi_collective(my_words, clean_text, rank, n_ranks, timesteps=100)
       
+          # use p2p version
+          acf_ave = word_count_average_mpi_p2p(my_words, clean_text, rank, n_ranks, timesteps=100)
       
+          # only rank 0 has the averaged data
+          if rank == 0:
+              np.savetxt(sys.argv[3], np.vstack((np.arange(1,101), acf_ave)).T, delimiter=',')      
+
+   Try running your code and time the result for different number of tanks!
+
+   .. code-block:: bash
+
+      time mpirun -np <N> python source/autocorrelation.py data/pg58.txt processed_data/pg58.dat results/pg58_acf.csv
 
 
-Exercises
----------
-    
-.. exercise:: Using MPI
+   .. solution:: 
 
-   We can do this as **exercise or as demo**. Note that this example requires ``mpi4py`` and a
-   MPI installation such as for instance `OpenMPI <https://www.open-mpi.org/>`__.
-
-   - Try to run this example on one core: ``$ python example.py``.
-   - Then compare the output with a run on multiple cores (in this case 2): ``$ mpiexec -n 2 python example.py``.
-   - Can you guess what the ``comm.gather`` function does by looking at the print-outs right before and after.
-   - Why do we have the if-statement ``if rank == 0`` at the end?
-   - Why did we use ``_, n_inside_circle = sample(n_task)`` and not ``n, n_inside_circle = sample(n_task)``?
-
-
+      A solution with both point-to-point and collective communication can be 
+      found on a `branch in the word-count-hpda repository 
+      <https://github.com/ENCCS/word-count-hpda/blob/autocorr-mpi/source/autocorrelation.py>`__
+                
 .. exercise:: Extend the Snakefile
 
    Extend the Snakefile in the word-count repository to compute the autocorrelation function for all 
