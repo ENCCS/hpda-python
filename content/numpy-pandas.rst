@@ -8,9 +8,10 @@ NumPy and Pandas
    - Learn to use several of NumPy's numerical computing tools 
    - Learn to use data structures and analysis tools from Pandas
 
-> This episode is based on this 
-> `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
-> this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
+*This episode is derived from this 
+`repository on HPC-Python <https://github.com/csc-training/hpc-python>`__ from CSC and 
+this `Python for Scientific Computing lesson 
+<https://aaltoscicomp.github.io/python-for-scicomp/>`__ from Aalto University.*
 
 Why can Python be slow?
 -----------------------
@@ -80,6 +81,14 @@ the programmer productivity greatly, is also the main cause for the
 performance problems. Flexibility comes with a price! Fortunately, as we
 discuss in the course, many of the bottlenecks can be circumvented.
 
+Introducing a toy problem
+-------------------------
+
+- 100,000 rows of observations for users of e.g. a social media platform or TV streaming service
+- 20 columns with time measurements of hours spent per day, i.e. each column is a day
+- want to add 21st column with slope of line fit to 20 observations
+- need linear least squares fit to each of 100,000 rows
+
 
 NumPy
 -----
@@ -108,7 +117,7 @@ NumPy arrays
 Array computing and vectorization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For loops in Python are slow. If one needs to apply a mathematical operation
+`for` loops in Python are slow. If one needs to apply a mathematical operation
 on multiple (consecutive) elements of an array, it is always better to use a
 vectorised operation if possible.
 
