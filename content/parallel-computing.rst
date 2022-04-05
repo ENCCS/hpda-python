@@ -642,8 +642,8 @@ Point-to-point and collective communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The MPI standard contains a `lot of functionality <https://mpi4py.readthedocs.io/en/stable/index.html>`__, 
-but in principle one can get away with only point-to-point communication (`MPI.COMM_WORLD.send` and 
-`MPI.COMM_WORLD.recv`). However, collective communication can sometimes require less effort as you 
+but in principle one can get away with only point-to-point communication (``MPI.COMM_WORLD.send`` and 
+``MPI.COMM_WORLD.recv``). However, collective communication can sometimes require less effort as you 
 will learn in an exercise below.
 In any case, it is good to have a mental model of different communication patterns in MPI.
 
@@ -903,7 +903,16 @@ Exercises
 
       A solution with both point-to-point and collective communication can be 
       found on a `branch in the word-count-hpda repository 
-      <https://github.com/ENCCS/word-count-hpda/blob/autocorr-mpi/source/autocorrelation.py>`__
+      <https://github.com/ENCCS/word-count-hpda/blob/autocorr-mpi/source/autocorrelation.py>`__.
+      You can also switch to the branch in your repository:
+
+      .. code-block:: bash
+
+         # first commit any work you have done:
+         git add -u 
+         git commit -m "save my work"
+         # switch branch
+         git checkout autocorr-mpi
                 
 .. exercise:: Extend the Snakefile
 
