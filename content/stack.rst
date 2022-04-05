@@ -8,9 +8,11 @@ Python software stack
    - Learn to use several of NumPy's numerical computing tools 
    - Learn to use data structures and analysis tools from Pandas
 
-> This episode is based on this 
-> `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
-> this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
+.. 
+
+  This episode is inspired by and derived from this 
+  `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
+  this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
 
 Why can Python be slow?
 -----------------------
@@ -62,21 +64,6 @@ when one is processing only a single type of data, for example only
 floating point numbers, there is a lot of unnecessary overhead due to the
 generic nature of these data structures.
 
-Multithreading
-^^^^^^^^^^^^^^
-
-XXXX maybe move this to parallel part? 
-
-The performance of a single CPU core has stagnated over the last ten years,
-and as such most of the speed-up in modern CPUs is coming from using multiple
-CPU cores, i.e. parallel processing. Parallel processing is normally based
-either on multiple threads or multiple processes. Unfortunately, the memory
-management of the standard CPython interpreter is not thread-safe, and it uses
-something called Global Interpreter Lock (GIL) to safeguard memory integrity.
-In practice, this limits the benefits of multiple threads only to some
-special situations (e.g. I/O). Fortunately, parallel processing with multiple
-processes is relatively straightforward also with Python.
-
 In summary, the flexibility and dynamic nature of Python, that enhances
 the programmer productivity greatly, is also the main cause for the
 performance problems. Flexibility comes with a price! Fortunately, as we
@@ -86,32 +73,24 @@ discuss in the course, many of the bottlenecks can be circumvented.
 NumPy
 -----
 
-Being one of the most fundemental part of python scientific computing ecosystem, 
+Being one of the most fundamental part of python scientific computing ecosystem, 
 NumPy offers comprehensive mathematical functions, random number generators, 
-linear algebra routines, Fourier transforms, and more. Moreover, 
-NumPy is based on well-optimized C code, which gives much better performace than Python. 
-(XXXX add vectorization, for this reason)
+linear algebra routines, Fourier transforms, and more. NumPy is based on well-optimized 
+C code, which gives much better performace than Python. In particular, by using homogeneous 
+data structures, NumPy *vectorizes* mathematical operations where fast pre-compiled code 
+can be applied to a sequence of data instead of using traditional ``for`` loops.
 
-- Standard Python is not well suitable for numerical computations
-    - lists are very flexible but also slow to process in numerical
-      computations
+Arrays
+^^^^^^
 
-- Numpy adds a new **array** data type
-    - static, multidimensional
-    - fast processing of arrays
-    - tools for linear algebra, random numbers, *etc.*
-
-NDArray
-^^^^^^^
-
-The core of numpy is the numpy ndarray (n-dimensional array).
-Compared to a python list, the numpy array is simialr in terms of serving as a data container.
+The core of numpy is the numpy ``ndarray`` (n-dimensional array).
+Compared to a python list, the numpy array is similar in terms of serving as a data container.
 Some differences between the two are: 
 
-- numpy array can have multi dimensions, e.g. a 1-D array is a vector, a 2-D array is a matrix 
-- numpy array can work fast only when all data elements are of the same type  
-- numpy array can be fast when vectorized  
-- numpy array is slower for certain operations, e.g. appending elements 
+- ndarrays can have multi dimensions, e.g. a 1-D array is a vector, a 2-D array is a matrix 
+- ndarrays are fast only when all data elements are of the same type 
+- ndarrays are fast when vectorized  
+- ndarrays are slower for certain operations, e.g. appending elements 
 
 
 .. figure:: img/list-vs-array.svg
@@ -119,80 +98,42 @@ Some differences between the two are:
    :scale: 100 %
 
 
-Numpy Data Type
-^^^^^^^^^^^^^^^
 
-The most common used data types (dtype) for numerical data (integer and floating-point) are listed here, 
+Data types
+^^^^^^^^^^
 
-For integers:
+NumPy supports a much greater variety of numerical types (``dtype``) than Python does.
+There are 5 basic numerical types representing booleans (``bool``), integers (``int``), 
+unsigned integers (``uint``) floating point (``float``) and complex (``complex``). 
 
-+-------------+----------------------------------+
-| data type   | data range                       |
-+=============+==================================+
-| int8        | -2**7 to  2**7 -1                |
-+-------------+----------------------------------+
-| int16       | -32768 to 32767                  |
-+-------------+----------------------------------+
-| int32       | -2147483648 to 2147483647        |
-+-------------+----------------------------------+
-| int64       |    fff                           |
-+-------------+----------------------------------+
+.. code-block:: python
 
-For unsigned intergers:
+   import numpy as np
 
-+-------------+----------------------------------+
-| data type   | data range                       |
-+=============+==================================+
-| uint8       | ffff                             |
-+-------------+----------------------------------+
-| uint16      | ffff                             |
-+-------------+----------------------------------+
-| uint32      | ffff                             |
-+-------------+----------------------------------+
-| uint64      | ffff                             |
-+-------------+----------------------------------+
-
-Be careful, once the data value is beyond the lower or upper bound of a certain data type, 
-the value will be wrapped around and there is no warning:
-
-.. code:: python
-
-	np.array([255], np.uint8) + 1   # 2**8-1 is INT_MAX for uint8  
-	array([0], dtype=uint8)
-
-
-
-For floating-point numbers:
-
-+-------------+----------------------------------+
-| data type   | data range                       |
-+=============+==================================+
-| float16     | fff	                         |
-+-------------+----------------------------------+
-| float32     | fff     			 |
-+-------------+----------------------------------+
-| float64     | fff                              |
-+-------------+----------------------------------+
-
+   # create float32 variable
+   x = np.float32(1.0)
+   # array with uint8 unsigned integers
+   z = np.arange(3, dtype=np.uint8)
+   # convert array to floats
+   z.astype(float)
 
 Creating numpy arrays
 ^^^^^^^^^^^^^^^^^^^^^
 
-One way to create a numpy array is to convert from a python list, but make sure that the list is homogeneous (same data type) 
-otherwise you will downgrade the performace of numpy array. 
-Since appending elements to an existing array is slow, it is a common practice to preallocate the necessary space with np.zeros or np.empty
-when converting from a python list is not possible.
-
+One way to create a numpy array is to convert from a python list, but make sure that the list is homogeneous 
+(same data type) otherwise you will downgrade the performace of numpy array. 
+Since appending elements to an existing array is slow, it is a common practice to preallocate the necessary space 
+with ``np.zeros`` or ``np.empty`` when converting from a python list is not possible.
 
 .. code-block:: python
 
-   import numpy
-   a = numpy.array((1, 2, 3, 4), float)
+   import numpy as np
+   a = np.array((1, 2, 3, 4), float)
    a
    # array([ 1., 2., 3., 4.])
 
-   list1 = [[1, 2, 3], [4,5,6]]
-   mat = numpy.array(list1, complex)
+   list1 = [[1, 2, 3], [4, 5, 6]]
+   mat = np.array(list1, complex)
    mat
    # array([[ 1.+0.j, 2.+0.j, 3.+0.j],
    #       [ 4.+0.j, 5.+0.j, 6.+0.j]])
@@ -203,51 +144,50 @@ when converting from a python list is not possible.
    mat.size
    # 6
 
+Helper functions
+~~~~~~~~~~~~~~~~
 
-Helper functions for creating arrays
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-XXXX may add this to exercise and find out what is the differences between arange and linspace
-
-`arange` and `linspace` can generate ranges of numbers:
+``arange`` and ``linspace`` can generate ranges of numbers:
 
 .. code-block:: python
 
-    a = numpy.arange(10)
+    a = np.arange(10)
     a
     # array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
-    b = numpy.arange(0.1, 0.2, 0.02)
+    b = np.arange(0.1, 0.2, 0.02)
     b
     # array([0.1 , 0.12, 0.14, 0.16, 0.18])
 
-    c = numpy.linspace(-4.5, 4.5, 5)
+    c = np.linspace(-4.5, 4.5, 5)
     c
     # array([-4.5 , -2.25, 0. , 2.25, 4.5 ])
 
 
-Array with given shape initialized to `zeros`, `ones` or arbitrary value (`full`):
+Array with given shape initialized to ``zeros``, ``ones``, arbitrary value (``full``)
+or unitialized (``empty``):
 
 .. code-block:: python
 
-   a = numpy.zeros((4, 6), float)
+   a = np.zeros((4, 6), float)
    a.shape
    # (4, 6)
 
-   b = numpy.ones((2, 4))
+   b = np.ones((2, 4))
    b
    # array([[ 1., 1., 1., 1.],
    #       [ 1., 1., 1., 1.]])
 	   
-   c = numpy.full((2, 3), 4.2)
+   c = np.full((2, 3), 4.2)
    c
    # array([[4.2, 4.2, 4.2],
    #       [4.2, 4.2, 4.2]])
 
-Empty array (no values assigned) with `empty`.
+   d = np.empty((2, 2))
+   # array([[0.00000000e+000, 1.03103236e-259],
+   #       [0.00000000e+000, 9.88131292e-324]])
 
-Similar arrays as an existing one with `zeros_like`, `ones_like`, 
-`full_like` and `empty_like`:
+Similar arrays as an existing array:
 
 .. code-block:: python
 
@@ -256,28 +196,6 @@ Similar arrays as an existing one with `zeros_like`, `ones_like`,
    c = numpy.ones_like(a)
    d = numpy.full_like(a, 9.1)
 
-Non-numeric data
-~~~~~~~~~~~~~~~~
-
-NumPy supports also storing non-numerical data e.g. strings (largest
-element determines the item size)
-
-.. code-block:: python
-
-   a = numpy.array(['foo', 'foo-bar'])
-   a
-   # array(['foo', 'foo-bar'], dtype='|U7')
-
-Character arrays can, however, be sometimes useful
-
-.. code-block:: python
-
-   dna = 'AAAGTCTGAC'
-   a = numpy.array(dna, dtype='c')
-   a
-   # array([b'A', b'A', b'A', b'G', b'T', b'C', b'T', b'G', b'A', b'C'],
-   #       dtype='|S1')
-
 
 
 Array Operations and Manipulations
@@ -285,45 +203,39 @@ Array Operations and Manipulations
 
 All the familiar arithemtic operators are applied on an element-by-element basis.
 
-.. challenge:: Arithmetic
+.. tabs:: 
 
-   .. tabs:: 
+   .. tab:: 1D
 
-      .. tab:: 1D
+      .. code-block:: python
 
-             .. code-block:: py
+         import numpy as np
+         a = np.array([1, 3, 5])
+         b = np.array([4, 5, 6])
+         
+         a + b
 
-			import numpy as np
-                        a = np.array([1, 3, 5])
-                        b = np.array([4, 5, 6])
+      .. figure:: img/np_add_1d_new.svg 
 
-             .. code-block:: py
+      .. code-block:: py
 
-			a + b
-
-             .. figure:: img/np_add_1d_new.svg 
-
-             .. code-block:: py
-
-			a/b
-
-             .. figure:: img/np_div_1d_new.svg 
+         a/b
+         
+      .. figure:: img/np_div_1d_new.svg
 
 
-      .. tab:: 2D
+   .. tab:: 2D
+    
+      .. code-block:: python
 
-             .. code-block:: python
+         import numpy as np
+	      a = np.array([[1, 2, 3], [4, 5, 6]])
+         b = np.array([10, 10, 10], [10, 10, 10]])
 
-			import numpy as np
-		        a = np.array([[1, 2, 3],
-	               	   [4, 5, 6]])
-		        b = np.array([10, 10, 10],
-	               	   [10, 10, 10]])
+         a + b                       # array([[11, 12, 13],
+                                     #        [14, 15, 16]]) 
 
-			a + b                       # array([[11, 12, 13],
-                                			 #        [14, 15, 16]]) 
-
-             .. figure:: img/np_add_2d.svg 
+      .. figure:: img/np_add_2d.svg 
 
 
 Array Indexing
@@ -332,140 +244,105 @@ Array Indexing
 Basic indexing is similar to python lists.
 Note that advanced indexing creates copies of arrays.
 
-.. challenge:: index
+.. tabs:: 
+
+   .. tab:: 1D
+
+      .. code-block:: py
+
+         import numpy as np
+         data = np.array([1,2,3,4,5,6,7,8])
+
+      .. figure:: img/np_ind_0.svg 
+
+      **Integer indexing:**
+
+      .. figure:: img/np_ind_integer.svg 
+
+      **Fancy indexing:**
+
+      .. figure:: img/np_ind_fancy.svg 
+
+      **Boolean indexing:**
+
+      .. figure:: img/np_ind_boolean.svg 
 
 
-   .. tabs:: 
+   .. tab:: 2D
 
-      .. tab:: 1D
+      .. code-block:: python
 
-             .. code-block:: py
+         import numpy as np
+         data = np.array([[1, 2, 3, 4],[5, 6, 7, 8],[9, 10, 11, 12]])
 
-			import numpy as np
-                        data = np.array([1,2,3,4,5,6,7,8])
+      .. figure:: img/np_ind2d_data.svg 
 
-             .. figure:: img/np_ind_0.svg 
+      **Integer indexing:**
 
-             .. code-block:: py
+      .. figure:: img/np_ind2d_integer.svg 
 
-			     # integer indexing 
+      **Fancy indexing:**
 
-             .. figure:: img/np_ind_integer.svg 
+      .. figure:: img/np_ind2d_fancy.svg 
 
-             .. code-block:: py
+      **Boolean indexing:**
 
-			     # fancy indexing 
-
-             .. figure:: img/np_ind_fancy.svg 
-
-             .. code-block:: python
-
-			     # boolean indexing 
-
-             .. figure:: img/np_ind_boolean.svg 
-
-
-      .. tab:: 2D
-
-             .. code-block:: python
-
-			     import numpy as np
-			     data = np.array([[1, 2, 3, 4],[5, 6, 7, 8],[9, 10, 11, 12]])
-
-             .. figure:: img/np_ind2d_data.svg 
-
-             .. code-block:: python
-
-			     # integer indexing
-
-             .. figure:: img/np_ind2d_integer.svg 
-
-             .. code-block:: python
-
-			     # fancy indexing 
-
-             .. figure:: img/np_ind2d_fancy.svg 
-
-             .. code-block:: python
-
-			     # boolean indexing 
-
-
-             .. figure:: img/np_ind2d_boolean.svg 
+      .. figure:: img/np_ind2d_boolean.svg 
 
 
 Array Aggregation
 ^^^^^^^^^^^^^^^^^
-.. challenge:: aggregation
 
-Apart from aggregate all values, one can also aggregate across the rows or columns by using the axis parameter:
+Apart from aggregating values, one can also aggregate across rows or columns by using the ``axis`` parameter:
 
-   .. tabs:: 
+.. code-block:: py
 
+   import numpy as np
+   data = np.array([[0, 1, 2], [3, 4, 5]])
 
-      .. tab:: 2D
+.. figure:: img/np_max_2d.svg 
 
-             .. code-block:: py
+.. figure:: img/np_sum_2d.svg 
 
-			     # max 
+.. figure:: img/np_min_2d_ax0.svg 
 
-             .. figure:: img/np_max_2d.svg 
-
-
-             .. code-block:: py
-
-			     # sum 
-
-             .. figure:: img/np_sum_2d.svg 
-
- 
-             .. code-block:: py
-
-			     # axis 
-
-             .. figure:: img/np_min_2d_ax0.svg 
-             .. figure:: img/np_min_2d_ax1.svg 
+.. figure:: img/np_min_2d_ax1.svg 
 
 
 Array Reshaping
 ^^^^^^^^^^^^^^^
 
-.. challenge:: reshape
-
 Sometimes, you need to change the dimension of an array. 
 One of the most common need is to trasnposing the matrix 
 during the dot product. Switching the dimensions of 
-a numpy array is also quite common in more advanced cases.
+a NumPy array is also quite common in more advanced cases.
 
-             .. code-block:: py
+.. code-block:: py
 
-			import numpy as np
-                        data = np.array([1,2,3,4,6,7,8,9,10,11,12])
+   import numpy as np
+   data = np.array([1,2,3,4,6,7,8,9,10,11,12])
 
-             .. figure:: img/np_reshape0.svg 
+.. figure:: img/np_reshape0.svg 
 
-             .. code-block:: py
+.. code-block:: py
 
-			    data.reshape(4,3)
+   data.reshape(4,3)
 
-             .. figure:: img/np_reshape43.svg 
+.. figure:: img/np_reshape43.svg 
 
-             .. code-block:: py
+.. code-block:: py
 
-			     data.reshape(3,4)
+   data.reshape(3,4)
  
-             .. figure:: img/np_reshape34.svg 
+.. figure:: img/np_reshape34.svg 
 
-
-XXX put the fowlloing in exercices
-
-add example, T of 1d array is not working
-Use flatten as an alternative to ravel. What is the difference? (Hint: check which one returns a view and which a copy)
 
 Views and copies of arrays
-- Simple assignment creates references to arrays
-- Slicing creates "views" to the arrays
-- Use `copy()` for real copying of arrays
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Simple assignment creates **references** to arrays
+- Slicing creates **views** to the arrays
+- Use ``copy`` for real copying of arrays
 
 .. code-block:: python
 
@@ -478,68 +355,85 @@ Views and copies of arrays
 
 
 I/O with numpy
+^^^^^^^^^^^^^^
+
+- Numpy provides functions for reading data from file and for writing data
+  into the files
+- Simple text files
+
+    - :meth:`numpy.loadtxt`
+    - :meth:`numpy.savetxt`
+    - Data in regular column layout
+    - Can deal with comments and different column delimiters
+
+
 Random numbers
+^^^^^^^^^^^^^^
 
-XXX put the above in exercices
+- The module ``numpy.random`` provides several functions for constructing
+  random arrays
+    - :meth:`random`: uniform random numbers
+    - :meth:`normal`: normal distribution
+    - :meth:`choice`: random sample from given array
+    - ...
 
+.. code-block:: python
 
+    import numpy.random as rnd
+    rnd.random((2,2))
+    # array([[ 0.02909142, 0.90848 ],
+    #       [ 0.9471314 , 0.31424393]])
 
-Anatomy of NumPy array
-^^^^^^^^^^^^^^^^^^^^^^
+    rnd.choice(numpy.arange(4), 10)
+    # array([0, 1, 1, 2, 1, 1, 2, 0, 2, 3])
 
-- **ndarray** type is made of
-    - one dimensional contiguous block of memory (raw data)
-    - indexing scheme: how to locate an element
-    - data type descriptor: how to interpret an element
+Polynomials
+^^^^^^^^^^^
 
-.. figure:: img/ndarray-in-memory.svg
-   :align: center
-   
+- Polynomial is defined by an array of coefficients p
+  ``p(x, N) = p[0] x^{N-1} + p[1] x^{N-2} + ... + p[N-1]``
+- For example:
 
+    - Least square fitting: :meth:`numpy.polyfit`
+    - Evaluating polynomials: :meth:`numpy.polyval`
+    - Roots of polynomial: :meth:`numpy.roots`
 
-NumPy indexing
-~~~~~~~~~~~~~~
+.. code-block:: python
 
-- There are many possible ways of arranging items of N-dimensional
-  array in a 1-dimensional block
-- NumPy uses **striding** where N-dimensional index ($n_0, n_1, ..., n_{N-1}$)
-  corresponds to offset from the beginning of 1-dimensional block
-  
-$$
-offset = \sum_{k=0}^{N-1} s_k n_k, s_k \text{ is stride in dimension k}
-$$
+    x = np.linspace(-4, 4, 7)
+    y = x**2 + rnd.random(x.shape)
 
-
-.. figure:: img/ndarray-in-memory-offset.svg
-   :align: center
-
-ndarray attributes
-~~~~~~~~~~~~~~~~~~
-
-`a = numpy.array(...)`
-  : `a.flags`
-    : various information about memory layout
-
-    `a.strides`
-    : bytes to step in each dimension when traversing
-
-    `a.itemsize`
-    : size of one array element in bytes
-
-    `a.data`
-    : Python buffer object pointing to start of arrays data
-
-    `a.__array_interface__`
-    : Python internal interface
+    p = np.polyfit(x, y, 2)
+    p
+    # array([ 0.96869003, -0.01157275, 0.69352514])
 
 
+Linear algebra
+^^^^^^^^^^^^^^
 
+- Numpy can calculate matrix and vector products efficiently: :meth:`dot`,
+  :meth:`vdot`, ...
+- Eigenproblems: :meth:`linalg.eig`, :meth:`linalg.eigvals`, ...
+- Linear systems and matrix inversion: :meth:`linalg.solve`, :meth:`linalg.inv`
 
+.. code-block:: python
 
+    A = np.array(((2, 1), (1, 3)))
+    B = np.array(((-2, 4.2), (4.2, 6)))
+    C = np.dot(A, B)
 
+    b = np.array((1, 2))
+    np.linalg.solve(C, b) # solve C x = b
+    # array([ 0.04453441, 0.06882591])
 
+- Normally, NumPy utilises high performance libraries in linear algebra
+  operations
+- Example: matrix multiplication C = A * B matrix dimension 1000
 
-
+    - pure python:           522.30 s
+    - naive C:                 1.50 s
+    - numpy.dot:               0.04 s
+    - library call from C:     0.04 s
 
 
 
@@ -547,59 +441,25 @@ Pandas
 ------
 
 Pandas is a Python package that provides high-performance and easy to use 
-data structures and data analysis tools. Build on numpy array, pandas is 
+data structures and data analysis tools. Built on NumPy arrays, pandas is 
 particularly well suited to analyze tabular and time series data. 
-Although numpy could deal with structured array (array with mixed data types), 
-it is not efficient. 
+Although NumPy could in principle deal with structured arrays 
+(arrays with mixed data types), it is not efficient. 
 
-The core data structures of pandas are Series and Dataframe. 
-A pandas series is a one-dimensional numpy array with an index 
-which we could use to access the data, while dataframe consists of 
-a table of values with lables for each row and column.  
-A dataframe can combine multiple data types, such as numbers and text, 
-but the data in each column is of the same type. Each column of a dataframe is a 
-`series object <https://pandas.pydata.org/docs/user_guide/dsintro.html#series>`__ - 
-a dataframe is thus a collection of series.
+The core data structures of pandas are Series and Dataframes.
+
+- A pandas **series** is a one-dimensional numpy array with an index 
+  which we could use to access the data 
+- A **dataframe** consist of a table of values with labels for each row and column.  
+  A dataframe can combine multiple data types, such as numbers and text, 
+  but the data in each column is of the same type. 
+- Each column of a dataframe is a series object - a dataframe is thus a collection of series.
 
 .. image:: img/01_table_dataframe.svg
 
 
-
-
-The open source community developing the pandas package has also created 
-excellent documentation and training material, including: 
-
-- a  `Getting started guide <https://pandas.pydata.org/getting_started.html>`__ 
-  (including tutorials and a 10 minute flash intro)
-- a `"10 minutes to pandas" <https://pandas.pydata.org/docs/user_guide/10min.html#min>`__
-  tutorial
-- thorough `Documentation <https://pandas.pydata.org/docs/>`__ containing a user guide, 
-  API reference and contribution guide
-- a `cheatsheet <https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf>`__ 
-- a `cookbook <https://pandas.pydata.org/docs/user_guide/cookbook.html#cookbook>`__.
-
-
-.. callout:: Getting help
-
-    Series and DataFrames have a lot functionality, but
-    how can we find out what methods are available and how they work? One way is to visit 
-    the `API reference <https://pandas.pydata.org/docs/reference/frame.html>`__ 
-    and reading through the list. 
-    Another way is to use the autocompletion feature in Jupyter and type e.g. 
-    ``titanic["Age"].`` in a notebook and then hit ``TAB`` twice - this should open 
-    up a list menu of available methods and attributes.
-
-    Jupyter also offers quick access to help pages (docstrings) which can be 
-    more efficient than searching the internet. Two ways exist:
-
-    - Write a function name followed by question mark and execute the cell, e.g.
-      write ``titanic.hist?`` and hit ``SHIFT + ENTER``.
-    - Write the function name and hit ``SHIFT + TAB``.
-
-
-
-tidy data format
-^^^^^^^^^^^^^^^^
+Tidy vs untidy data
+^^^^^^^^^^^^^^^^^^^
 
 Let's first look at the following two tables:
 
@@ -607,105 +467,119 @@ Let's first look at the following two tables:
 
    .. tabs:: 
 
-      .. tab:: untidy data format
+      .. tab:: Untidy data format
 
-             .. code-block:: py
+         .. code-block:: py
 
-			     Runner  400  800  1200  1500
-			0  Runner 1   64  128   192   240
-			1  Runner 2   80  160   240   300
-			2  Runner 3   96  192   288   360
+	   		     Runner  400  800  1200  1500
+	   		0  Runner 1   64  128   192   240
+	   		1  Runner 2   80  160   240   300
+	   		2  Runner 3   96  192   288   360
 
-      .. tab:: tidy data format
+      .. tab:: Tidy data format
 
-             .. code-block:: python
+         .. code-block:: python
 
-			      Runner distance  time
-			0   Runner 1      400    64
-			1   Runner 2      400    80
-			2   Runner 3      400    96
-			3   Runner 1      800   128
-			4   Runner 2      800   160
-			5   Runner 3      800   192
-			6   Runner 1     1200   192
-			7   Runner 2     1200   240
-			8   Runner 3     1200   288
-			9   Runner 1     1500   240
-			10  Runner 2     1500   300
-			11  Runner 3     1500   360
+   			      Runner distance  time
+   			0   Runner 1      400    64
+   			1   Runner 2      400    80
+   			2   Runner 3      400    96
+   			3   Runner 1      800   128
+   			4   Runner 2      800   160
+   			5   Runner 3      800   192
+   			6   Runner 1     1200   192
+   			7   Runner 2     1200   240
+   			8   Runner 3     1200   288
+   			9   Runner 1     1500   240
+   			10  Runner 2     1500   300
+   			11  Runner 3     1500   360
 
 
 Most tabular data is either in a tidy format or a untidy format 
 (some people refer them as the long format or the wide format). 
 
-In short, in an untidy (wide) format, each row represents an observation 
-consisting of multiple variables and each variable has its own column. 
-This is very intuitive and easy for us (human beings) to understand 
-and  make comparisons across different variables, calculate statistics, etc.  
-In a tidy (long) format , i.e. column-oriented format, each row represents 
-only one variable of the observation, and can be considered "computer readable".
+In short: 
 
-Both formats have their own merits and you need to know 
-which one suits your analysis. For example, if you are dealing with matrices, 
-you would not want to store them as rows and columns, but as 
-a two-dimensional array using untidy format. On the other hand, 
-if you need to add new data or remove old data frequently from the table 
-in a relational database, the tidy format may be the choice. 
-Another case is that there are certain visualization tools 
-which take data in the tidy format, e,g, ggplot, seaborn.
+- in an untidy (wide) format, each row represents an observation 
+  consisting of multiple variables and each variable has its own column. 
+  This is very intuitive and easy for us (human beings) to understand 
+  and  make comparisons across different variables, calculate statistics, etc.  
+
+- In a tidy (long) format , i.e. column-oriented format, each row represents 
+  only one variable of the observation, and can be considered "computer readable".
 
 When it comes to data analysis using pandas, the tidy format is recommended: 
 
- - each column can be stored as a vector and this not only saves memory 
-   but also allows for vectorized calculations which are much faster.
- - it's easier to filter, group, join and aggregate the data
+- Each column can be stored as a vector and this not only saves memory 
+  but also allows for vectorized calculations which are much faster.
+- It's easier to filter, group, join and aggregate the data.
 
-.. note:: 
+The name "tidy data" comes from `Wickham’s paper (2014) <https://vita.had.co.nz/papers/tidy-data.pdf>`__ 
+which describes the ideas in great detail.
+This image from Hadley Wickham’s book *R for Data Science* visualizes the idea:
 
-   The name "tidy data" comes from Wickham’s paper (2014) which describes 
-   the ideas in great detail.
+.. figure:: img/tidy_data.png
 
+Data analysis workflow
+^^^^^^^^^^^^^^^^^^^^^^
 
-data pre-processing
-^^^^^^^^^^^^^^^^^^^
+Pandas is a powerful tool for all steps of a data analysis pipeline, 
+including 
 
-In real applications, some data pre-processing have to be performed 
-before one can perform useful analysis. There is no fixed list of 
-what these pre-processings are, but in general the following steps are involved:
+- Downloading and reading in data sets
+- Exploring the data
+- Pre-processing and cleaning data
 
-- data cleaning
-- data reshaping
-- data 
+  - renaming, reshaping, reordering, type conversion, handling duplicate/missing/invalid data
 
-
-data cleaning
-~~~~~~~~~~~~~
-
-A couple of essential  data cleaning processes include 
-but not limited to the following:
-
-- data renaming
-- data reordering
-- data type converting
-- handling of duplicating data, missing data, invalid data
+- Analysis
 
 
-add examples 
-https://pandas.pydata.org/docs/user_guide/missing_data.html
+Let us explore some of the capabilities.
+We begin by creating a dataframe:
+Let's get a flavor of what we can do with pandas. We will be working with an
+example dataset containing the passenger list from the Titanic, which is often used in 
+Kaggle competitions and data science tutorials. First step is to load pandas and download 
+the dataset into a dataframe:
+
+.. code-block:: python
+
+   import pandas as pd
+
+   url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
+   titanic = pd.read_csv(url, index_col='Name')
+
+We can now view the dataframe to get an idea of what it contains and
+print some summary statistics of its numerical data::
+
+    # print the first 5 lines of the dataframe
+    titanic.head()  
+    
+    # print summary statistics for each column
+    titanic.describe()  
 
 
-data Reshaping
-~~~~~~~~~~~~~~
+Ok, so we have information on passenger names, survival (0 or 1), age, 
+ticket fare, number of siblings/spouses, etc. With the summary statistics we 
+see that the average age is 29.7 years, maximum ticket price is 512 USD, 
+38\% of passengers survived, etc.
 
-Once data cleaning is done, we will reach the data reshaping phase. 
-By reorganising the data, one could make the subsequent data operations easier.
+Let's say we're interested in the survival probability of different age groups. 
+With two one-liners, we can find the average age of those who survived or didn't survive, 
+and plot corresponding histograms of the age distribution:
 
-pivoting
-********
+.. code-block:: python
 
-Create a data frame first
+   print(titanic.groupby("Survived")["Age"].mean())
 
-.. code:: python
+::
+
+    titanic.hist(column='Age', by='Survived', bins=25, figsize=(8,10), 
+                 layout=(2,1), zorder=2, sharex=True, rwidth=0.9);
+    
+
+
+.. code-block:: python
 
 	df = pd.DataFrame(
     	{
@@ -715,17 +589,23 @@ Create a data frame first
        	 "zoo": ["x","y","z","q","w","t"]
     	}
 	)
+   df
 
+Summary statistics of numerical columns:
+
+.. code-block:: python
+
+   df.describe()
 
 To select out everything for variable ``A`` we could do:
 
-.. code:: python
+.. code-block:: python
 
    filtered = df[df["bar"] == "A"]
    filtered
 
 But suppose we would like to represent the table in such a way that
-the ``columns`` are the unique variables from 'bar' and the ``index`` from 'foo'. 
+the ``columns`` are the unique variables from "bar" and the ``index`` from "foo". 
 To reshape the data into this form, we use the :meth:`DataFrame.pivot` 
 method (also implemented as a top level function :func:`~pandas.pivot`):
 
@@ -735,27 +615,6 @@ method (also implemented as a top level function :func:`~pandas.pivot`):
    pivoted
 
 .. image:: img/reshaping_pivot.png
-
-If the ``values`` argument is omitted, and the input :class:`DataFrame` has more than
-one column of values which are not used as column or index inputs to :meth:`~DataFrame.pivot`,
-then the resulting "pivoted" :class:`DataFrame` will have :ref:`hierarchical columns
-<advanced.hierarchical>` whose topmost level indicates the respective value
-column:
-
-.. code:: python
-
-   df["value2"] = df["value"] * 2
-   pivoted = df.pivot(index="date", columns="variable")
-   pivoted
-
-You can then select subsets from the pivoted :class:`DataFrame`:
-
-.. code:: python
-
-   pivoted["value2"]
-
-Note that this returns a view on the underlying data in the case where the data
-are homogeneously-typed.
 
 .. note::
    :func:`~pandas.pivot` will error with a ``ValueError: Index contains duplicate
@@ -1137,11 +996,16 @@ standpoint: you aren't just using some unknown function, but have a
 full scientific description and citation to the method and
 implementation.
 
+See also
+--------
 
+- Pandas  `getting started guide <https://pandas.pydata.org/getting_started.html>`__ 
+  (including tutorials and a 10 minute flash intro)
+- Pandas `documentation <https://pandas.pydata.org/docs/>`__ containing a user guide, 
+  API reference and contribution guide.
+- Pandas `cheatsheet <https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf>`__ 
+- Pandas `cookbook <https://pandas.pydata.org/docs/user_guide/cookbook.html#cookbook>`__.
 
 .. keypoints::
 
-   - When you need advance math or scientific functions, let's just
-     admit it: you do a web search first.
-   - But when you see something in SciPy come up, you know your
-     solutions are in good hands.
+
