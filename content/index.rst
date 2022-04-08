@@ -34,7 +34,14 @@ computing.
    :widths: auto
    :delim: ;
 
-   20 min ; :doc:`motivation`
+   15 min ; :doc:`motivation`
+   30 min ; :doc:`scientific-data`
+   35 min ; :doc:`sharing`
+   50 min ; :doc:`stack`
+   60 min ; :doc:`performance`
+   110 min ; :doc:`parallel-computing`
+   110 min ; :doc:`dask`
+   110 min ; :doc:`GPU-computing`
 
 
 .. toctree::
@@ -48,8 +55,14 @@ computing.
    parallel-computing
    dask
    GPU-computing
-   sharing
+   
 
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Optional material
+
+   pandas_extra
 
 
 .. toctree::

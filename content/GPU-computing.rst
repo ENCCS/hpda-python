@@ -1,3 +1,5 @@
+.. _GPU-computing:
+
 GPU computing
 =============
 
@@ -77,10 +79,10 @@ CPUs and GPUs were designed with different goals in mind. While the CPU is desig
 .. figure:: img/gpu_vs_cpu.png
    :align: center
 
-    A comparison of the CPU and GPU architecture.
-    CPU (left) has complex core structure and pack several cores on a single chip.
-    GPU cores are very simple in comparison, they also share data and control between each other.
-    This allows to pack more cores on a single chip, thus achieving very hich compute density.
+   A comparison of the CPU and GPU architecture.
+   CPU (left) has complex core structure and pack several cores on a single chip.
+   GPU cores are very simple in comparison, they also share data and control between each other.
+   This allows to pack more cores on a single chip, thus achieving very hich compute density.
 
 .. list-table::  
    :widths: 100 100
@@ -268,7 +270,7 @@ benchmark
 
 
 CUDA kernel: CUDA JIT decorator 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alough it is simple to use ufuncs(gfuncs) to run on GPU, the performance is the price we have to pay. 
 In addition, not all functions can be written as ufuncs in practice. To have much more flexibility, 
@@ -319,7 +321,12 @@ NVIDIA Volta streaming multiprocessor (SM):
 thread hierarchy
 ^^^^^^^^^^^^^^^^
 
-In order to take advantage of the accelerators it is needed to use parallelism.  When a kernel is launched,  tens of thousands of threads are created. All threads execute the given kernel with each thread executing the same instructions but on different data (*S*ingle *I*instruction *M*ultiple *D*ata parallel programming model). It is therefore crucial  to know which thread operates on which array element(s). 
+In order to take advantage of the accelerators it is needed to use parallelism.  
+When a kernel is launched,  tens of thousands of threads are created. 
+All threads execute the given kernel with each thread executing the same 
+instructions but on different data (Single Iinstruction Multiple Data 
+parallel programming model). It is therefore crucial  to know which thread 
+operates on which array element(s). 
 
 .. note:: All loops in which the individual iterations are independent of each other can be parallelized.
 

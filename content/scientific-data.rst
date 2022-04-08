@@ -1,3 +1,5 @@
+.. _scientific-data:
+
 Scientific data
 ===============
 

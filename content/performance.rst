@@ -1,4 +1,4 @@
-.. include:: .special.rst
+.. _performance:
 
 Optimization
 ============

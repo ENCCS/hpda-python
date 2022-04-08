@@ -1,3 +1,5 @@
+.. _parallel-computing:
+
 Parallel computing
 ==================
 
@@ -9,9 +11,17 @@ Parallel computing
    - Learn the basics of *multiprocessing*, *threading*, *ipyparallel* and *MPI4Py*
 
 
+The performance of a single CPU core has stagnated over the last ten years,
+and as such most of the speed-up in modern CPUs is coming from using multiple
+CPU cores, i.e. parallel processing. Parallel processing is normally based
+either on multiple threads or multiple processes. Unfortunately, the memory
+management of the standard CPython interpreter is not thread-safe, and it uses
+something called Global Interpreter Lock (GIL) to safeguard memory integrity.
+In practice, this limits the benefits of multiple threads only to some
+special situations (e.g. I/O). Fortunately, parallel processing with multiple
+processes is relatively straightforward also with Python.
 
-**Parallel computing** is when many different tasks are carried out
-simultaneously.  There are three main models:
+There are three main models of parallel computing:
 
 - **Embarrassingly parallel:** the code does not need to synchronize/communicate
   with other instances, and you can run

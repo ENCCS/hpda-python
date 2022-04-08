@@ -1,3 +1,5 @@
+.. _dask:
+
 Dask for scalable analytics
 ===========================
 

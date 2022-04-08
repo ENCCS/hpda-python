@@ -1,3 +1,5 @@
+.. _stack:
+
 Python software stack
 =====================
 
@@ -372,10 +374,11 @@ Random numbers
 
 - The module ``numpy.random`` provides several functions for constructing
   random arrays
-    - :meth:`random`: uniform random numbers
-    - :meth:`normal`: normal distribution
-    - :meth:`choice`: random sample from given array
-    - ...
+
+   - :meth:`random`: uniform random numbers
+   - :meth:`normal`: normal distribution
+   - :meth:`choice`: random sample from given array
+   - ...
 
 .. code-block:: python
 
