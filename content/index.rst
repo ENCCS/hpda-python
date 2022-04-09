@@ -35,8 +35,7 @@ computing.
    :delim: ;
 
    15 min ; :doc:`motivation`
-   30 min ; :doc:`scientific-data`
-   35 min ; :doc:`sharing`
+   35 min ; :doc:`scientific-data`
    50 min ; :doc:`stack`
    60 min ; :doc:`performance`
    110 min ; :doc:`parallel-computing`
@@ -62,7 +61,7 @@ computing.
    :maxdepth: 1
    :caption: Optional material
 
-   pandas_extra
+   pandas-extra
 
 
 .. toctree::

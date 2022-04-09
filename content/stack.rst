@@ -203,7 +203,35 @@ Similar arrays as an existing array:
 Array Operations and Manipulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-All the familiar arithemtic operators are applied on an element-by-element basis.
+`for` loops in Python are slow. If one needs to apply a mathematical operation
+on multiple (consecutive) elements of an array, it is always better to use a
+vectorised operation if possible.
+
+In practice, a vectorised operation means reframing the code in a manner that
+completely avoids a loop and instead uses e.g. slicing to apply the operation
+on the whole array (slice) at one go. For example, the following code for 
+calculating the difference of neighbouring elements in an array:
+
+.. code-block:: python
+
+   # brute force using a for loop
+   arr = numpy.arange(1000)
+   dif = numpy.zeros(999, int)
+   for i in range(1, len(arr)):
+       dif[i-1] = arr[i] - arr[i-1]
+
+can be re-written as a vectorised operation:
+
+.. code-block:: python
+
+   # vectorised operation
+   arr = numpy.arange(1000)
+   dif = arr[1:] - arr[:-1]
+
+The first brute force approach using a for loop is approx. 80 times slower
+than the second vectorised form!
+
+All the familiar arithmetic operators in NumPy are applied in vectorised form:
 
 .. tabs:: 
 
@@ -464,51 +492,66 @@ The core data structures of pandas are Series and Dataframes.
 Tidy vs untidy data
 ^^^^^^^^^^^^^^^^^^^
 
-Let's first look at the following two tables:
+Let's first look at the following two dataframes:
 
-.. challenge:: 1500m Running event
+.. callout:: 1500m Running event
 
    .. tabs:: 
 
       .. tab:: Untidy data format
 
-         .. code-block:: py
+         .. code-block:: python
 
-	   		     Runner  400  800  1200  1500
-	   		0  Runner 1   64  128   192   240
-	   		1  Runner 2   80  160   240   300
-	   		2  Runner 3   96  192   288   360
+            runners = pd.DataFrame([
+                  {'Runner': 'Runner 1', 400: 64, 800: 128, 1200: 192, 1500: 240},
+                  {'Runner': 'Runner 2', 400: 80, 800: 160, 1200: 240, 1500: 300},
+                  {'Runner': 'Runner 3', 400: 96, 800: 192, 1200: 288, 1500: 360},
+              ])
+            runners
+
+            # returns:
+
+	   		#      Runner  400  800  1200  1500
+	   		# 0  Runner 1   64  128   192   240
+	   		# 1  Runner 2   80  160   240   300
+	   		# 2  Runner 3   96  192   288   360
 
       .. tab:: Tidy data format
 
          .. code-block:: python
 
-   			      Runner distance  time
-   			0   Runner 1      400    64
-   			1   Runner 2      400    80
-   			2   Runner 3      400    96
-   			3   Runner 1      800   128
-   			4   Runner 2      800   160
-   			5   Runner 3      800   192
-   			6   Runner 1     1200   192
-   			7   Runner 2     1200   240
-   			8   Runner 3     1200   288
-   			9   Runner 1     1500   240
-   			10  Runner 2     1500   300
-   			11  Runner 3     1500   360
+            # "melt" the data (opposite of "pivot")
+            runners = pd.melt(runners, id_vars="Runner", 
+                              value_vars=[400, 800, 1200, 1500], 
+                              var_name="distance", 
+                              value_name="time"
+                             )
+            # returns:
+
+   			#       Runner distance  time
+   			# 0   Runner 1      400    64
+   			# 1   Runner 2      400    80
+   			# 2   Runner 3      400    96
+   			# 3   Runner 1      800   128
+   			# 4   Runner 2      800   160
+   			# 5   Runner 3      800   192
+   			# 6   Runner 1     1200   192
+   			# 7   Runner 2     1200   240
+   			# 8   Runner 3     1200   288
+   			# 9   Runner 1     1500   240
+   			# 10  Runner 2     1500   300
+   			# 11  Runner 3     1500   360
 
 
 Most tabular data is either in a tidy format or a untidy format 
 (some people refer them as the long format or the wide format). 
 
-In short: 
-
-- in an untidy (wide) format, each row represents an observation 
+- In untidy (wide) format, each row represents an observation 
   consisting of multiple variables and each variable has its own column. 
-  This is very intuitive and easy for us (human beings) to understand 
+  This is intuitive and easy for us to understand 
   and  make comparisons across different variables, calculate statistics, etc.  
 
-- In a tidy (long) format , i.e. column-oriented format, each row represents 
+- In tidy (long) format , i.e. column-oriented format, each row represents 
   only one variable of the observation, and can be considered "computer readable".
 
 When it comes to data analysis using pandas, the tidy format is recommended: 
@@ -526,21 +569,17 @@ This image from Hadley Wickham’s book *R for Data Science* visualizes the idea
 Data analysis workflow
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Pandas is a powerful tool for all steps of a data analysis pipeline, 
-including 
+Pandas is a powerful tool for many steps of a data analysis pipeline:
 
-- Downloading and reading in data sets
-- Exploring the data
+- Downloading and reading in datasets
+- Initial exploration of data
 - Pre-processing and cleaning data
 
   - renaming, reshaping, reordering, type conversion, handling duplicate/missing/invalid data
 
 - Analysis
 
-
-Let us explore some of the capabilities.
-We begin by creating a dataframe:
-Let's get a flavor of what we can do with pandas. We will be working with an
+To explore some of the capabilities, we start with an
 example dataset containing the passenger list from the Titanic, which is often used in 
 Kaggle competitions and data science tutorials. First step is to load pandas and download 
 the dataset into a dataframe:
@@ -550,7 +589,12 @@ the dataset into a dataframe:
    import pandas as pd
 
    url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
-   titanic = pd.read_csv(url, index_col='Name')
+   # set the index to the "Name" column 
+   titanic = pd.read_csv(url, index_col="Name")
+
+Pandas also understands multiple other formats, for example :meth:`read_excel`,  
+:meth:`read_hdf`, :meth:`read_json`, etc. (and corresponding methods to write to file: 
+:meth:`to_csv`, :meth:`to_excel`, :meth:`to_hdf`, :meth:`to_json`, ...)  
 
 We can now view the dataframe to get an idea of what it contains and
 print some summary statistics of its numerical data::
@@ -558,420 +602,175 @@ print some summary statistics of its numerical data::
     # print the first 5 lines of the dataframe
     titanic.head()  
     
+    # print some information about the columns
+    titanic.info()
+
     # print summary statistics for each column
     titanic.describe()  
-
 
 Ok, so we have information on passenger names, survival (0 or 1), age, 
 ticket fare, number of siblings/spouses, etc. With the summary statistics we 
 see that the average age is 29.7 years, maximum ticket price is 512 USD, 
 38\% of passengers survived, etc.
 
-Let's say we're interested in the survival probability of different age groups. 
-With two one-liners, we can find the average age of those who survived or didn't survive, 
-and plot corresponding histograms of the age distribution:
+Unlike a NumPy array, a dataframe can combine multiple data types, such as
+numbers and text, but the data in each column is of the same type. So we say a
+column is of type ``int64`` or of type ``object``.
+
+Indexing
+^^^^^^^^
+
+Let's inspect one column of the dataframe:
 
 .. code-block:: python
 
-   print(titanic.groupby("Survived")["Age"].mean())
+   titanic["Age"]
+   titanic.Age          # same as above
 
-::
-
-    titanic.hist(column='Age', by='Survived', bins=25, figsize=(8,10), 
-                 layout=(2,1), zorder=2, sharex=True, rwidth=0.9);
-    
-
+The columns have names. Here's how to get them:
 
 .. code-block:: python
 
-	df = pd.DataFrame(
-    	{
-       	 "foo": ["one", "one", "one", "two", "two", "two"] ,
-       	 "bar": ["A", "B", "C"] * 2,
-       	 "baz": np.linspace(1,6,6).astype(int),
-       	 "zoo": ["x","y","z","q","w","t"]
-    	}
-	)
-   df
+   titanic.columns
 
-Summary statistics of numerical columns:
+However, the rows also have names! This is what pandas calls the **index**:
 
 .. code-block:: python
 
-   df.describe()
+   titanic.index
 
-To select out everything for variable ``A`` we could do:
+We saw above how to select a single column, but there are many ways of
+selecting (and setting) single or multiple rows, columns and elements. We can
+refer to columns and rows either by number or by their name:
 
 .. code-block:: python
 
-   filtered = df[df["bar"] == "A"]
-   filtered
+   titanic.loc["Lam, Mr. Ali","Age"]          # select single value by row and column
+   titanic.loc[:"Lam, Mr. Ali","Survived":"Age"]  # slice the dataframe by row and column *names*
+   titanic.iloc[0:2,3:6]                      # same slice as above by row and column *numbers*
 
-But suppose we would like to represent the table in such a way that
-the ``columns`` are the unique variables from "bar" and the ``index`` from "foo". 
-To reshape the data into this form, we use the :meth:`DataFrame.pivot` 
-method (also implemented as a top level function :func:`~pandas.pivot`):
+   titanic.at["Lam, Mr. Ali","Age"] = 42      # set single value by row and column *name* (fast)
+   titanic.at["Lam, Mr. Ali","Age"]           # select single value by row and column *name* (fast)
+   titanic.at["Lam, Mr. Ali","Age"] = 42      # set single value by row and column *name* (fast)
+   titanic.iat[0,5]                           # select same value by row and column *number* (fast)
 
-.. code:: python
+   titanic["somecolumns"] = "somevalue"       # set a whole column
 
-   pivoted = df.pivot(index="foo", columns="bar", values="baz")
-   pivoted
+Dataframes also support boolean indexing:
 
-.. image:: img/reshaping_pivot.png
+.. code-block:: python
 
-.. note::
-   :func:`~pandas.pivot` will error with a ``ValueError: Index contains duplicate
-   entries, cannot reshape`` if the index/column pair is not unique. In this
-   case, consider using :func:`~pandas.pivot_table` which is a generalization
-   of pivot that can handle duplicate values for one index/column pair.
+   titanic[titanic["Age"] > 70]
+   # ".str" creates a string object from a column
+   titanic[titanic.index.str.contains("Margaret")]
 
-stacking and unstacking
-***********************
+Missing/invalid data
+^^^^^^^^^^^^^^^^^^^^
 
-Closely related to the pivot() method are the related 
-stack() and unstack() methods available on Series and DataFrame. 
-These methods are designed to work together with MultiIndex objects.
+What if your dataset has missing data? Pandas uses the value ``np.nan`` 
+to represent missing data, and by default does not include it in any computations.
+We can find missing values, drop them from our dataframe, replace them
+with any value we like or do forward or backward filling:
 
-The stack() function "compresses" a level in 
-the DataFrame columns to produce either:
+.. code-block:: python
 
- - A Series, in the case of a simple column Index.
- - A DataFrame, in the case of a MultiIndex in the columns.
-
-If the columns have a MultiIndex, you can choose which level to stack. 
-The stacked level becomes the new lowest level in a MultiIndex on the columns:
-
-.. code:: python
-
-	tuples = list(
-    	zip(
-        	*[
-            	["bar", "bar", "baz", "baz", "foo", "foo", "qux", "qux"],
-            	["one", "two", "one", "two", "one", "two", "one", "two"],
-        	]
-    	)
-	)
-
-	columns = pd.MultiIndex.from_tuples(
-    	[
-        	("bar", "one"),
-	        ("bar", "two"),
-        	("baz", "one"),
-	        ("baz", "two"),
-        	("foo", "one"),
-	        ("foo", "two"),
-	        ("qux", "one"),
-        	("qux", "two"),
-	    ],
-	    names=["first", "second"]
-	)
-
-	index = pd.MultiIndex.from_tuples(tuples, names=["first", "second"])
+   titanic.isna()                    # returns boolean mask of NaN values
+   titanic.dropna()                  # drop missing values
+   titanic.dropna(how="any")         # or how="all"
+   titanic.dropna(subset=["Cabin"])  # only drop NaNs from one column
+   titanic.fillna(0)                 # replace NaNs with zero
+   titanic.fillna(method='ffill')    # forward-fill NaNs
 
 
-Note: there are other ways to generate MultiIndex, e.g. 
-
-.. code:: python
-
-	index = pd.MultiIndex.from_product(
-    	[("bar", "baz", "foo", "qux"), ("one", "two")], names=["first", "second"]
-	)
-
-	df = pd.DataFrame(np.linspace(1,16,16).astype(int).reshape(8,2), index=index, columns=["A", "B"])
-	df
-	df2 = df[:4]
-	df2
-	stacked=df2.stack()
-
-.. image:: img/reshaping_stack.png 
-
-The unstack() method performs the inverse operation of stack(), 
-and by default unstacks the last level. If the indexes have names, 
-you can use the level names instead of specifying the level numbers.
-
-
-
-stacked.unstack()
-
-.. image:: img/reshaping_unstack.png 
-
-
-stacked.unstack(1)
-or 
-stacked.unstack("second")
-
-.. image:: img/reshaping_unstack_1.png 
-.. image:: img/reshaping_unstack_0.png 
-
-
-
-groupby
+Groupby
 ^^^^^^^
 
-As we know, when it is about  mathematical oprations on arrays of numerical data, Numpy does best.
-Pandas works very well with numpy when aggregating dataframes.
+:meth:`groupby` is a powerful method which splits a dataframe and aggregates data
+in groups. To see what's possible, let's
+test the old saying "Women and children first". We start by creating a new
+column ``Child`` to indicate whether a passenger was a child or not, based on
+the existing ``Age`` column. For this example, let's assume that you are a
+child when you are younger than 12 years:
 
-Pandas has a strong built-in understanding of time. With datasets indexed by a pandas DateTimeIndex, 
-we can easily group and resample the data using common time units.
+.. code-block:: python
 
-The groupby() method is an amazingly powerful function in pandas. But it is also complicated to use and understand.
-Together with pivot() / stack() / unstack() and the basic Series and DataFrame statistical functions, 
-groupby can produce some very expressive and fast data manipulations.
+   titanic["Child"] = titanic["Age"] < 12
 
-.. image:: img/groupby.png 
+Now we can test the saying by grouping the data on ``Sex`` and then creating 
+further sub-groups based on ``Child``:
 
-The workflow of groubpy method can be divided into three general steps:
+.. code-block:: python
+
+   titanic.groupby(["Sex", "Child"])["Survived"].mean()
+
+Here we chose to summarize the data by its mean, but many other common
+statistical functions are available as dataframe methods, like
+``std()``, ``min()``, ``max()``, ``cumsum()``, ``median()``, ``skew()``,
+``var()`` etc. 
+
+Similarly, one can use the ``by`` parameter to the :meth:`hist` histogram plotting 
+method to create subplots by groups:
+
+.. code-block:: python
+
+   titanic.hist(column='Age', by='Survived', bins=25, figsize=(8,10),
+                layout=(2,1), zorder=2, sharex=True, rwidth=0.9)
+
+
+The workflow of :meth:`groupby` can be divided into three general steps:
 
 - Splitting: Partition the data into different groups based on some criterion.
 - Applying: Do some caclulation within each group. 
-  Different kinds of calulations might be aggregation, transformation, filtration
+  Different kinds of calulations might be aggregation, transformation, filtration.
 - Combining: Put the results back together into a single object.
 
-data aggregation
-~~~~~~~~~~~~~~~~
+.. image:: img/groupby.png 
 
-Here we will go through the following example 
+For an overview of other data wrangling methods built into pandas, have a look 
+at :doc:`pandas-extra`.
 
-.. code:: python
+Exercises
+---------
 
-	import urllib.request
-	import pandas as pd
+.. challenge:: Further analysis of the Titanic passenger list dataset
 
-	header_url = 'ftp://ftp.ncdc.noaa.gov/pub/data/uscrn/products/daily01/HEADERS.txt'
-	with urllib.request.urlopen(header_url) as response:
-	    data = response.read().decode('utf-8')
-	lines = data.split('\n')
-	headers = lines[1].split(' ')
+   Consider the titanic dataset.
 
-	ftp_base = 'ftp://ftp.ncdc.noaa.gov/pub/data/uscrn/products/daily01/'
-	dframes = []
-	for year in range(2016, 2019):
-	    data_url = f'{year}/CRND0103-{year}-NY_Millbrook_3_W.txt'               
-	    df = pd.read_csv(ftp_base + data_url, parse_dates=[1],
-	                     names=headers,header=None, sep='\s+',
-        	             na_values=[-9999.0, -99.0])
-	    dframes.append(df)
-
-	df = pd.concat(dframes)
-	df = df.set_index('LST_DATE')
-	df.head()
-	df['T_DAILY_MEAN'] # or df.T_DAILY_MEAN
-	df['T_DAILY_MEAN'].aggregate([np.max,np.min,np.mean])
-	df.index   # df.index is a pandas DateTimeIndex object.
-
-.. code:: python
-
-	gbyear=df.groupby(df.index.year)
-	gbyear.T_DAILY_MEAN.head()
-	gbyear.T_DAILY_MEAN.max()
-	gbyear.T_DAILY_MEAN.aggregate(np.max)
-	gbyear.T_DAILY_MEAN.aggregate([np.min, np.max, np.mean, np.std])
-
-
-now let us calculate the monthly mean values
-
-.. code:: python
-
-	gb=df.groupby(df.index.month)
-	df.groupby('T_DAILY_MEAN')  # or  df.groupby(df.T_DAILY_MEAN)
-	monthly_climatology = df.groupby(df.index.month).mean()
-	monthly_climatology
-
-Each row in this new dataframe respresents the average values for the months (1=January, 2=February, etc.)
-
-.. code:: python
-
-	monthly_T_climatology = df.groupby(df.index.month).aggregate({'T_DAILY_MEAN': 'mean',
-                                                              'T_DAILY_MAX': 'max',
-                                                              'T_DAILY_MIN': 'min'})
-	monthly_T_climatology.head()
-	daily_T_climatology = df.groupby(df.index.dayofyear).aggregate({'T_DAILY_MEAN': 'mean',
-                                                            'T_DAILY_MAX': 'max',
-                                                            'T_DAILY_MIN': 'min'})
-	def standardize(x):
-	    return (x - x.mean())/x.std()
-	anomaly = df.groupby(df.index.month).transform(standardize)
-
-
-data transfromation
-~~~~~~~~~~~~~~~~~~~
-
-The key difference between aggregation and transformation is that 
-aggregation returns a smaller object than the original, 
-indexed by the group keys, while transformation returns an object 
-with the same index (and same size) as the original object. 
-
-In this example, we standardize the temperature so that 
-the distribution has zero mean and unit variance. 
-We do this by first defining a function called standardize 
-and then passing it to the transform method.
-
-
-.. code:: python
-
-	transformed = df.groupby(lambda x: x.year).transform(
-	    lambda x: (x - x.mean()) / x.std()
-	)
-	grouped = df.groupby(lambda x: x.year)
-	grouped_trans = transformed.groupby(lambda x: x.year)
-
-
-
-
-Exercises 1
-^^^^^^^^^^^
-
-.. challenge:: Exploring dataframes
-
-    - Have a look at the available methods and attributes using the 
-      `API reference <https://pandas.pydata.org/docs/reference/frame.html>`__ 
-      or the autocomplete feature in Jupyter. 
-    - Try out a few methods using the Titanic dataset and have a look at 
-      the docstrings (help pages) of methods that pique your interest
-    - Compute the mean age of the first 10 passengers by slicing and the ``mean`` method
-    - (Advanced) Using boolean indexing, compute the survival rate 
+   1. Compute the mean age of the first 10 passengers by slicing and the ``mean`` method
+   2. Using boolean indexing, compute the survival rate 
       (mean of "Survived" values) among passengers over and under the average age.
     
-.. solution:: 
+   Now investigate the family size of the passengers (i.e. the "SibSp" column):
 
-    - Mean age of the first 10 passengers: ``titanic.iloc[:10,:]["Age"].mean()`` 
-      or ``titanic.loc[:9,"Age"].mean()`` or ``df.iloc[:10,5].mean()``.
-    - Survival rate among passengers over and under average age: 
-      ``titanic[titanic["Age"] > titanic["Age"].mean()]["Survived"].mean()`` and 
-      ``titanic[titanic["Age"] < titanic["Age"].mean()]["Survived"].mean()``.
-
-
-Exercises 2
-^^^^^^^^^^^
-
-.. challenge:: Analyze the Titanic passenger list dataset
-
-    In the Titanic passenger list dataset, 
-    investigate the family size of the passengers (i.e. the "SibSp" column).
-
-    - What different family sizes exist in the passenger list? Hint: try the `unique` method 
-    - What are the names of the people in the largest family group?
-    - (Advanced) Create histograms showing the distribution of family sizes for 
+   1. What different family sizes exist in the passenger list? Hint: try the :meth:`unique` method 
+   2. What are the names of the people in the largest family group?
+   3. (Advanced) Create histograms showing the distribution of family sizes for 
       passengers split by the fare, i.e. one group of high-fare passengers (where 
       the fare is above average) and one for low-fare passengers 
       (Hint: instead of an existing column name, you can give a lambda function
       as a parameter to ``hist`` to compute a value on the fly. For example
-      ``lambda x: "Poor" if df["Fare"].loc[x] < df["Fare"].mean() else "Rich"``).
+      ``lambda x: "Poor" if titanic["Fare"].loc[x] < titanic["Fare"].mean() else "Rich"``).
 
-.. solution:: Solution
-
-    - Existing family sizes: ``df["SibSp"].unique()``
-    - Names of members of largest family(ies): ``df[df["SibSp"] == 8]["Name"]``
-    - ``df.hist("SibSp", lambda x: "Poor" if df["Fare"].loc[x] < df["Fare"].mean() else "Rich", rwidth=0.9)``
-
-
-Exercises 3
-^^^^^^^^^^^
-
-.. challenge:: Analyze the Nobel prize dataset
-
-    - What country has received the largest number of Nobel prizes, and how many?
-      How many countries are represented in the dataset? Hint: use the `describe()` method
-      on the ``bornCountryCode`` column.
-    - Create a histogram of the age when the laureates received their Nobel prizes.
-      Hint: follow the above steps we performed for the lifespan. 
-    - List all the Nobel laureates from your country.
-
-    Now more advanced steps:
-    
-    - Now define an array of 4 countries of your choice and extract 
-      only laureates from these countries::
-      
-          countries = np.array([COUNTRY1, COUNTRY2, COUNTRY3, COUNTRY4])
-          subset = nobel.loc[nobel['bornCountry'].isin(countries)]
-
-    - Use ``groupby`` to compute how many nobel prizes each country received in
-      each category. The ``size()`` method tells us how many rows, hence nobel
-      prizes, are in each group::
-
-          nobel.groupby(['bornCountry', 'category']).size()
-
-    - (Optional) Create a pivot table to view a spreadsheet like structure, and view it
-
-        - First add a column “number” to the nobel dataframe containing 1’s 
-          (to enable the counting below).          
-
-        - Then create the pivot table::
-
-            table = subset.pivot_table(values="number", index="bornCountry", columns="category", aggfunc=np.sum)
-        
-    - (Optional) Install the **seaborn** visualization library if you don't 
-      already have it, and create a heatmap of your table::
-      
-          import seaborn as sns
-          sns.heatmap(table,linewidths=.5);
-
-    - Play around with other nice looking plots::
-    
-        sns.violinplot(y="year", x="bornCountry",inner="stick", data=subset);
-
-      ::
-
-        sns.swarmplot(y="year", x="bornCountry", data=subset, alpha=.5);
-
-      ::
-
-        subset_physchem = nobel.loc[nobel['bornCountry'].isin(countries) & (nobel['category'].isin(['physics']) | nobel['category'].isin(['chemistry']))]
-        sns.catplot(x="bornCountry", y="year", col="category", data=subset_physchem, kind="swarm");
-
-      ::
-      
-        sns.catplot(x="bornCountry", col="category", data=subset_physchem, kind="count");
-
-
-Beyond the basics
-^^^^^^^^^^^^^^^^^
-
-There is much more to Pandas than what we covered in this lesson. Whatever your
-needs are, chances are good there is a function somewhere in its `API
-<https://pandas.pydata.org/docs/>`__. And when there is not, you can always
-apply your own functions to the data using `.apply`::
-
-    from functools import lru_cache
-
-    @lru_cache
-    def fib(x):
-        """Compute Fibonacci numbers. The @lru_cache remembers values we
-        computed before, which speeds up this function a lot."""
-        if x < 0:
-            raise NotImplementedError('Not defined for negative values')
-        elif x < 2:
-            return x
-        else:
-            return fib(x - 2) + fib(x - 1)
-
-    df = pd.DataFrame({'Generation': np.arange(100)})
-    df['Number of Rabbits'] = df['Generation'].apply(fib)
-
-
-.. keypoints::
-
-   - Numpy provides a static array data structure, fast mathematical operations for 
-     arrays and tools for linear algebra and random numbers
-   - pandas dataframes are a good data structure for tabular data
-   - Dataframes allow both simple and advanced analysis in very compact form 
-
-
-
+   .. solution:: 
+   
+      1. Mean age of the first 10 passengers: ``titanic.iloc[:10,:]["Age"].mean()`` 
+         or ``titanic.iloc[:10,4].mean()`` or 
+         ``titanic.loc[:"Nasser, Mrs. Nicholas (Adele Achem)", "Age"].mean()``.
+      2. Survival rate among passengers over and under average age: 
+         ``titanic[titanic["Age"] > titanic["Age"].mean()]["Survived"].mean()`` and 
+         ``titanic[titanic["Age"] < titanic["Age"].mean()]["Survived"].mean()``.
+      3. Existing family sizes: ``titanic["SibSp"].unique()``
+      4. Names of members of largest family(ies): ``titanic[titanic["SibSp"] == 8].index``
+      5. ``titanic.hist("SibSp", lambda x: "Poor" if titanic["Fare"].loc[x] < titanic["Fare"].mean() else "Rich", rwidth=0.9)``
+   
 
 
 Scipy
 -----
 
-.. seealso::
-
-   * Main article: `SciPy documentation <https://docs.scipy.org/doc/scipy/reference/>`__
-
-
-
-SciPy is a library that builds on top of NumPy. It contains a lot of
-interfaces to battle-tested numerical routines written in Fortran or
-C, as well as python implementations of many common algorithms.
+`SciPy <https://docs.scipy.org/doc/scipy/reference/>`__ is a library that builds 
+on top of NumPy. It contains a lot of interfaces to battle-tested numerical routines 
+written in Fortran or C, as well as python implementations of many common algorithms.
 
 What's in SciPy?
 ^^^^^^^^^^^^^^^^
@@ -990,11 +789,11 @@ Briefly, it contains functionality for
 - More I/O routine, e.g. Matrix Market format for sparse matrices,
   MATLAB files (.mat), etc.
 
-Many (most?) of these are not written specifically for SciPy, but use
+Many of these are not written specifically for SciPy, but use
 the best available open source C or Fortran libraries.  Thus, you get
 the best of Python and the best of compiled languages.
 
-Most functions are documented ridiculously well from a scientific
+Most functions are documented very well from a scientific
 standpoint: you aren't just using some unknown function, but have a
 full scientific description and citation to the method and
 implementation.
@@ -1008,7 +807,14 @@ See also
   API reference and contribution guide.
 - Pandas `cheatsheet <https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf>`__ 
 - Pandas `cookbook <https://pandas.pydata.org/docs/user_guide/cookbook.html#cookbook>`__.
+- Scipy `documentation <https://docs.scipy.org/doc/scipy/reference/>`__
 
 .. keypoints::
+
+   - NumPy provides a static array data structure, fast mathematical operations for 
+     arrays and tools for linear algebra and random numbers
+   - Pandas dataframes are a good data structure for tabular data
+   - Dataframes allow both simple and advanced analysis in very compact form 
+
 
 

@@ -290,11 +290,11 @@ NumPy expands the arrays such that the operation becomes viable.
 
 
 Cache effects
-.............
+~~~~~~~~~~~~~
 
 Memory access is cheaper when it is grouped: accessing a big array in a 
 continuous way is much faster than random access. This implies amongst 
-other things that **smaller strides are faster** (see :ref:`cache_effects`):
+other things that **smaller strides are faster**:
 
   .. sourcecode:: ipython
 
