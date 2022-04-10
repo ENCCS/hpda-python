@@ -193,8 +193,62 @@ Multithreading
 --------------
 
 Due to the GIL only one thread can execute Python code at once, and this makes 
-threading rather useless for compute-bound problems. However, threading is 
-still an appropriate model for running *multiple I/O-bound tasks simultaneously*.
+threading rather useless for compute-bound problems in pure Puthon. 
+However, multithreading is still relevant in two situations:
+
+- External libraries written in non-Python languages can take advantage of multithreading 
+- Multithreading can be useful for running *multiple I/O-bound tasks simultaneously*.
+
+Multithreaded libraries
+^^^^^^^^^^^^^^^^^^^^^^^
+
+NumPy and SciPy are built on external libraries such as LAPACK, FFTW append BLAS, 
+which provide optimized routines for linear algebra, Fourier transforms etc.
+These libraries are written in C, C++ or Fortran and are thus not limited 
+by the GIL, so they typically support actual multihreading during the execution.
+It might be a good idea to use multiple threads during calculations 
+like matrix operations or frequency analysis.
+
+Depending on configuration, NumPy will often use multiple threads by default, 
+but we can use the environment variable ``OMP_NUM_THREADS`` to set the number 
+of threads manually:
+
+.. code-block:: bash
+
+   export OMP_NUM_THREADS=<N>
+
+After setting this environment variable we continue as usual 
+and multithreading will be turned on.
+
+.. type-along:: Multithreading NumPy 
+
+   Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
+   We can save it in a file named `omp_test.py`.
+
+   .. code-block:: python
+
+      import numpy as np
+      import time
+      
+      A = np.random.random((4000,4000))
+      A = A * A.T
+      time_start = time.time()
+      np.linalg.inv(A)
+      time_end = time.time()
+      print("time spent for inverting A is", round(time_end - time_start,2), 's')
+
+   Let us test it with 1 and 4 threads:
+
+   .. code-block:: bash
+
+      export OMP_NUM_THREADS=1
+      python omp_test.py
+
+      export OMP_NUM_THREADS=4
+      python omp_test.py
+
+Multithreaded I/O
+^^^^^^^^^^^^^^^^^
 
 This is how an I/O-bound application might look.
 
@@ -284,52 +338,6 @@ The speedup gained from multithreading our problem can be understood from the fo
 
   From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
 
-
-Using internal parallelization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-NumPy and SciPy are built upon libraries such as LAPACK, FFTW, BLAS, 
-which provide optimized routines for linear algebra, Fourier transforms and etc.
-Moreover, these libraries are usually built to support multihreading during the execution.
-It might be a good idea to use multiple threads during calculations 
-like matrix operations or frequency analysis.
-
-We use the environment variable ``OMP_NUM_THREADS`` to set the number of threads simply by executing
-
-.. code-block:: bash
-
-   export OMP_NUM_THREADS=1
-
-After setting the environment variable ``OMP_NUM_THREADS``, we continue as usual 
-and multithreading will be turned on automatically.
-
-.. type-along:: Multithreading 
-
-   Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
-   We will save it in a file named omp_test.py.
-
-   .. code-block:: python
-
-      import numpy as np
-      import time
-      
-      A = np.random.random((4000,4000))
-      A = A * A.T
-      time_start = time.time()
-      np.linalg.inv(A)
-      time_end = time.time()
-      print("time spent for inverting A is", round(time_end - time_start,2), 's')
-
-
-   We will test it with 1 and 4 threads. 
-
-   .. code-block:: bash
-
-      export OMP_NUM_THREADS=1
-      python omp_test.py
-
-      export OMP_NUM_THREADS=4
-      python omp_test.py
 
 
 
