@@ -9,43 +9,58 @@ Dask for scalable analytics
    - Learn a few common workflows with Dask
 
 
-Intro
------
+Overview
+--------
 
-An increasingly common problem we are facing today is that
-the data we are analyzing is getter biger and bigger. So becomes 
-the modern data analysis more and more expensive computationally 
-as the data volume grows. The first difficult situation to deal with
-is when the volume of data exceeds one's computer's RAM. 
-Modern laptops/desktops have RAM about 10 GB. Beyond this threshold, 
-some special care is required to carry out the analysis. 
+An increasingly common problem faced by researchers and data scientists 
+today is that datasets are becoming larger and larger and modern data analysis 
+is thus becoming more and more computationally demanding. The first 
+difficulty to deal with is when the volume of data exceeds one's computer's RAM. 
+Modern laptops/desktops have about 10 GB of RAM. Beyond this threshold, 
+some special care is required to carry out data analysis. 
 The next threshold of difficulty is when the data can not even 
 fit on the hard drive, which is about a couple of TB on a modern laptop.
-In this situation, it is better to use HPC system, or cloud-based solution, 
-and Dask is the tool that helps us easily extend our familiar data analysis 
-tools to work with big data. In addition, dask also speed up 
-our analysis by using mutiple CPU cores and making our work 
-more efficiently on laptop, HPC and cloud platforms.
+In this situation, it is better to use an HPC system or a cloud-based solution, 
+and Dask is a tool that helps us easily extend our familiar data analysis 
+tools to work with big data. In addition, Dask can also speeds up 
+our analysis by using multiple CPU cores which makes our work run 
+faster on laptop, HPC and cloud platforms.
 
+What is Dask?
+-------------
+
+Dask is composed of two parts:
+
+- Dynamic task scheduling optimized for computation. Similar to other workflow 
+  management systems, but optimized for interactive computational workloads.
+- "Big Data" collections like parallel arrays, dataframes, and lists that extend 
+  common interfaces like NumPy, Pandas, or Python iterators to larger-than-memory 
+  or distributed environments. These parallel collections run on top of dynamic 
+  task schedulers.
+
+.. figure:: img/dask-overview.svg
+
+   High level collections are used to generate task graphs which can be executed 
+   by schedulers on a single machine or a cluster. From the 
+   `Dask documentation <https://docs.dask.org/en/stable/>`__.
 
 Dask Clusters
 -------------
 
-Dask needs a certain amount of computing resources in order to 
-perform parallel computations. Dask Clusters have different names corresponding 
-to different computing environments. for example: 
+Dask needs computing resources in order to perform parallel computations. 
+"Dask Clusters" have different names corresponding to different computing environments, 
+for example: 
 
-  - LocalCluster on laptop/desktop
-  - PBSCluster on HPC
-  - Kubernetes Cluster on the Cloud
+  - `LocalCluster` on laptop/desktop
+  - `PBSCluster` or SLURMCluster on HPC
+  - `Kubernetes` cluster in the cloud
  
-Each cluster will be allocated with a certain number of "workers" associated with 
-CPU and RAM and the dask scheduling system maps jobs to each worker for you.
+Each cluster will be allocated with a given number of "workers" associated with 
+CPU and RAM and the Dask scheduling system automatically maps jobs to each worker.
 
-
-We will focus on LocalCluster only during the course. XXXX
+Here we will focus on using a LocalCluster. 
 We can start a LocalCluster scheduler which makes use of all the cores and RAM 
-we have on the machine. by: 
+we have on the machine by: 
 
 .. code-block:: python
     
@@ -86,23 +101,30 @@ Dask Collections
 Dask provides dynamic parallel task scheduling and 
 three main high-level collections:
   
-  - dask.array: Parallel NumPy arrays
-  - dask.dataframe: Parallel Pandas DataFrames
-  - dask.bag: Parallel Python Lists 
+  - ``dask.array``: Parallel NumPy arrays
+  - ``dask.dataframe``: Parallel Pandas DataFrames
+  - ``dask.bag``: Parallel Python Lists 
 
 
 Dask Arrays
 ^^^^^^^^^^^
 
-A dask array looks and feels a lot like a numpy array. 
-However, a dask array uses the so-called "lazy" execution mode, 
+A Dask array looks and feels a lot like a NumPy array. 
+However, a Dask array uses the so-called "lazy" execution mode, 
 which allows one to build up complex, large calculations symbolically 
 before turning them over the scheduler for execution. 
 
 
-.. note::
+.. callout:: Lazy evaluation
 
-   Not like a normal computation, in a lazy execution mode, all the computations needed to generate the data are symbolically represented, forming a queue of tasks mapped over data blocks. Nothing is actually computed until the actual numerical values are needed, e.g., to print results to your screen or write to disk. At that point, data is loaded into memory and computation proceeds in a streaming fashion, block-by-block. The actual computation is controlled by a multi-processing or thread pool, which allows Dask to take full advantage of multiple processors available on the computers.
+   Contrary to normal computation, lazy execution mode is when all the computations 
+   needed to generate results are symbolically represented, forming a queue of 
+   tasks mapped over data blocks. Nothing is actually computed until the actual 
+   numerical values are needed, e.g., to print results to your screen or write to disk. 
+   At that point, data is loaded into memory and computation proceeds in a streaming 
+   fashion, block-by-block. The actual computation is controlled by a multi-processing 
+   or thread pool, which allows Dask to take full advantage of multiple processors 
+   available on the computers.
 
 
 .. code-block:: python
@@ -114,18 +136,9 @@ before turning them over the scheduler for execution.
     ones_np.nbytes / 1e6
 
 
-Now let's create the same array using dask's array interface.
-
-.. code-block:: python
-
-    import dask.array as da
-    shape = (1000, 4000)
-    ones = da.ones(shape)
-
-
-This did not work, because a crucal difference with dask is that 
-we must specify the "chunks" argument, which describes 
-how the array is split up into sub-arrays.
+Now let's create the same array using Dask's array interface. In addition to 
+providing the shape of the array, we also specify the ``chunks`` argument, 
+which describes how the array is split up into sub-arrays:
 
 .. code-block:: python
 
@@ -136,8 +149,8 @@ how the array is split up into sub-arrays.
     ones
 
 
-So far, it is only a symbolic represetnation of the array. 
-One way to trigger the computation is to call ``.compute()``:
+So far, it is only a symbolic representation of the array. 
+One way to trigger the computation is to call :meth:`compute`:
 
 .. code-block:: python
 
@@ -146,10 +159,10 @@ One way to trigger the computation is to call ``.compute()``:
 
 .. note::
 
-   Plotting also triggers computation, since the actual values are needed.
+   Plotting also triggers computation, since the actual values are needed to produce the plot.
 
 
-We can visualize the symbolic operations by calling ``.visualize()``:
+We can visualize the symbolic operations by calling :meth:`visualize`:
 
 .. code-block:: python
 
@@ -162,15 +175,20 @@ Let us calculate the sum of the dask array and visualize again:
     sum_da = ones.sum()
     sum_da.visualize()
 
+You can find additional details and examples here 
+https://examples.dask.org/array.html.
 
-
-Dask Dataframe
+Dask dataframe
 ^^^^^^^^^^^^^^
 
-Dask Dataframes split a dataframe into partitions along an index. 
-You can find additional details and examples here 
-https://examples.dask.org/dataframe.html.
+Dask dataframes split a dataframe into partitions along an index and can be used 
+in situations where one would normally use Pandas, but this fails due to data size or 
+insufficient computational efficiency. Specifically, you can use Dask dataframes to:
 
+- manipulate large datasets, even when these don't fit in memory
+- accelerate long computations by using many cores
+- perform distributed computing on large datasets with standard Pandas operations 
+  like groupby, join, and time series computations.
 
 .. code-block:: python
 
@@ -200,26 +218,92 @@ https://examples.dask.org/dataframe.html.
     last_eruption_year_min.compute()
 
 
+Let us revisit the dataset containing the Titanic passenger list, and now transform it to 
+a Dask dataframe:
 
+.. code-block:: python
+
+   import pandas as pd
+   import dask.dataframe as dd
+
+   url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
+   df = pd.read_csv(url, index_col="Name")
+
+   ddf = dd.from_pandas(df, npartitions=10)
+
+
+Dask dataframes do not support the entire interface of Pandas dataframes, but 
+the most `commonly used methods are available <https://docs.dask.org/en/stable/dataframe.html#scope>`__. 
+For a full listing refer to the `dask dataframe API <https://docs.dask.org/en/stable/dataframe-api.html>__.
+
+We can for example perform the group-by operation we did earlier, but this time in parallel:
+
+.. code-block:: python
+
+   ddf[ddf["Age"] < 12].groupby(["Sex", "Child"])["Survived"].mean().compute()
+
+However, for a small dataframe like this the overhead of parallelisation will far 
+outweigh the benefit. 
+
+As an additional use case, recall the word-count project that we encountered earlier. 
+The :download:`results.txt <data/results.txt>` file contains word counts of the 10 
+most frequent words in different texts, and we want to fit a power law to the 
+individual distributions in each row.
+
+Here is our fitting function:
+
+.. code-block:: python
+
+   def linear_fit_loglog(row):
+       X = np.log(np.arange(row.shape[0]) + 1.0)
+       ones = np.ones(row.shape[0])
+       A = np.vstack((X, ones)).T
+       Y = np.log(row)
+       res = np.linalg.lstsq(A, Y, rcond=-1)
+       return res[0][0]
+
+Earlier we saw that iterating over a pandas dataframe was slower than using the 
+:meth:`apply` function. With dask dataframes, we should not iterate over dataframes at all!
+We load the `results.txt` file directly into a dask dataframe and fit the power law 
+to each row:
+
+.. code-block:: python
+
+   ddf = dd.read_csv("/some/path/to/results.txt")
+   results = ddf.iloc[:,1:].apply(linear_fit_loglog, axis=1, meta=(None, "f8"))
+
+Note the additional argument ``meta`` which is required for dask dataframes. 
+It should contain an empty ``pd.DataFrame`` or ``pd.Series`` that matches the 
+dtypes and column names of the output, or a dict of ``{name: dtype}`` or iterable of ``(name, dtype)``. 
+
+You can find additional details and examples here 
+https://examples.dask.org/dataframe.html.
+
+.. exercise:: Benchmarking dask.dataframes.apply()
+
+   Compare the performance of :meth:`dask.dataframes.apply` with :meth:`pandas.dataframes.apply` 
+   for the word-count example. You will probably see a slowdown due to the parallelisation 
+   overhead. 
+   But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
+   emulate a time-consuming calculation? 
+    
 
 Dask Delayed
 ^^^^^^^^^^^^
 
 Sometimes problems don't fit into one of the collections like 
-dask.array or dask.dataframe. In these cases, we can parallelize custom algorithms 
-using dask.delayed interface. dask.delay allows users to delay function calls 
-into a task graph with dependencies. If you have a problem that is paralellizable, 
-but isn't as simple as just a big array or a big dataframe, then dask.delayed 
-may be the right choice for you.
+``dask.array`` or ``dask.dataframe``. In these cases, we can parallelise custom algorithms 
+using ``dask.delayed`` interface. ``dask.delayed`` allows users to delay function calls 
+into a task graph with dependencies. If you have a problem that is paralellisable, 
+but isn't as simple as just a big array or a big dataframe, then ``dask.delayed`` 
+may be the right choice.
 
 
-Consider the following example, these functions are very simple, and they sleep 
+Consider the following example. The functions are very simple, and they sleep 
 for a prescribed time to simulate real work.
 
-#.. tab:: python
-
-#    .. literalinclude:: example/delay.py 
-
+.. literalinclude:: example/delay.py 
+   :language: python
 
 Let us run the example first, one after the other in sequence:
 
@@ -232,8 +316,8 @@ Let us run the example first, one after the other in sequence:
     z
 
 
-Note that the first two functions inc and dec don't depend on each other, 
-we could have called them in parallel. We can call dask.delayed on these funtions 
+Note that the first two functions ``inc`` and ``dec``` don't depend on each other, 
+we could have called them in parallel. We can call ``dask.delayed`` on these funtions 
 to make them lazy and tasks into a graph which we will run later on parallel hardware.
 
 .. sourcecode:: ipython
