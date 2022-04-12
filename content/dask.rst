@@ -178,7 +178,7 @@ Let us calculate the sum of the dask array and visualize again:
 You can find additional details and examples here 
 https://examples.dask.org/array.html.
 
-Dask dataframe
+Dask Dataframe
 ^^^^^^^^^^^^^^
 
 Dask dataframes split a dataframe into partitions along an index and can be used 
@@ -234,7 +234,8 @@ a Dask dataframe:
 
 Dask dataframes do not support the entire interface of Pandas dataframes, but 
 the most `commonly used methods are available <https://docs.dask.org/en/stable/dataframe.html#scope>`__. 
-For a full listing refer to the `dask dataframe API <https://docs.dask.org/en/stable/dataframe-api.html>__.
+For a full listing refer to the 
+`dask dataframe API <https://docs.dask.org/en/stable/dataframe-api.html>`__.
 
 We can for example perform the group-by operation we did earlier, but this time in parallel:
 
@@ -270,7 +271,7 @@ to each row:
 .. code-block:: python
 
    ddf = dd.read_csv("/some/path/to/results.txt")
-   results = ddf.iloc[:,1:].apply(linear_fit_loglog, axis=1, meta=(None, "f8"))
+   results = ddf.iloc[:,1:].apply(linear_fit_loglog, axis=1, meta=(None, "float64"))
 
 Note the additional argument ``meta`` which is required for dask dataframes. 
 It should contain an empty ``pd.DataFrame`` or ``pd.Series`` that matches the 
@@ -286,7 +287,76 @@ https://examples.dask.org/dataframe.html.
    overhead. 
    But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
    emulate a time-consuming calculation? 
-    
+
+Dask Bag
+^^^^^^^^
+
+A Dask bag enables processing data that can be represented as a sequence of arbitrary 
+inputs ("messy data"), like in a Python list. Dask Bags are often used to for 
+preprocessing log files, JSON records, or other user defined Python objects.
+
+We will content ourselves with implementing a dask version of the word-count problem, 
+specifically the step where we count words in a text. 
+
+.. type-along:: Dask version of word-count
+
+   First navigate to the ``word-count-hpda`` directory. The serial version (wrapped in 
+   multiple functions in the ``source/wordcount.py`` code) looks like this:
+
+   .. code-block:: python
+
+      filename = './data/pg10.txt'
+      DELIMITERS = ". , ; : ? $ @ ^ < > # % ` ! * - = ( ) [ ] { } / \" '".split()
+      
+      with open(filename, "r") as input_fd:
+          lines = input_fd.read().splitlines()
+      
+      counts = {}
+      for line in lines:
+          for purge in DELIMITERS:
+              line = line.replace(purge, " ")
+          words = line.split()
+          for word in words:
+              word = word.lower().strip()
+              if word in counts:
+                  counts[word] += 1
+              else:
+                  counts[word] = 1    
+      
+      sorted_counts = sorted(list(counts.items()), key=lambda key_value: key_value[1], reverse=True)
+      
+      sorted_counts[:10]
+
+   A very compact ``dask.bag`` version of this code is as follows:
+
+   .. code-block:: python
+
+      import dask.bag as db
+      filename = './data/pg10.txt'
+      DELIMITERS = ". , ; : ? $ @ ^ < > # % ` ! * - = ( ) [ ] { } / \" '".split()
+
+      text = db.read_text(filename, blocksize='1MiB')
+      sorted_counts = text.filter(lambda word: word not in DELIMITERS).str.lower().str.strip().str.split().flatten().frequencies().topk(10,key=1).compute()
+
+      sorted_counts
+
+.. callout:: When to use a Dask bag
+
+   There is no benefit from using a Dask bag on small datasets. But imagine we were 
+   analysing a very large text file (all tweets in a year? a genome?). Dask provides 
+   both parallelisation and the ability to utilize RAM on multiple machines.
+
+.. exercise:: Break down the dask.bag computational pipeline
+
+   Revisit the word-count problem and the implementation with a ``dask.bag`` that we 
+   saw above. 
+   
+   - To get a feeling for the computational pipeline, break down the computation into 
+     separate steps and investigate intermediate results using :meth:`.compute`.
+   - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
+     What if you have a larger textfile? You can for example concatenate all texts into 
+     a single file: ``cat data/*.txt > data/all.txt``.
+
 
 Dask Delayed
 ^^^^^^^^^^^^
