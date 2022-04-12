@@ -252,13 +252,6 @@ dtypes and column names of the output, or a dict of ``{name: dtype}`` or iterabl
 You can find additional details and examples here 
 https://examples.dask.org/dataframe.html.
 
-.. exercise:: Benchmarking dask.dataframes.apply()
-
-   Compare the performance of :meth:`dask.dataframes.apply` with :meth:`pandas.dataframes.apply` 
-   for the word-count example. You will probably see a slowdown due to the parallelisation 
-   overhead. 
-   But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
-   emulate a time-consuming calculation? 
 
 Dask Bag
 ^^^^^^^^
@@ -318,16 +311,6 @@ specifically the step where we count words in a text.
    analysing a very large text file (all tweets in a year? a genome?). Dask provides 
    both parallelisation and the ability to utilize RAM on multiple machines.
 
-.. exercise:: Break down the dask.bag computational pipeline
-
-   Revisit the word-count problem and the implementation with a ``dask.bag`` that we 
-   saw above. 
-   
-   - To get a feeling for the computational pipeline, break down the computation into 
-     separate steps and investigate intermediate results using :meth:`.compute`.
-   - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
-     What if you have a larger textfile? You can for example concatenate all texts into 
-     a single file: ``cat data/*.txt > data/all.txt``.
 
 
 Dask Delayed
@@ -500,8 +483,27 @@ Dask has much in common with the
 
 
 
+Exercises
+---------
 
+.. exercise:: Benchmarking dask.dataframes.apply()
 
+   Compare the performance of :meth:`dask.dataframes.apply` with :meth:`pandas.dataframes.apply` 
+   for the word-count example. You will probably see a slowdown due to the parallelisation 
+   overhead. 
+   But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
+   emulate a time-consuming calculation? 
+
+.. exercise:: Break down the dask.bag computational pipeline
+
+   Revisit the word-count problem and the implementation with a ``dask.bag`` that we 
+   saw above. 
+   
+   - To get a feeling for the computational pipeline, break down the computation into 
+     separate steps and investigate intermediate results using :meth:`.compute`.
+   - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
+     What if you have a larger textfile? You can for example concatenate all texts into 
+     a single file: ``cat data/*.txt > data/all.txt``.
 
 
 
