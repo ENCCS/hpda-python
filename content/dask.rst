@@ -190,34 +190,6 @@ insufficient computational efficiency. Specifically, you can use Dask dataframes
 - perform distributed computing on large datasets with standard Pandas operations 
   like groupby, join, and time series computations.
 
-.. code-block:: python
-
-    import dask.dataframe as dd
-    server = 'https://webservices.volcano.si.edu/geoserver/GVP-VOTW/ows?'
-    query = 'service=WFS&version=2.0.0&request=GetFeature&typeName=GVP-VOTW:Smithsonian_VOTW_Holocene_Volcanoes&outputFormat=csv'
-
-    # blocksize=None means use a single partion
-    df = dd.read_csv(server+query, blocksize=None)
-
-    # We only see the metadata, the actual data are only computed when requested.
-    df
-
-    # We can break up the table into 4 partions to map out to each core:
-    df = df.repartition(npartitions=4)
-    df
-
-    # Let's say we want to know the minimum last eruption year for all volcanoes
-    last_eruption_year_min = df.Last_Eruption_Year.min()
-    last_eruption_year_min
-
-    # Instead of getting the actual value we see dd.Scalar, which represents a recipe for actually calculating this value
-    last_eruption_year_min.visualize()
-
-    # To get the value call the 'compute method'
-    # NOTE: this was slower than using pandas directly,,, for small data you often don't need to use parallel computing!
-    last_eruption_year_min.compute()
-
-
 Let us revisit the dataset containing the Titanic passenger list, and now transform it to 
 a Dask dataframe:
 
