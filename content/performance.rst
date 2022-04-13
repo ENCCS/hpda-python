@@ -16,18 +16,19 @@ Profilers
 ---------
 
 Timeit
-******
+^^^^^^
 
-If you use Jupyter-notebook, the best choice will be to use ``timeit`` (https://docs.python.org/library/timeit.html) to time a small piece of code:
+If you're using a Jupyter notebook, the best choice will be to use 
+`timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
 
-.. sourcecode:: ipython
+.. code-block:: ipython
 
-    In [1]: import numpy as np
+   In [1]: import numpy as np
 
-    In [2]: a = np.arange(1000)
+   In [2]: a = np.arange(1000)
 
-    In [3]: %timeit a ** 2
-    100000 loops, best of 3: 5.73 us per loop
+   In [3]: %timeit a ** 2
+   100000 loops, best of 3: 5.73 us per loop
 
 .. note::
 
@@ -36,71 +37,148 @@ If you use Jupyter-notebook, the best choice will be to use ``timeit`` (https://
 
 
 cProfile
-********
+^^^^^^^^
 
-For more complex code, one could use the built-in python profilers 
-<https://docs.python.org/3/library/profile.html>`_ ``cProfile``.
+For more complex code, one can use the `built-in python profilers 
+<https://docs.python.org/3/library/profile.html>`_, ``cProfile`` or ``profile``.
 
-    .. sourcecode:: console
+As a demo, let us consider the following code which simulates a random walk in one dimension
+(we can save it as ``walk.py``):
 
-        $  python -m cProfile -o demo.prof demo.py
+.. code-block:: python
 
-    Using the ``-o`` switch will output the profiler results to the file
-    ``demo.prof`` to view with an external tool. 
+   import numpy as np
+
+   def step():
+       import random
+       return 1. if random.random() > .5 else -1.
+   
+   def walk(n):
+       x = np.zeros(n)
+       dx = 1. / n
+       for i in range(n - 1):
+           x_new = x[i] + dx * step()
+           if x_new > 5e-3:
+               x[i + 1] = 0.
+           else:
+               x[i + 1] = x_new
+       return x
+
+   if __name__ == "__main__":
+       n = 100000
+       x = walk(n)
+
+We can profile it with ``cProfile``:
+
+.. code-block:: console
+
+   $  python -m cProfile walk.py
+
+This will print a lot of output which is difficult to read. It's also possible to write the profile 
+to a file with the ``-o`` flag and view it with profile visualisation tools like 
+`Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
+or `profile-viewer <https://pypi.org/project/profile-viewer/>`__:
+
+.. code-block:: console
+
+   $  python -m cProfile -o walk.prof walk.py
+
+Similar functionality is available in interactive IPython or Jupyter sessions with the 
+magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
 
 
 Line-profiler
-*************
+^^^^^^^^^^^^^
 
-The cprofile tells us which function takes most of the time, but not where it is called.
+The cProfile tool tells us which function takes most of the time but it does not give us a 
+line-by-line breakdown of where time is being spent. For this information, we can use the 
+`line_profiler <https://github.com/pyutils/line_profiler/>`__ tool. 
 
-For this information, we use the `line_profiler <http://packages.python.org/line_profiler/>`_: in the
-source file  by adding a decorator ``@profile`` in the functions of interests
+.. type-along:: Line profiling
 
-.. sourcecode:: python
+   For line-profiling source files from the command line, we can add a decorator ``@profile`` 
+   to the functions of interests. If we do this for the :meth:`step` and :meth:`walk` function 
+   in the example above, we can then run the script using the `kernprof.py` program which comes with 
+   ``line_profiler``, making sure to include the switches ``-l, --line-by-line`` and ``-v, --view``:
 
-    @profile
-    def test():
-        data = np.random.random((5000, 100))
-        u, s, v = linalg.svd(data)
-        pca = np.dot(u[:, :10], data)
-        results = fastica(pca.T, whiten=False)
+   .. code-block:: console
 
-Then we run the script using the `kernprof.py
-<http://packages.python.org/line_profiler>`_ program, with switches ``-l, --line-by-line`` and ``-v, --view`` to use the line-by-line profiler and view the results in addition to saving them:
+       $ kernprof.py -l -v walk.py
 
-.. sourcecode:: console
+   ``line_profiler`` also works in a Jupyter notebook. First one needs to load the extension:
 
-    $ kernprof.py -l -v demo.py
+   .. code-block:: ipython
 
-    Wrote profile results to demo.py.lprof
-    Timer unit: 1e-06 s
+      In [1]: %load_ext line_profiler
 
-    File: demo.py
-    Function: test at line 5
-    Total time: 14.2793 s
+   If the :meth:`walk` and :meth:`step` functions are defined in code cells, we can get the line-profiling 
+   information by:
 
-    Line #      Hits         Time  Per Hit   % Time  Line Contents
-    =========== ============ ===== ========= ======= ==== ========
-        5                                           @profile
-        6                                           def test():
-        7         1        19015  19015.0      0.1      data = np.random.random((5000, 100))
-        8         1     14242163 14242163.0   99.7      u, s, v = linalg.svd(data)
-        9         1        10282  10282.0      0.1      pca = np.dot(u[:10, :], data)
-       10         1         7799   7799.0      0.1      results = fastica(pca.T, whiten=False)
+   .. code-block:: ipython
 
-It is clear from the profiling results: 
-the SVD is taking all the time, we need to optimise it if possible.
+      In [2]: %lprun -f walk -f step walk(10000)
 
 
+   - Based on the output, can you spot a mistake which is affecting performance?
 
-performance optimization 
+   .. solution:: Line-profiling output
+
+      .. code-block:: console
+
+         Wrote profile results to walk.py.lprof
+         Timer unit: 1e-06 s
+
+         Total time: 0.113249 s
+         File: walk.py
+         Function: step at line 4
+
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+            4                                           @profile
+            5                                           def step():
+            6     99999      57528.0      0.6     50.8      import random
+            7     99999      55721.0      0.6     49.2      return 1. if random.random() > .5 else -1.
+
+         Total time: 0.598811 s
+         File: walk.py
+         Function: walk at line 9
+
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+            9                                           @profile
+            10                                           def walk(n):
+            11         1         20.0     20.0      0.0      x = np.zeros(n)
+            12         1          1.0      1.0      0.0      dx = 1. / n
+            13    100000      44279.0      0.4      7.4      for i in range(n - 1):
+            14     99999     433303.0      4.3     72.4          x_new = x[i] + dx * step()
+            15     99999      53894.0      0.5      9.0          if x_new > 5e-3:
+            16                                                       x[i + 1] = 0.
+            17                                                   else:
+            18     99999      67313.0      0.7     11.2              x[i + 1] = x_new
+            19         1          1.0      1.0      0.0      return x
+
+      .. solution:: The mistake
+
+         The mistake is that the ``random`` module is loaded inside the :meth:`step` function
+         which is called thousands of times! Moving the module import to the top level saves 
+         considerable time.
+
+.. exercise:: Profile the word-autocorrelation code
+
+   Revisit the word-autocorrelation code. Add ``@profile`` to the :meth:`word_autocorr` and 
+   :meth:`word_autocorr_average` function, and run ``kernprof.py`` from the command line.
+
+   .. solution:: autocorrelation.py
+
+
+
+Performance optimization 
 ------------------------
 
 Once we have identified the bottlenecks, we need to make the corresponding code go faster.
 
 Algorithm optimization
-**********************
+^^^^^^^^^^^^^^^^^^^^^^
 
 The first thing to look into is the underlying algorithm you chose: is it optimal?
 To answer this question,  a good understanding of the maths behind the algorithm helps. 
@@ -113,7 +191,7 @@ most often, you can avoid inverting a matrix and use a less costly
 moving computation or memory allocation outside a loop, and this happens very often as well.
 
 Singular Value Decomposition
-............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `Singular Value Decomposition <https://en.wikipedia.org/wiki/Singular_value_decomposition>`_ (SVD)
 is quite often used in climate model data analysis.  The computational cost of this algorithm is 
@@ -158,10 +236,10 @@ We can try this using the example above: (XXXX fixing the example)
 XXXX add sparse matrix example here 
 
 CPU usage optimization
-**********************
+^^^^^^^^^^^^^^^^^^^^^^
 
 Vectorization
-.............
+~~~~~~~~~~~~~
 
 Arithmetic is one place where numpy performance outperforms python list and the reason is that it uses vectorization.
 A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
@@ -228,10 +306,10 @@ Adding the decorator in a function, Numba will figure out the rest for you.
 
 
 Memory usage optimization
-*************************
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Broadcasting
-............
+~~~~~~~~~~~~
 
 Basic operations of numpy are elementwise, and the shape of the arrays should be compatible.
 However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
@@ -338,7 +416,7 @@ other things that **smaller strides are faster**:
 
 
 Temporary arrays
-................
+~~~~~~~~~~~~~~~~
 
 - In complex expressions, NumPy stores intermediate values in
   temporary arrays
@@ -370,7 +448,7 @@ Temporary arrays
 
 
 Numexpr
-.......
+~~~~~~~
 
 - Evaluation of complex expressions with one operation at a time can lead
   also into suboptimal performance
@@ -399,7 +477,7 @@ Numexpr
 
 
 Performance boosting
-********************
+--------------------
 
 For many user cases, using NumPy or Pandas is sufficient. Howevewr, in some computationally heavy applications, 
 it is possible to improve the performance by using the compiled code.
@@ -407,7 +485,7 @@ Cython and Numba are among the popular choices and both of them have good suppor
 
 
 Cython
-......
+^^^^^^
 
 The source code gets translated into optimized C/C++ code and compiled as Python extension modules. 
 
@@ -425,7 +503,7 @@ Cython treats the function as pure 'C' functions. All types *must* be declared. 
 
 
 Numba
-.....
+^^^^^
 
 
 An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with `Numba <https://numba.pydata.org/>`__.
@@ -451,11 +529,9 @@ Methods that support ``engine="numba"`` will also have an ``engine_kwargs`` keyw
 If ``engine_kwargs`` is not specified, it defaults to ``{"nogil": False, "nopython": True, "parallel": False}`` unless otherwise specified.
 
 
-examples
-........
 
 Integration
-^^^^^^^^^^^
+~~~~~~~~~~~
 
 
 Consider the following pure Python code:
@@ -503,7 +579,7 @@ Consider the following pure Python code:
 
 
 Pairwise distance
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~
 
 
 .. challenge:: pairwise distance
@@ -531,7 +607,7 @@ Pairwise distance
 
 
 Bubble sort
-^^^^^^^^^^^
+~~~~~~~~~~~
 
 Long stroy short, in the worse case, the time Bubblesort algorithm takes is roughly :math:`O(n^2)` where  :math:`n` is the number of items being sorted. 
 
@@ -560,5 +636,5 @@ Long stroy short, in the worse case, the time Bubblesort algorithm takes is roug
 
 .. note::
 
-Note that the relative results also depend on what version of Python, Cython, Numba, and NumPy you are using. Also, the compiler choice for installing NumPy can account for differences in the results.
-NumPy is really good at what it does. For simple operations, Numba is not going to outperform it, but when things get more complex Numba will save the day. 
+   Note that the relative results also depend on what version of Python, Cython, Numba, and NumPy you are using. Also, the compiler choice for installing NumPy can account for differences in the results.
+   NumPy is really good at what it does. For simple operations, Numba is not going to outperform it, but when things get more complex Numba will save the day. 
