@@ -103,10 +103,6 @@ Let us have a look at a toy example which many of us can hopefully relate to.
       python source/wordcount.py data/pg10.txt > processed_data/pg10.dat
       python source/wordcount.py data/pg65.txt > processed_data/pg65.dat
       
-      # (optionally) create plots
-      python source/plotcount.py processed_data/pg10.dat results/pg10.png
-      python source/plotcount.py processed_data/pg65.dat results/pg65.png
-      
       # print frequency of 10 most frequent words in both books to file
       python source/zipf_test.py 10 pg10.dat pg65.dat > results.txt
       
@@ -170,14 +166,6 @@ results (targets). This is how the Snakefile looks:
                python {input.wc} {input.book} {output} >> {log} 2>&1
            '''
    
-   # create a plot for each book
-   rule make_plot:
-      input:
-          plotcount='source/plotcount.py',
-          book='processed_data/{file}.dat'
-      output: 'results/{file}.png'
-      shell: 'python {input.plotcount} {input.book} {output}'
-   
    # generate results table
    rule zipf_test:
        input:
@@ -193,7 +181,7 @@ Multithreading
 --------------
 
 Due to the GIL only one thread can execute Python code at once, and this makes 
-threading rather useless for compute-bound problems in pure Puthon. 
+threading rather useless for *compute-bound* problems in pure Puthon. 
 However, multithreading is still relevant in two situations:
 
 - External libraries written in non-Python languages can take advantage of multithreading 
@@ -223,7 +211,7 @@ and multithreading will be turned on.
 .. type-along:: Multithreading NumPy 
 
    Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
-   We can save it in a file named `omp_test.py`.
+   To run it, we can save it in a file named `omp_test.py`.
 
    .. code-block:: python
 
@@ -250,7 +238,7 @@ and multithreading will be turned on.
 Multithreaded I/O
 ^^^^^^^^^^^^^^^^^
 
-This is how an I/O-bound application might look.
+This is how an I/O-bound application might look:
 
 .. figure:: img/IOBound.png
    :align: center
@@ -270,59 +258,64 @@ to files. For further details on ``threading`` refer to the **See also** section
    for I/O. After running ``snakemake -j 1`` we should have 64 ``.dat`` files in the 
    ``processed_data`` directory. Let's say we want to convert them all to csv format.
 
-   Here is code to accomplish this:
+   The easiest way to use multithreading is to use the ``ThreadPoolExecutor``
+   from ``concurrent.futures``. Here is a comparison of serial and multithreaded 
+   code to accomplish this:
 
-   .. code-block:: python
+   .. tabs:: 
 
-      import glob
-      import time
+      .. tab:: Serial
+
+         .. code-block:: python
       
-      def csvify_file(file):
-          with open(file, 'r') as f:
-              lines = f.readlines()
-          with open(file.replace('.dat', '.csv'), 'w') as f:
-              for line in lines:
-                  f.write(line.replace(' ', ','))
-      
-      def csvify_all_files(files):
-          for file in files:
-              csvify_file(file)
-              #break
-              
-      if __name__ == '__main__':
-          files = glob.glob("processed_data/*.dat")
-          start_time = time.time()
-          csvify_all_files(files)
-          duration = time.time() - start_time
-          print(f"Read {len(files)} in {duration} seconds")   
+            import glob
+            import time
+            
+            def csvify_file(file):
+                with open(file, 'r') as f:
+                    lines = f.readlines()
+                with open(file.replace('.dat', '.csv'), 'w') as f:
+                    for line in lines:
+                        f.write(line.replace(' ', ','))
+            
+            def csvify_all_files(files):
+                for file in files:
+                    csvify_file(file)
+                    #break
+                    
+            if __name__ == '__main__':
+                files = glob.glob("processed_data/*.dat")
+                start_time = time.time()
+                csvify_all_files(files)
+                duration = time.time() - start_time
+                print(f"Read {len(files)} in {duration} seconds")   
 
+      .. tab:: Multithreaded
 
-   The easiest way to multithread this code is to use the ``ThreadPoolExecutor``
-   from ``concurrent.futures``:
+         .. code-block:: python
+            :emphasize-lines: 2, 13-14
 
-   .. code-block:: python
+            import glob
+            import concurrent.futures
+            import time
 
-      import glob
-      import concurrent.futures
-      import time
-      
-      def csvify_file(file):
-          with open(file, 'r') as f:
-              lines = f.readlines()
-          with open(file.replace('.dat', '.csv'), 'w') as f:
-              for line in lines:
-                  f.write(line.replace(' ', ','))        
-      
-      def csvify_all_files(files):
-          with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-              executor.map(read_file, files)
-              
-      if __name__ == '__main__':
-          files = glob.glob("processed_data/*.dat")
-          start_time = time.time()
-          csvify_all_files(files)
-          duration = time.time() - start_time
-          print(f"Read {len(files)} in {duration} seconds")      
+            def csvify_file(file):
+                with open(file, 'r') as f:
+                    lines = f.readlines()
+                with open(file.replace('.dat', '.csv'), 'w') as f:
+                    for line in lines:
+                        f.write(line.replace(' ', ','))        
+
+            def csvify_all_files(files):
+                with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                    executor.map(read_file, files)
+
+            if __name__ == '__main__':
+                files = glob.glob("processed_data/*.dat")
+                start_time = time.time()
+                csvify_all_files(files)
+                duration = time.time() - start_time
+                print(f"Read {len(files)} in {duration} seconds")      
 
    Tasks:
 
@@ -349,19 +342,12 @@ similar to the ``threading`` module. It effectively side-steps the GIL by using
 *subprocesses* instead of threads, where each subprocess is an independent Python 
 process.
 
-.. callout:: Interactive environments
-
-   Functionality within multiprocessing requires that the ``__main__`` module be 
-   importable by children processes. This means that for example ``multiprocessing.Pool`` 
-   will not work in the interactive interpreter. A fork of multiprocessing, called 
-   ``multiprocess``, can be used in interactive environments like IPython sessions.
-
-
 One of the simplest ways to use ``multiprocessing`` is via ``Pool`` objects and 
-the parallel ``Pool.map`` function. In the following code, we define a ``square`` 
-function, call the ``cpu_count`` method to get the number of CPUs on the machine,
+the parallel :meth:`Pool.map` function, similarly to what we saw for multithreading above. 
+In the following code, we define a :meth:`square` 
+function, call the :meth:`cpu_count` method to get the number of CPUs on the machine,
 and then initialize a Pool object in a context manager and inside of it call the 
-``Pool.map`` method to parallelize the computation:
+:meth:`Pool.map` method to parallelize the computation:
 
 .. code-block:: python
 
@@ -379,10 +365,12 @@ and then initialize a Pool object in a context manager and inside of it call the
            result = pool.map(square, range(20))    
        print(result)
  
-For functions that take multiple arguments one can instead use the ``Pool.starmap`` 
+For functions that take multiple arguments one can instead use the :meth:`Pool.starmap`
 function:
 
 .. code-block:: python
+
+   import multiprocessing as mp
 
    def power_n(x, n):
        return x ** n
@@ -395,256 +383,20 @@ function:
            result = pool.starmap(power_n, [(x, 2) for x in range(20)])
        print(result)
 
+.. callout:: Interactive environments
+
+   Functionality within multiprocessing requires that the ``__main__`` module be 
+   importable by children processes. This means that for example ``multiprocessing.Pool`` 
+   will not work in the interactive interpreter. A fork of multiprocessing, called 
+   ``multiprocess``, can be used in interactive environments like IPython sessions.
+
 ``multiprocessing`` has a number of other methods which can be useful for certain 
 use cases, including ``Process`` and ``Queue`` which make it possible to have direct 
 control over individual processes. Refer to the `See also`_ section below for a list 
 of external resources that cover these methods.
 
-We now turn our attention back to the word-count problem.
-
-.. type-along:: Word-autocorrelation: parallelizing word-count with multiprocessing
-
-   Inspired by a study of 
-   `dynamic correlations of words in written text <https://www.scirp.org/journal/paperinformation.aspx?paperid=92643>`__,
-   we decide to investigate autocorrelations of words in our database of book texts.
-
-   A serial version of the code is available in the 
-   `source/autocorrelation.py <https://github.com/ENCCS/word-count-hpda/blob/main/source/autocorrelation.py>`__
-   script in the word-count repository. The full script can be viewed below, but we focus on the ``word_autocorr``
-   and ``word_autocorr_average`` functions:
-
-   .. code-block:: python
-         
-      def word_autocorr(word, text, timesteps):
-          """
-          Calculate word-autocorrelation function for given word 
-          in a text. Each word in the text corresponds to one "timestep".
-          """
-          acf = np.zeros((timesteps,))
-          mask = [w==word for w in text]
-          nwords_chosen = np.sum(mask)
-          nwords_total = len(text)
-          for t in range(timesteps):
-              for i in range(1,nwords_total-t):
-                  acf[t] += mask[i]*mask[i+t]
-              acf[t] /= nwords_chosen      
-          return acf
-          
-      def word_autocorr_average(words, text, timesteps=100):
-          """
-          Calculate an average word-autocorrelation function 
-          for a list of words in a text.
-          """
-          acf = np.zeros((len(words), timesteps))
-          for n, word in enumerate(words):
-              acf[n, :] = word_autocorr(word, text, timesteps)
-          return np.average(acf, axis=0)
-
-
-   .. solution:: Full script
-
-      .. code-block:: python
-   
-         import sys
-         import numpy as np
-         from wordcount import load_word_counts, load_text, DELIMITERS
-         import time
-         
-         def preprocess_text(text):
-             """
-             Remove delimiters, split lines into words and remove whitespaces, 
-             and make lowercase. Return list of all words in the text.
-             """
-             clean_text = []
-             for line in text:
-                 for purge in DELIMITERS:
-                     line = line.replace(purge, " ")    
-                 words = line.split()
-                 for word in words:
-                     word = word.lower().strip()
-                     clean_text.append(word)
-             return clean_text
-         
-         def word_autocorr(word, text, timesteps):
-             """
-             Calculate word-autocorrelation function for given word 
-             in a text. Each word in the text corresponds to one "timestep".
-             """
-             acf = np.zeros((timesteps,))
-             mask = [w==word for w in text]
-             nwords_chosen = np.sum(mask)
-             nwords_total = len(text)
-             for t in range(timesteps):
-                 for i in range(1,nwords_total-t):
-                     acf[t] += mask[i]*mask[i+t]
-                 acf[t] /= nwords_chosen      
-             return acf
-             
-         def word_autocorr_average(words, text, timesteps=100):
-             """
-             Calculate an average word-autocorrelation function 
-             for a list of words in a text.
-             """
-             acf = np.zeros((len(words), timesteps))
-             for n, word in enumerate(words):
-                 acf[n, :] = word_autocorr(word, text, timesteps)
-             return np.average(acf, axis=0)
-         
-         if __name__ == '__main__':          
-             # load book text and preprocess it
-             book = sys.argv[1]
-             text = load_text(book)
-             clean_text = preprocess_text(text)
-             # load precomputed word counts and select top 10 words
-             wc_book = sys.argv[2]
-             nwords = 10
-             word_count = load_word_counts(wc_book)
-             top_words = [w[0] for w in word_count[:nwords]]
-             # number of "timesteps" to use in autocorrelation function
-             timesteps = 100
-             # compute average autocorrelation and time the execution
-             t0 = time.time()
-             acf_ave = word_autocorr_average(top_words, clean_text, timesteps=100)
-             t1 = time.time()        
-             print(f"serial time: {t1-t0}")
-             # save results to csv file
-             np.savetxt(sys.argv[3], np.vstack((np.arange(1,timesteps+1), acf_ave)).T, delimiter=',')
-
-      
-
-   - ``word_autocorr`` computes the autocorrelation in a text for a given word
-   - ``word_autocorr_average`` loops over a list of words and computes their average autocorrelation
-   - To run this code: 
-
-     .. code-block:: bash
-
-        python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
-
-   .. discussion:: Where to parallelise?
-
-      Think about what this code is doing and try to find a good place to parallelize it using 
-      a pool of processes. With or without having a look at the hints below, try to parallelize 
-      the code using ``multiprocessing`` and use ``time.time()`` to measure the speedup when running 
-      it for one book.
-
-   .. solution:: Hints
- 
-      The most time-consuming parts of this code is the double-loop inside ``word_autocorr`` (you can 
-      confirm this in an exercise below). This function is called 10 times in the ``word_autocorr_average``
-      function, once for each word in the top-10 list. This looks like a perfect place to use a multiprocessing 
-      pool of processes!
-
-      We would like to do something like:
-
-      .. code-block:: python
-
-         with Pool(4) as p:
-             results = p.map(word_autocorr, words)
-
-      However, there's an issue with this because ``word_autocorr`` takes 3 arguments ``(word, text, timesteps)``.
-      We could solve this using the ``Pool.starmap`` function:
-
-      .. code-block:: python
-
-         with Pool(4) as p:
-             results = p.starmap(word_autocorr, [(i,j,k) for i,j,k in zip(words, 10*[text], 10*[timestep])]
-
-      But this might be somewhat inefficient because ``10*[text]`` might take up quite a lot of memory.
-      A workaround is to use the ``partial`` method from ``functools`` which returns a new function with 
-      partial application of the given arguments:
-
-      .. code-block:: python
-
-         from functools import partial
-         word_autocorr_partial = partial(word_autocorr, text=text, timesteps=timesteps)
-         with Pool(4) as p:
-             results = p.map(word_autocorr_partial, words)
-
-   .. solution::
-
-      .. code-block:: python
-
-         import sys
-         import numpy as np
-         from wordcount import load_word_counts, load_text, DELIMITERS
-         import time
-         from multiprocessing import Pool
-         from functools import partial
-         
-         def preprocess_text(text):
-             """
-             Remove delimiters, split lines into words and remove whitespaces, 
-             and make lowercase. Return list of all words in the text.
-             """
-             clean_text = []
-             for line in text:
-                 for purge in DELIMITERS:
-                     line = line.replace(purge, " ")    
-                 words = line.split()
-                 for word in words:
-                     word = word.lower().strip()
-                     clean_text.append(word)
-             return clean_text
-         
-         def word_autocorr(word, text, timesteps):
-             """
-             Calculate word-autocorrelation function for given word 
-             in a text. Each word in the text corresponds to one "timestep".
-             """
-             acf = np.zeros((timesteps,))
-             mask = [w==word for w in text]
-             nwords_chosen = np.sum(mask)
-             nwords_total = len(text)
-             for t in range(timesteps):
-                 for i in range(1,nwords_total-t):
-                     acf[t] += mask[i]*mask[i+t]
-                 acf[t] /= nwords_chosen      
-             return acf
-             
-         def word_autocorr_average(words, text, timesteps=100):
-             """
-             Calculate an average word-autocorrelation function 
-             for a list of words in a text.
-             """
-             acf = np.zeros((len(words), timesteps))
-             for n, word in enumerate(words):
-                 acf[n, :] = word_autocorr(word, text, timesteps)
-             return np.average(acf, axis=0)
-         
-         def word_autocorr_average_pool(words, text, timesteps=100):
-             """
-             Calculate an average word-autocorrelation function 
-             for a list of words in a text using multiprocessing.
-             """
-             word_autocorr_partial = partial(word_autocorr, text=text, timesteps=timesteps)
-             with Pool(4) as p:
-                 results = p.map(word_autocorr_partial, words)
-             acf = np.array(results)
-             return np.average(acf, axis=0)
-         
-         if __name__ == '__main__':          
-             # load book text and preprocess it
-             book = sys.argv[1]
-             text = load_text(book)
-             clean_text = preprocess_text(text)
-             # load precomputed word counts and select top 10 words
-             wc_book = sys.argv[2]
-             nwords = 10
-             word_count = load_word_counts(wc_book)
-             top_words = [w[0] for w in word_count[:nwords]]
-             # number of "timesteps" to use in autocorrelation function
-             timesteps = 100
-             # compute average autocorrelation and time the execution
-             t0 = time.time()
-             acf_ave = word_autocorr_average(top_words, clean_text, timesteps=100)
-             t1 = time.time()        
-             acf_pool_ave = word_autocorr_average_pool(top_words, clean_text, timesteps=100)
-             t2 = time.time()        
-             print(f"serial time: {t1-t0}")
-             print(f"parallel map time: {t2-t1}")
-             np.testing.assert_array_equal(acf_ave, acf_pool_ave)     
-   
-      
+At the end of this episode you can turn your attention back to the word-count problem 
+and practice using ``multiprocessing`` pools of processes.
 
 
 ipyparallel
@@ -823,11 +575,286 @@ Examples
 Exercises
 ---------
 
+.. exercise:: Word-autocorrelation: parallelizing word-count with multiprocessing
+
+   Inspired by a study of 
+   `dynamic correlations of words in written text <https://www.scirp.org/journal/paperinformation.aspx?paperid=92643>`__,
+   we decide to investigate autocorrelations of words in our database of book texts.
+
+   A serial version of the code is available in the 
+   `source/autocorrelation.py <https://github.com/ENCCS/word-count-hpda/blob/main/source/autocorrelation.py>`__
+   script in the word-count repository. The full script can be viewed below, 
+   but we focus on the :meth:`word_autocorr` and :meth:`word_autocorr_average` functions:
+
+   .. code-block:: python
+         
+      def word_autocorr(word, text, timesteps):
+          """
+          Calculate word-autocorrelation function for given word 
+          in a text. Each word in the text corresponds to one "timestep".
+          """
+          acf = np.zeros((timesteps,))
+          mask = [w==word for w in text]
+          nwords_chosen = np.sum(mask)
+          nwords_total = len(text)
+          for t in range(timesteps):
+              for i in range(1,nwords_total-t):
+                  acf[t] += mask[i]*mask[i+t]
+              acf[t] /= nwords_chosen      
+          return acf
+          
+      def word_autocorr_average(words, text, timesteps=100):
+          """
+          Calculate an average word-autocorrelation function 
+          for a list of words in a text.
+          """
+          acf = np.zeros((len(words), timesteps))
+          for n, word in enumerate(words):
+              acf[n, :] = word_autocorr(word, text, timesteps)
+          return np.average(acf, axis=0)
+
+
+   .. solution:: Full script
+
+      .. code-block:: python
+   
+         import sys
+         import numpy as np
+         from wordcount import load_word_counts, load_text, DELIMITERS
+         import time
+         
+         def preprocess_text(text):
+             """
+             Remove delimiters, split lines into words and remove whitespaces, 
+             and make lowercase. Return list of all words in the text.
+             """
+             clean_text = []
+             for line in text:
+                 for purge in DELIMITERS:
+                     line = line.replace(purge, " ")    
+                 words = line.split()
+                 for word in words:
+                     word = word.lower().strip()
+                     clean_text.append(word)
+             return clean_text
+         
+         def word_autocorr(word, text, timesteps):
+             """
+             Calculate word-autocorrelation function for given word 
+             in a text. Each word in the text corresponds to one "timestep".
+             """
+             acf = np.zeros((timesteps,))
+             mask = [w==word for w in text]
+             nwords_chosen = np.sum(mask)
+             nwords_total = len(text)
+             for t in range(timesteps):
+                 for i in range(1,nwords_total-t):
+                     acf[t] += mask[i]*mask[i+t]
+                 acf[t] /= nwords_chosen      
+             return acf
+             
+         def word_autocorr_average(words, text, timesteps=100):
+             """
+             Calculate an average word-autocorrelation function 
+             for a list of words in a text.
+             """
+             acf = np.zeros((len(words), timesteps))
+             for n, word in enumerate(words):
+                 acf[n, :] = word_autocorr(word, text, timesteps)
+             return np.average(acf, axis=0)
+         
+         if __name__ == '__main__':          
+             # load book text and preprocess it
+             book = sys.argv[1]
+             text = load_text(book)
+             clean_text = preprocess_text(text)
+             # load precomputed word counts and select top 10 words
+             wc_book = sys.argv[2]
+             nwords = 10
+             word_count = load_word_counts(wc_book)
+             top_words = [w[0] for w in word_count[:nwords]]
+             # number of "timesteps" to use in autocorrelation function
+             timesteps = 100
+             # compute average autocorrelation and time the execution
+             t0 = time.time()
+             acf_ave = word_autocorr_average(top_words, clean_text, timesteps=100)
+             t1 = time.time()        
+             print(f"serial time: {t1-t0}")
+             # save results to csv file
+             np.savetxt(sys.argv[3], np.vstack((np.arange(1,timesteps+1), acf_ave)).T, delimiter=',')
+
+      
+
+   - :meth:`word_autocorr` computes the autocorrelation in a text for a given word
+   - :meth:`word_autocorr_average` loops over a list of words and computes their average autocorrelation
+   - To run this code: 
+
+     .. code-block:: bash
+
+        python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
+
+   .. discussion:: Where to parallelise?
+
+      Think about what this code is doing and try to find a good place to parallelize it using 
+      a pool of processes. With or without having a look at the hints below, try to parallelize 
+      the code using ``multiprocessing`` and use :meth:`time.time()` to measure the speedup when running 
+      it for one book.
+
+   .. solution:: Hints
+ 
+      The most time-consuming parts of this code is the double-loop inside 
+      :meth:`word_autocorr` (you can confirm this in an exercise below). 
+      This function is called 10 times in the :meth:`word_autocorr_average`
+      function, once for each word in the top-10 list. This looks like a perfect place to use a multiprocessing 
+      pool of processes!
+
+      We would like to do something like:
+
+      .. code-block:: python
+
+         with Pool(4) as p:
+             results = p.map(word_autocorr, words)
+
+      However, there's an issue with this because :meth:`word_autocorr` takes 3 arguments ``(word, text, timesteps)``.
+      We could solve this using the :meth:`Pool.starmap` function:
+
+      .. code-block:: python
+
+         with Pool(4) as p:
+             results = p.starmap(word_autocorr, [(i,j,k) for i,j,k in zip(words, 10*[text], 10*[timestep])]
+
+      But this might be somewhat inefficient because ``10*[text]`` might take up quite a lot of memory.
+      A workaround is to use the ``partial`` method from ``functools`` which returns a new function with 
+      partial application of the given arguments:
+
+      .. code-block:: python
+
+         from functools import partial
+         word_autocorr_partial = partial(word_autocorr, text=text, timesteps=timesteps)
+         with Pool(4) as p:
+             results = p.map(word_autocorr_partial, words)
+
+   .. solution::
+
+      .. code-block:: python
+
+         import sys
+         import numpy as np
+         from wordcount import load_word_counts, load_text, DELIMITERS
+         import time
+         from multiprocessing import Pool
+         from functools import partial
+         
+         def preprocess_text(text):
+             """
+             Remove delimiters, split lines into words and remove whitespaces, 
+             and make lowercase. Return list of all words in the text.
+             """
+             clean_text = []
+             for line in text:
+                 for purge in DELIMITERS:
+                     line = line.replace(purge, " ")    
+                 words = line.split()
+                 for word in words:
+                     word = word.lower().strip()
+                     clean_text.append(word)
+             return clean_text
+         
+         def word_autocorr(word, text, timesteps):
+             """
+             Calculate word-autocorrelation function for given word 
+             in a text. Each word in the text corresponds to one "timestep".
+             """
+             acf = np.zeros((timesteps,))
+             mask = [w==word for w in text]
+             nwords_chosen = np.sum(mask)
+             nwords_total = len(text)
+             for t in range(timesteps):
+                 for i in range(1,nwords_total-t):
+                     acf[t] += mask[i]*mask[i+t]
+                 acf[t] /= nwords_chosen      
+             return acf
+             
+         def word_autocorr_average(words, text, timesteps=100):
+             """
+             Calculate an average word-autocorrelation function 
+             for a list of words in a text.
+             """
+             acf = np.zeros((len(words), timesteps))
+             for n, word in enumerate(words):
+                 acf[n, :] = word_autocorr(word, text, timesteps)
+             return np.average(acf, axis=0)
+         
+         def word_autocorr_average_pool(words, text, timesteps=100):
+             """
+             Calculate an average word-autocorrelation function 
+             for a list of words in a text using multiprocessing.
+             """
+             word_autocorr_partial = partial(word_autocorr, text=text, timesteps=timesteps)
+             with Pool(4) as p:
+                 results = p.map(word_autocorr_partial, words)
+             acf = np.array(results)
+             return np.average(acf, axis=0)
+         
+         if __name__ == '__main__':          
+             # load book text and preprocess it
+             book = sys.argv[1]
+             text = load_text(book)
+             clean_text = preprocess_text(text)
+             # load precomputed word counts and select top 10 words
+             wc_book = sys.argv[2]
+             nwords = 10
+             word_count = load_word_counts(wc_book)
+             top_words = [w[0] for w in word_count[:nwords]]
+             # number of "timesteps" to use in autocorrelation function
+             timesteps = 100
+             # compute average autocorrelation and time the execution
+             t0 = time.time()
+             acf_ave = word_autocorr_average(top_words, clean_text, timesteps=100)
+             t1 = time.time()        
+             acf_pool_ave = word_autocorr_average_pool(top_words, clean_text, timesteps=100)
+             t2 = time.time()        
+             print(f"serial time: {t1-t0}")
+             print(f"parallel map time: {t2-t1}")
+             np.testing.assert_array_equal(acf_ave, acf_pool_ave)     
+   
+.. exercise:: Is the :meth:`word_autocorr` function efficient?
+
+   Have another look at the :meth:`word_autocorr` function in the previous exercise. 
+   Do you think there is any room for improvement? 
+
+   .. solution:: 
+
+      The function uses a Python object (``mask``) inside a double for-loop, 
+      which is guaranteed to be suboptimal. There are a number of ways to speed 
+      it up. One is to use ``numba`` and just-in-time compilation, as we shall 
+      see in the :doc:`performance` episode. 
+
+      Another is to find an in-built NumPy function which can calculate the 
+      autocorrelation for us! Here's one way to do it:
+
+      .. code-block:: python
+
+         def word_autocorr_fast(word, text, timesteps):
+             """
+             Calculate word-autocorrelation function for given word 
+             in a text using numpy.correlate function. 
+             Each word in the text corresponds to one "timestep".
+             """
+             acf = np.zeros((timesteps,))
+             mask = np.array([w==word for w in text]).astype(np.float64)
+             nwords_chosen = np.sum(mask)
+             acf = np.correlate(mask, mask, mode='full') / nwords_chosen
+             return acf[int(acf.size/2):int(acf.size/2)+100]         
+
+
+
 .. exercise:: MPI version of word-autocorrelation
 
-   Just like with ``multiprocessing``, the most natural MPI solution parallelizes over the words used 
-   to compute the word-autocorrelation.  
-   For educational purposes, both point-to-point and collective communication implementations will be demonstrated.
+   Just like with ``multiprocessing``, the most natural MPI solution parallelizes over 
+   the words used to compute the word-autocorrelation.  
+   For educational purposes, both point-to-point and collective communication 
+   implementations will be demonstrated here.
 
    Start by standard boilerplate code in the ``__main__`` module:
 
