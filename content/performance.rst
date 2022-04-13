@@ -157,11 +157,11 @@ line-by-line breakdown of where time is being spent. For this information, we ca
             18     99999      67313.0      0.7     11.2              x[i + 1] = x_new
             19         1          1.0      1.0      0.0      return x
 
-      .. solution:: The mistake
+   .. solution:: The mistake
 
-         The mistake is that the ``random`` module is loaded inside the :meth:`step` function
-         which is called thousands of times! Moving the module import to the top level saves 
-         considerable time.
+      The mistake is that the ``random`` module is loaded inside the :meth:`step` function
+      which is called thousands of times! Moving the module import to the top level saves 
+      considerable time.
 
 .. exercise:: Profile the word-autocorrelation code
 
