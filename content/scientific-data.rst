@@ -44,8 +44,7 @@ numerical algorithms have to be carefully chosen and
 floating-point numbers are usally allocated with 8 bytes  
 to make sure the inaccuracy is under control and does not lead to unsteady solutions.
 
-.. note:: In climate community, it is common practice to use single precision 
-in some part of the model to achieve better performance at a small cost to the accuracy.
+.. note:: In climate community, it is common practice to use single precision in some part of the model to achieve better performance at a small cost to the accuracy.
 
 Text Data
 *********
