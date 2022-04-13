@@ -305,6 +305,14 @@ specifically the step where we count words in a text.
 
       sorted_counts
 
+   The last two steps of the pipeline could also have been done with a dataframe:
+
+   .. code-block:: python
+
+      filtered = text.filter(lambda word: word not in DELIMITERS).str.lower().str.strip().str.split().flatten()
+      ddf = filtered.to_dataframe(columns=['words'])
+      ddf['words'].value_counts().compute()[:10]
+
 .. callout:: When to use a Dask bag
 
    There is no benefit from using a Dask bag on small datasets. But imagine we were 
@@ -504,7 +512,6 @@ Exercises
    - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
      What if you have a larger textfile? You can for example concatenate all texts into 
      a single file: ``cat data/*.txt > data/all.txt``.
-
 
 
 
