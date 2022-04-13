@@ -15,14 +15,18 @@ What is a data?
 ---------------
 
 bit and byte
-************
+^^^^^^^^^^^^
 
 The smallest building block of storage in the computer is a **bit**, 
 which stores either a 0 or 1.
 Normally a number of 8 bits are combined in a group to make a **byte**. 
-One byte (8 bits) can represent/hold at most 2**8 distint values.
+One byte (8 bits) can represent/hold at most :math:`2^8` distint values.
 Organising bytes in different ways could further represent 
 different types of information, i.e. data.
+
+
+Types of scientific data 
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Numerical Data
 **************
@@ -37,13 +41,11 @@ can not be represented exactly as binary (base 2) fractions in most cases
 which is known as the representation error. Arithmetic operations will 
 further propagate this error. That is why in scienctific computing, 
 numerical algorithms have to be carefully chosen and 
-floating-point numbers are usally allocated with 8 bytes (XXXX add range here) 
+floating-point numbers are usally allocated with 8 bytes  
 to make sure the inaccuracy is under control and does not lead to unsteady solutions.
 
-Note:
-Many climate models or certain parts of the models have the option of 
-using single precision, i.e. 4 bytes or 32 bits, for floating-point numbers 
-in order to achieve better performance at a small cost to the accuracy.
+.. note:: In climate community, it is common practice to use single precision 
+in some part of the model to achieve better performance at a small cost to the accuracy.
 
 Text Data
 *********
@@ -59,9 +61,11 @@ from other languages like Chinese, Greek, Arabic, etc. UTF-8  becomes
 the most common encoding nowadays and it uses minimum one byte up to four bytes per character. 
 
 
+Data and storage format
+^^^^^^^^^^^^^^^^^^^^^^^
+
 In real applications, the scientific data is more complex and usually contains both numerical and text data. 
-There is no single file format that is good for every case to store the dataset.
-Here we list a few of the data and file formats commonly used in climate modelling community:
+Here we list a few of the data and file storage formats commonly used:
 
 Tabular Data
 ************
@@ -77,9 +81,9 @@ Grided Data
 Grided data is another very common type, and usually the numerical data is saved 
 in a multi-dimentional rectangular grid. Most probably it is saved in one of the following formats:
 
-Hierarchical Data Format (HDF5) - Container for many arrays
-Network Common Data Form (NetCDF) - Container for many arrays which conform to the NetCDF data model
-Zarr - New cloud-optimized format for array storage
+- Hierarchical Data Format (HDF5) - Container for many arrays
+- Network Common Data Form (NetCDF) - Container for many arrays which conform to the NetCDF data model
+- Zarr - New cloud-optimized format for array storage
 
 Metadata
 ********
@@ -87,20 +91,18 @@ Metadata
 Metadata consists of the information about the data. 
 Different types of data may have different metadata conventions. 
 
-In Earth and Environmental science, we are fortunate to have widespread robust practices around metdata. 
+In Earth and Environmental science, there are widespread robust practices around metdata. 
 For NetCDF files, metadata can be embedded directly into the data files. 
 The most common metadata convention is Climate and Forecast (CF) Conventions, commonly used with NetCDF data
 
 
-
-Types of scientific data
-------------------------
-
-There are many types of data format used in scietific computing and data analysis.
+When it comes to data storage, there are many types of data storage format used 
+in scietific computing and data analysis. There isn't one data storage format that 
+works in all cases, choose a file format that best suits you.
 
 
 CSV (comma-separated values)
-****************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. admonition:: Key features
 
@@ -131,7 +133,7 @@ However, it is not the best format to use when you're working with big data.
 4. Binary files, where floating point numbers are represented in their native binary format, do not suffer from such problems.
 
 HDF5 (Hierarchical Data Format version 5)
-*****************************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. admonition:: Key features
 
@@ -152,7 +154,7 @@ It is especially popular in fields where you need to store big multidimensional 
 
 
 NetCDF4 (Network Common Data Form version 4)
-********************************************
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. important::
 
