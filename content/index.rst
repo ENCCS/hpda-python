@@ -50,8 +50,8 @@ computing.
    motivation
    scientific-data
    stack
-   performance
    parallel-computing
+   performance
    dask
    GPU-computing
    
