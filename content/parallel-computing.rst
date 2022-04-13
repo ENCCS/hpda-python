@@ -818,35 +818,6 @@ Exercises
              print(f"parallel map time: {t2-t1}")
              np.testing.assert_array_equal(acf_ave, acf_pool_ave)     
    
-.. exercise:: Is the :meth:`word_autocorr` function efficient?
-
-   Have another look at the :meth:`word_autocorr` function in the previous exercise. 
-   Do you think there is any room for improvement? 
-
-   .. solution:: 
-
-      The function uses a Python object (``mask``) inside a double for-loop, 
-      which is guaranteed to be suboptimal. There are a number of ways to speed 
-      it up. One is to use ``numba`` and just-in-time compilation, as we shall 
-      see in the :doc:`performance` episode. 
-
-      Another is to find an in-built NumPy function which can calculate the 
-      autocorrelation for us! Here's one way to do it:
-
-      .. code-block:: python
-
-         def word_autocorr_fast(word, text, timesteps):
-             """
-             Calculate word-autocorrelation function for given word 
-             in a text using numpy.correlate function. 
-             Each word in the text corresponds to one "timestep".
-             """
-             acf = np.zeros((timesteps,))
-             mask = np.array([w==word for w in text]).astype(np.float64)
-             nwords_chosen = np.sum(mask)
-             acf = np.correlate(mask, mask, mode='full') / nwords_chosen
-             return acf[int(acf.size/2):int(acf.size/2)+100]         
-
 
 
 .. exercise:: MPI version of word-autocorrelation

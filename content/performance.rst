@@ -268,6 +268,52 @@ In such cases, vectorization is key for better performance.
 			a_dif = a[1:] - a[:-1]
 
 
+.. exercise:: Is the :meth:`word_autocorr` function efficient?
+
+   Have another look at the :meth:`word_autocorr` function from the word-count project. 
+
+   .. code-block:: python
+
+      def word_autocorr_slow(word, text, timesteps):
+          """
+          Calculate word-autocorrelation function for given word 
+          in a text. Each word in the text corresponds to one "timestep".
+          """
+          acf = np.zeros((timesteps,))
+          mask = [w==word for w in text]
+          nwords_chosen = np.sum(mask)
+          nwords_total = len(text)
+          for t in range(timesteps):
+              for i in range(1,nwords_total-t):
+                  acf[t] += mask[i]*mask[i+t]
+              acf[t] /= nwords_chosen      
+          return acf
+      
+   Do you think there is any room for improvement? 
+
+   .. solution:: 
+
+      The function uses a Python object (``mask``) inside a double for-loop, 
+      which is guaranteed to be suboptimal. There are a number of ways to speed 
+      it up. One is to use ``numba`` and just-in-time compilation, as we shall 
+      see in the :doc:`performance` episode. 
+
+      Another is to find an in-built NumPy function which can calculate the 
+      autocorrelation for us! Here's one way to do it:
+
+      .. code-block:: python
+
+         def word_autocorr_fast(word, text, timesteps):
+             """
+             Calculate word-autocorrelation function for given word 
+             in a text using numpy.correlate function. 
+             Each word in the text corresponds to one "timestep".
+             """
+             acf = np.zeros((timesteps,))
+             mask = np.array([w==word for w in text]).astype(np.float64)
+             nwords_chosen = np.sum(mask)
+             acf = np.correlate(mask, mask, mode='full') / nwords_chosen
+             return acf[int(acf.size/2):int(acf.size/2)+100]         
 
 
 So one should consider use "vectorized" operations whenever possible.
