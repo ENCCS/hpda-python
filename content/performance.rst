@@ -657,6 +657,7 @@ We can now start adding types to variables inside the functions using ``cdef``:
 The amount of yellow is decreasing and the speed is increasing.
 
 We can add even more type annotations: 
+
 - replacing ``def`` with ``cdef`` to have Cython treat our functions as pure C function, 
   which requires that **all** types be declared
 - adding type declarations to :meth:`apply_integrate_f`, which requires us to convert 
