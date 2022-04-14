@@ -72,16 +72,24 @@ We can profile it with ``cProfile``:
 
 .. code-block:: console
 
-   $  python -m cProfile walk.py
+   $  python -m cProfile -s time walk.py
 
-This will print a lot of output which is difficult to read. It's also possible to write the profile 
-to a file with the ``-o`` flag and view it with profile visualisation tools like 
-`Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
-or `profile-viewer <https://pypi.org/project/profile-viewer/>`__:
+
+we use the ``-s`` switch to sort the results by ``time``, other options include 
+e.g. function name, cummulative time, etc. However, this will print a lot of 
+output which is difficult to read. 
 
 .. code-block:: console
 
    $  python -m cProfile -o walk.prof walk.py
+
+
+It's also possible to write the profile 
+to a file with the ``-o`` flag and view it with `profile pstats module 
+<https://docs.python.org/3/library/profile.html#module-pstats>`__
+or profile visualisation tools like 
+`Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
+or `profile-viewer <https://pypi.org/project/profile-viewer/>`__.
 
 Similar functionality is available in interactive IPython or Jupyter sessions with the 
 magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
@@ -181,7 +189,7 @@ Algorithm optimization
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The first thing to look into is the underlying algorithm you chose: is it optimal?
-To answer this question,  a good understanding of the maths behind the algorithm helps. 
+To answer this question, a good understanding of the maths behind the algorithm helps. 
 For certain algorithms, many of the bottlenecks will be linear 
 algebra computations. In these cases, using the right function to solve 
 the right problem is key. For instance, an eigenvalue problem with a 
@@ -218,22 +226,6 @@ scipy are richer then those in numpy and should be preferred.
     In [7]: %timeit np.linalg.svd(data, full_matrices=False)
     1 loops, best of 3: 293 ms per loop
 
-We can try this using the example above: (XXXX fixing the example)
-
-.. sourcecode:: console
-
-    $ kernprof.py -l -v demo_opt.py
-
-    Wrote profile results to demo_opt.py.lprof
-    Timer unit: 1e-06 s
-
-    File: demo_opt.py
-    Function: test at line 5
-    Total time: 14.2793 s
-
-
-
-XXXX add sparse matrix example here 
 
 CPU usage optimization
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -255,7 +247,7 @@ In such cases, vectorization is key for better performance.
 
 			import numpy as np
 			a = np.arange(1000)
-			a_dif = np.zeros(999, int)
+			a_dif = np.zeros(999, np.int64)
 			for i in range(1, len(a)):
 			    a_dif[i-1] = a[i] - a[i-1]
 
@@ -317,27 +309,45 @@ In such cases, vectorization is key for better performance.
 
 
 So one should consider use "vectorized" operations whenever possible.
-For universal functions (or ufunc for short), NumPy provides the vectorize function.
+Not only for performance, sometimes the vectorized function is also convenient. 
 
-Let's define a simple function f which is defined for scalars only, 
+Let's define a simple function f which takes scalars as input only, 
 
 .. code-block:: python
 
    import math
-
    def f(x, y):
-    return x**3 + 4*math.sin(y) 
+       return x**3 + 4*math.sin(y) 
 
-In order to pass an numpy array, we have to vectorize it
+if we pass an array, 
+   
+.. code-block:: console
+
+   >>> x = np.ones(10000, dtype=np.int8)
+   >>> f(x,x)
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+     File "<stdin>", line 2, in f
+   TypeError: only size-1 arrays can be converted to Python scalars
+
+
+In order to pass an numpy array, we could vectorize it.
+For universal functions (or ``ufunc`` for short), 
+NumPy provides the ``vectorize`` function.
 
 .. code-block:: python
 
-   f_vec = np.vectorize(f)
+   import numpy as np
+   import math
+
+   def f(x, y):
+       return x**3 + 4*math.sin(y) 
+
+   f_numpy = np.vectorize(f)
 
    # benchmark
-   import numpy as np
-   x = np.ones(10000, dtype='int8')
-   %timeit f_vec(x,x)
+   x = np.ones(10000, dtype=np.int8)
+   %timeit f_numpy(x,x)
 
 
 .. note:: 
@@ -347,8 +357,23 @@ In order to pass an numpy array, we have to vectorize it
 
 
 
-Another way to generate vectorzed function is to use Numba. 
+For high performance vectorization, one choice is to use Numba. 
 Adding the decorator in a function, Numba will figure out the rest for you. 
+
+.. code-block:: python
+
+   import numba
+   import math
+
+   def f(x, y):
+       return x**3 + 4*math.sin(y) 
+
+   f_numba = numba.vectorize(f)
+
+   # benchmark
+   x = np.ones(10000, dtype=np.int8)
+   %timeit f_numba(x,x)
+
 
 
 Memory usage optimization
@@ -476,21 +501,26 @@ Temporary arrays
    # two temporary arrays will be created
    c = 2.0 * a - 4.5 * b
    
-   # three temporary arrays will be created due to unnecessary parenthesis
-   c = (2.0 * a - 4.5 * b) + 1.1 * (numpy.sin(a) + numpy.cos(b))
+   # four temporary arrays will be created due to unnecessary parenthesis
+   c = (2.0 * a - 4.5 * b) + (numpy.sin(a) + numpy.cos(b))
 
-- Broadcasting approaches can lead also to hidden temporary arrays  XXXX add one example
-- XXXX Not clear to me Example: pairwise distance of **M** points in 3 dimensions
-    - Input data is M x 3 array
-    - Output is M x M array containing the distance between points i
-      and j
-	
-       - There is a temporary 1000 x 1000 x 3 array
+   # solution
+   # apply the operation one by one for really large arrays
+   c = 2.0 * a
+   c = c - 4.5 * b
+   c = c + numpy.sin(a)
+   c = c + numpy.cos(b)
+
+- Broadcasting approaches can lead also to hidden temporary arrays  
+   - Input data M x 3 array
+   - Output data M x M array 
+   - There is a temporary M x M x 3 array
 
 .. code-block:: python
 
-   X = numpy.random.random((1000, 3))
-   D = numpy.sqrt(((X[:, numpy.newaxis, :] - X) ** 2).sum(axis=-1))
+   import numpy as np
+   X = np.random.random((M, 3))
+   D = npy.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
 
 
 Numexpr
@@ -499,8 +529,7 @@ Numexpr
 - Evaluation of complex expressions with one operation at a time can lead
   also into suboptimal performance
     
-    - Effectively, one carries out multiple *for* loops in the NumPy
-      C-code
+    - Effectively, one carries out multiple *for* loops in the NumPy C-code
 
 - Numexpr package provides fast evaluation of array expressions
 
