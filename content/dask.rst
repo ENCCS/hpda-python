@@ -58,40 +58,74 @@ for example:
 Each cluster will be allocated with a given number of "workers" associated with 
 CPU and RAM and the Dask scheduling system automatically maps jobs to each worker.
 
-Here we will focus on using a LocalCluster. 
+Here we will focus on using a LocalCluster, and it is recommended to use 
+a distributed sceduler ``dask.distributed``. It is more sophisticated, offers more features,
+but requires minimum effort to set up. It can run locally on a laptop and scale up to a cluster. 
 We can start a LocalCluster scheduler which makes use of all the cores and RAM 
 we have on the machine by: 
 
 .. code-block:: python
     
-    from dask.distributed import Client, LocalCluster
-    cluster = LocalCluster()
-    # explicitly connect to the cluster we just created
-    client = Client(cluster)
-    client
+   from dask.distributed import Client, LocalCluster
+   # create a local cluster
+   cluster = LocalCluster()
+   # connect to the cluster we just created
+   client = Client(cluster)
+   client
 
 
 Or you can simply lauch a Client() call which is shorthand for what is described above.
 
 .. code-block:: python
 
-    from dask.distributed import Client
-    client = Client()
-    client
+   from dask.distributed import Client
+   client = Client()
+   client
 
 
+We can also specify the resources to be allocated to a Dask cluster by:
 
-This sets up a scheduler in your local process along with a number of workers and threads per worker 
-related to the number of cores in your machine.
+.. code-block:: python
+    
+   from dask.distributed import Client, LocalCluster
+   # create a local cluster with 
+   # 4 workers 
+   # 1 thread per worker
+   # 4 GiB memory limit for a worker
+   cluster = LocalCluster(n_workers=4,threads_per_worker=1,memory_limit='4GiB')
 
-Instantiating a cluster class like LocalCluster and then passing it to the Client is a common pattern. 
+
 Cluster managers also provide useful utilities: for example if a cluster manager supports scaling, 
-you can modify the number of workers manually or automatically based on workload.
+you can modify the number of workers manually or automatically based on workload:
 
 .. code-block:: python
    
    cluster.scale(10)  # Sets the number of workers to 10
    cluster.adapt(minimum=1, maximum=10)  # Allows the cluster to auto scale to 10 when tasks are computed
+
+
+Dask distributed scheduler also provides live feedback via its interactive dashboard. 
+A link that redirects to the dashboard will prompt in the terminal 
+where the scheduler is created, and it is also shown when you create a Client and connect the scheduler.
+By default, when starting a scheduler on your local machine the dashboard will be served at 
+http://localhost:8787/status and can be always queried from commond line by:
+
+.. code-block:: python
+
+   cluster.dashboard_link 
+   http://127.0.0.1:8787/status
+   # or 
+   client.dashboard_link
+
+
+
+When everything finishes, you can shut down the connected scheduler and workers 
+by calling the :meth:`shutdown` method:
+
+.. code-block:: python
+
+   client.shutdown()
+
 
 
 
@@ -129,11 +163,11 @@ before turning them over the scheduler for execution.
 
 .. code-block:: python
 
-    import numpy as np
-    shape = (1000, 4000)
-    ones_np = np.ones(shape)
-    ones_np
-    ones_np.nbytes / 1e6
+   import numpy as np
+   shape = (1000, 4000)
+   ones_np = np.ones(shape)
+   ones_np
+   ones_np.nbytes / 1e6
 
 
 Now let's create the same array using Dask's array interface. In addition to 
@@ -142,11 +176,13 @@ which describes how the array is split up into sub-arrays:
 
 .. code-block:: python
 
-    import dask.array as da
-    shape = (4000, 4000)
-    chunk_shape = (1000, 1000)
-    ones = da.ones(shape, chunks=chunk_shape)
-    ones
+   import dask.array as da
+   shape = (4000, 4000)
+   chunk_shape = (1000, 1000)
+   ones = da.ones(shape, chunks=chunk_shape)
+   ones
+
+.. note::Other ways to specify ``chunks`` size can be found here https://docs.dask.org/en/stable/array-chunks.html#specifying-chunk-shapes
 
 
 So far, it is only a symbolic representation of the array. 
@@ -154,7 +190,7 @@ One way to trigger the computation is to call :meth:`compute`:
 
 .. code-block:: python
 
-    ones.compute()
+   ones.compute()
 
 
 .. note::
@@ -166,14 +202,17 @@ We can visualize the symbolic operations by calling :meth:`visualize`:
 
 .. code-block:: python
 
-    ones.visualize()
+   ones.visualize()
+   # or 
+   dask.visualize(ones)
 
-Let us calculate the sum of the dask array and visualize again:
+Let us calculate the sum of the dask array and visualize it:
 
 .. code-block:: python
 
-    sum_da = ones.sum()
-    sum_da.visualize()
+   sum_da = ones.sum()
+   sum_da.visualize()
+
 
 You can find additional details and examples here 
 https://examples.dask.org/array.html.
@@ -325,11 +364,10 @@ Dask Delayed
 ^^^^^^^^^^^^
 
 Sometimes problems don't fit into one of the collections like 
-``dask.array`` or ``dask.dataframe``. In these cases, we can parallelise custom algorithms 
-using ``dask.delayed`` interface. ``dask.delayed`` allows users to delay function calls 
-into a task graph with dependencies. If you have a problem that is paralellisable, 
-but isn't as simple as just a big array or a big dataframe, then ``dask.delayed`` 
-may be the right choice.
+``dask.array`` or ``dask.dataframe``, they are not as simple as just a big array or dataframe. 
+In these cases, ``dask.delayed`` may be the right choice. If the problem is paralellisable,  
+we can use ``dask.delayed`` which allows users to make function calls lazy 
+and thus can be put into a task graph with dependencies. 
 
 
 Consider the following example. The functions are very simple, and they sleep 
@@ -349,7 +387,7 @@ Let us run the example first, one after the other in sequence:
     z
 
 
-Note that the first two functions ``inc`` and ``dec``` don't depend on each other, 
+Note that the first two functions ``inc`` and ``dec`` don't depend on each other, 
 we could have called them in parallel. We can call ``dask.delayed`` on these funtions 
 to make them lazy and tasks into a graph which we will run later on parallel hardware.
 
@@ -512,6 +550,7 @@ Exercises
    - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
      What if you have a larger textfile? You can for example concatenate all texts into 
      a single file: ``cat data/*.txt > data/all.txt``.
+
 
 
 
