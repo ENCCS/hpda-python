@@ -266,7 +266,7 @@ In such cases, vectorization is key for better performance.
 
    .. code-block:: python
 
-      def word_autocorr_slow(word, text, timesteps):
+      def word_autocorr(word, text, timesteps):
           """
           Calculate word-autocorrelation function for given word 
           in a text. Each word in the text corresponds to one "timestep".
@@ -281,16 +281,17 @@ In such cases, vectorization is key for better performance.
               acf[t] /= nwords_chosen      
           return acf
       
-   Do you think there is any room for improvement? 
+   Do you think there is any room for improvement? How would you go about optimizing 
+   this function?
 
    .. solution:: 
 
       The function uses a Python object (``mask``) inside a double for-loop, 
       which is guaranteed to be suboptimal. There are a number of ways to speed 
       it up. One is to use ``numba`` and just-in-time compilation, as we shall 
-      see in the :doc:`performance` episode. 
+      see below. 
 
-      Another is to find an in-built NumPy function which can calculate the 
+      Another is to find an in-built vectorized NumPy function which can calculate the 
       autocorrelation for us! Here's one way to do it:
 
       .. code-block:: python
@@ -390,10 +391,7 @@ NumPy expands the arrays such that the operation becomes viable.
 
   - Dimensions match when they are equal, or when either is 1 or None.   
   - In the latter case, the dimension of the output array is expanded to the larger of the two.
-
-.. note:: the broadcasted arrays are never physically constructed
-
-
+  - Broadcasted arrays are never physically constructed, which saves memory.
 
 
 .. challenge:: broadcasting
@@ -554,9 +552,10 @@ Numexpr
 Performance boosting
 --------------------
 
-For many user cases, using NumPy or Pandas is sufficient. Howevewr, in some computationally heavy applications, 
-it is possible to improve the performance by using the compiled code.
-Cython and Numba are among the popular choices and both of them have good support for numpy arrays. 
+For many user cases, using NumPy or Pandas is sufficient. However, in some computationally heavy applications, 
+it is possible to improve the performance by pre-compiling expensive functions.
+`Cython <https://cython.org/>`__ and `Numba <https://numba.pydata.org/>`__ 
+are among the popular choices and both of them have good support for numpy arrays. 
 
 
 Cython

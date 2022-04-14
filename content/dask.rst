@@ -258,7 +258,7 @@ However, for a small dataframe like this the overhead of parallelisation will fa
 outweigh the benefit. 
 
 As an additional use case, recall the word-count project that we encountered earlier. 
-The :download:`results.txt <data/results.txt>` file contains word counts of the 10 
+The :download:`results.csv <data/results.csv>` file contains word counts of the 10 
 most frequent words in different texts, and we want to fit a power law to the 
 individual distributions in each row.
 
