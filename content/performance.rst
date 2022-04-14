@@ -296,7 +296,7 @@ In such cases, vectorization is key for better performance.
 
       .. code-block:: python
 
-         def word_autocorr_fast(word, text, timesteps):
+         def word_autocorr_numpy(word, text, timesteps):
              """
              Calculate word-autocorrelation function for given word 
              in a text using numpy.correlate function. 
@@ -561,19 +561,140 @@ are among the popular choices and both of them have good support for numpy array
 Cython
 ^^^^^^
 
-The source code gets translated into optimized C/C++ code and compiled as Python extension modules. 
+Cython is a superset of Python that additionally supports calling C functions and 
+declaring C types on variables and class attributes. Under Cython, source code gets 
+translated into optimized C/C++ code and compiled as Python extension modules. 
 
-There are three ways of declaring functions: 
+Developers can run the ``cython`` command-line utility to produce a ``.c`` file from 
+a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library 
+which can then be directly imported in a Python program. There is, however, also an easy 
+way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic 
+command. We will restrict the discussion here to the Jupyter-way - for a full overview 
+of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
 
+Consider the following pure Python code which integrates a function:
 
-``def`` - Python style:
-Declaring the types of arguments and local types (thus return values) can allow Cython to generate optimised code which speeds up the execution. If the types are declared then a ``TypeError`` will be raised if the function is passed the wrong types.
+.. literalinclude:: example/integrate_python.py 
 
-``cdef`` - C style:
-Cython treats the function as pure 'C' functions. All types *must* be declared. This will give you the best performance but there are a number of consequences. One should really take care of the ``cdef`` declared functions, since you are actually writing in C.
+We generate a dataframe and apply the :meth:`apply_integrate_f` function on 
+its columns, timing the execution:
 
-``cpdef`` - Python/C mixed
-``cpdef`` functions combine both ``def`` and ``cdef`` by creating two functions; a ``cdef`` for C types and a ``def`` for Python types. This exploits early binding so that ``cpdef`` functions may be as fast as possible when using C fundamental types (by using ``cdef``). ``cpdef`` functions use dynamic binding when passed Python objects and this might much slower, perhaps as slow as ``def`` declared functions.   XXXX rewrite this part.
+.. code-block:: python
+
+   df = pd.DataFrame({"a": np.random.randn(1000),
+                     "b": np.random.randn(1000),
+                     "N": np.random.randint(100, 1000, (1000)),
+                     "x": "x"})                
+
+   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
+   # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+Now import the Cython extension:
+
+.. code-block::
+
+   %load_ext cython
+
+As a first cythonization step we add the cython magic command with the 
+``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
+The yellow coloring in the output shows us the amount of pure Python:
+
+.. figure:: img/cython_annotate.png
+   
+   Output from code cell with ``%%cython -a``.
+
+Our task is to remove as much yellow as possible!
+
+We can start by adding type annotation to the arguments of the 
+function :meth:`f`, which gets called a large number of times:
+
+.. code-block:: python
+
+   def f(double x):
+       return x ** 2 - x
+
+.. code-block:: python
+
+   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
+   # 135 ms ± 6.44 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+Enormous improvement already! We continue with the :meth:`integrate_f` function:
+
+.. code-block:: python
+
+   def integrate_f(double a, double b, int N):
+       s = 0
+       dx = (b - a) / N
+       for i in range(N):
+           s += f(a + i * dx)
+       return s * dx
+
+.. code-block:: python
+
+   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
+   # 48 ms ± 1.41 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+Even better, almost full order of magnitude now. 
+We can now start adding types to variables inside the functions using ``cdef``:
+
+.. code-block:: python
+
+   def integrate_f(double a, double b, int N):
+       cdef double s 
+       s = 0
+       cdef double dx 
+       dx = (b - a) / N
+       cdef int i
+       for i in range(N):
+           s += f(a + i * dx)
+       return s * dx
+
+.. code-block:: python
+
+   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
+   # 26.5 ms ± 545 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+The amount of yellow is decreasing and the speed is increasing.
+
+We can add even more type annotations: 
+- replacing ``def`` with ``cdef`` to have Cython treat our functions as pure C function, 
+  which requires that **all** types be declared
+- adding type declarations to :meth:`apply_integrate_f`, which requires us to convert 
+  the dataframe columns (Series objects) to numpy arrays:
+
+.. code-block:: python
+   
+   import numpy as np
+   
+   cdef f(double x):
+       return x * (x - 1)
+   
+   cdef integrate_f(double a, double b, int N):
+       cdef double s 
+       s = 0
+       cdef double dx 
+       dx = (b - a) / N
+       cdef int i
+       for i in range(N):
+           s += f_cython(a + i * dx)
+       return s * dx
+   
+   cdef apply_integrate_f(double[:] col_a, double[:] col_b, long[:] col_N):
+       cdef int n
+       n = len(col_N)
+       cdef double[:] res
+       res = np.empty(n)
+       cdef int i
+       for i in range(n):
+           res[i] = integrate_f_cython(col_a[i], col_b[i], col_N[i])
+       return res     
+   
+.. code-block:: python
+
+   %timeit apply_integrate_f(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+   # 15.1 ms ± 694 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+This might be as fast as we can get.
 
 
 Numba
@@ -603,107 +724,82 @@ Methods that support ``engine="numba"`` will also have an ``engine_kwargs`` keyw
 If ``engine_kwargs`` is not specified, it defaults to ``{"nogil": False, "nopython": True, "parallel": False}`` unless otherwise specified.
 
 
-
-Integration
-~~~~~~~~~~~
+**WRITEME: use word-count example here**
 
 
-Consider the following pure Python code:
+Exercises
+---------
 
-
-
-.. challenge:: integration
-
-	we first generate a dataframe and apply the integrate_f function on the dataframe.
-
-
-   .. tabs:: 
-
-      .. tab:: python
-
-             .. literalinclude:: example/integrate_python.py 
-
-      .. tab:: cython
-
-             .. literalinclude:: example/integrate_cython.py 
-
-      .. tab:: numba
-
-             .. literalinclude:: example/integrate_numba.py 
+.. exercise:: Integration
 
 
 
-	test benchmark
+   Try to convert it to Cython or Numba (depending on your interest). Then benchmark your 
+   implementation(s) with ``%timeit``.
 
-   .. tabs:: 
+   .. solution::
 
-      .. tab:: benchmark
+      .. tabs:: 
 
-	.. code-block:: 
+         .. tab:: cython
 
-	  df = pd.DataFrame(
-  		  {
-        		"a": np.random.randn(1000),
-		        "b": np.random.randn(1000),
-		        "N": np.random.randint(100, 1000, (1000)),
-		        "x": "x",
-		    }
-		)
+                .. literalinclude:: example/integrate_cython.py 
+
+         .. tab:: numba
+
+                .. literalinclude:: example/integrate_numba.py 
 
 
+.. exercise:: Pairwise distance
 
-Pairwise distance
-~~~~~~~~~~~~~~~~~
+   Consider the following pure Python function. Try to speed it up with NumPy, 
+   Numba and/or Cython (depending on what you find most interesting).
 
+   .. literalinclude:: example/dis_python.py
 
-.. challenge:: pairwise distance
+   .. solution::
 
-	we first generate a dataframe and apply the integrate_f function on the dataframe.
-
-
-   .. tabs:: 
-
-      .. tab:: python
-
-             .. literalinclude:: example/dis_python.py 
-
-      .. tab:: numpy
-
-             .. literalinclude:: example/dis_numpy.py 
-
-      .. tab:: cython
-
-             .. literalinclude:: example/dis_cython.py 
-
-      .. tab:: numba
-
-             .. literalinclude:: example/dis_numba.py 
+      .. tabs:: 
+   
+         .. tab:: numpy
+   
+                .. literalinclude:: example/dis_numpy.py 
+   
+         .. tab:: cython
+   
+                .. literalinclude:: example/dis_cython.py 
+   
+         .. tab:: numba
+   
+                .. literalinclude:: example/dis_numba.py 
 
 
-Bubble sort
-~~~~~~~~~~~
-
-Long stroy short, in the worse case, the time Bubblesort algorithm takes is roughly :math:`O(n^2)` where  :math:`n` is the number of items being sorted. 
-
-.. image:: img/Bubble-sort-example-300px.gif
 
 
-.. challenge:: Bubble sort
+.. exercise:: Bubble sort
 
-   .. tabs:: 
+   To make a long story short, in the worse case the time taken by the Bubblesort algorithm is 
+   roughly :math:`O(n^2)` where  :math:`n` is the number of items being sorted. 
 
-      .. tab:: python
+   .. image:: img/Bubble-sort-example-300px.gif
 
-             .. literalinclude:: example/bs_python.py 
+   Try to convert the following Bubblesort implementation in pure Python into Cython 
+   or Numba.
 
-      .. tab:: cython
+   .. literalinclude:: example/bs_python.py 
 
-             .. literalinclude:: example/bs_cython.py 
 
-      .. tab:: numba
+   .. solution:: 
+   
+      .. tabs:: 
 
-             .. literalinclude:: example/bs_numba.py 
+         .. tab:: cython
 
+                .. literalinclude:: example/bs_cython.py 
+
+         .. tab:: numba
+
+                .. literalinclude:: example/bs_numba.py 
 
 
 
