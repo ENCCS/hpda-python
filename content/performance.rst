@@ -237,28 +237,35 @@ Arithmetic is one place where numpy performance outperforms python list and the 
 A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
 In such cases, vectorization is key for better performance.
 
-.. challenge::  vectorized operation vs for loop 
+.. exercise::  vectorized operation vs for loop 
 
-   .. tabs::
+   Consider the following code:
 
-      .. tab:: python
+   .. code-block:: python
 
-             .. code-block:: python
+      import numpy as np
+      a = np.arange(1000)
+      a_dif = np.zeros(999, np.int64)
+      for i in range(1, len(a)):
+            a_dif[i-1] = a[i] - a[i-1]
+
+   Try to vectorize the ``for`` loop!
+
+   .. solution::
+
+      .. code-block:: python
 
 			import numpy as np
-			a = np.arange(1000)
-			a_dif = np.zeros(999, np.int64)
-			for i in range(1, len(a)):
-			    a_dif[i-1] = a[i] - a[i-1]
-
-      .. tab:: numpy
-
-             .. code-block:: python
-
-			import numpy as np
-                        a = np.arange(1000)
+         a = np.arange(1000)
 			a_dif = a[1:] - a[:-1]
 
+.. exercise:: Profile the word-autocorrelation code
+
+   Use what you learned in an earlier episode to perform line profiling on the word-autocorrelation code!
+
+   .. solution:: 
+
+      WRITEME
 
 .. exercise:: Is the :meth:`word_autocorr` function efficient?
 
@@ -306,7 +313,7 @@ In such cases, vectorization is key for better performance.
              mask = np.array([w==word for w in text]).astype(np.float64)
              nwords_chosen = np.sum(mask)
              acf = np.correlate(mask, mask, mode='full') / nwords_chosen
-             return acf[int(acf.size/2):int(acf.size/2)+100]         
+             return acf[int(acf.size/2):int(acf.size/2)+timesteps]         
 
 
 So one should consider use "vectorized" operations whenever possible.

@@ -984,13 +984,6 @@ Exercises
    books! If you are running on a cluster you can add e.g. ``threads: 4`` to the rule and run a parallel 
    version of the ``autocorrelation.py`` script.
 
-.. exercise:: Profile the word-autocorrelation code
-
-   Use what you learned in an earlier episode to perform line profiling on the word-autocorrelation code!
-
-   .. solution:: 
-
-      WRITEME
 
 .. _See also:
 
