@@ -102,7 +102,7 @@ The cProfile tool tells us which function takes most of the time but it does not
 line-by-line breakdown of where time is being spent. For this information, we can use the 
 `line_profiler <https://github.com/pyutils/line_profiler/>`__ tool. 
 
-.. type-along:: Line profiling
+.. demo:: Line profiling
 
    For line-profiling source files from the command line, we can add a decorator ``@profile`` 
    to the functions of interests. If we do this for the :meth:`step` and :meth:`walk` function 
@@ -261,7 +261,7 @@ In such cases, vectorization is key for better performance.
 
 .. exercise:: Profile the word-autocorrelation code
 
-   Use what you learned in an earlier episode to perform line profiling on the word-autocorrelation code!
+   Use line-profiling on the word-autocorrelation code!
 
    .. solution:: 
 

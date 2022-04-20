@@ -302,7 +302,7 @@ preprocessing log files, JSON records, or other user defined Python objects.
 We will content ourselves with implementing a dask version of the word-count problem, 
 specifically the step where we count words in a text. 
 
-.. type-along:: Dask version of word-count
+.. demo:: Dask version of word-count
 
    First navigate to the ``word-count-hpda`` directory. The serial version (wrapped in 
    multiple functions in the ``source/wordcount.py`` code) looks like this:
