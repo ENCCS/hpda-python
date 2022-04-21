@@ -14,6 +14,3 @@ def dis_numba(X):
                 d += tmp * tmp
             D[i, j] = np.sqrt(d)
     return D
-
-X = np.random.random((1000, 3))
-%timeit dis_numba(X)
