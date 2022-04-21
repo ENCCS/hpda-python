@@ -1,7 +1,7 @@
-from numba import jit
-@jit
-def bs_numba(a_list):
+import numba
 
+@numba.jit
+def bs_numba(a_list):
     N = len(a_list)
     for i in range(N):
         for j in range(1, N):

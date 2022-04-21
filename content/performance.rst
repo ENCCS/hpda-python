@@ -579,191 +579,177 @@ way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic
 command. We will restrict the discussion here to the Jupyter-way - for a full overview 
 of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
 
-Consider the following pure Python code which integrates a function:
 
-.. literalinclude:: example/integrate_python.py 
+.. demo:: Cython
 
-We generate a dataframe and apply the :meth:`apply_integrate_f` function on 
-its columns, timing the execution:
+   Consider the following pure Python code which integrates a function:
 
-.. code-block:: python
+   .. literalinclude:: example/integrate_python.py 
 
-   df = pd.DataFrame({"a": np.random.randn(1000),
-                     "b": np.random.randn(1000),
-                     "N": np.random.randint(100, 1000, (1000)),
-                     "x": "x"})                
+   We generate a dataframe and apply the :meth:`apply_integrate_f` function on its columns, timing the execution:
 
-   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-   # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+   .. code-block:: ipython
 
-Now import the Cython extension:
+      df = pd.DataFrame({"a": np.random.randn(1000),
+                        "b": np.random.randn(1000),
+                        "N": np.random.randint(100, 1000, (1000))})                
 
-.. code-block::
+      %timeit apply_integrate_f(df['a'], df['b'], df['N'])
+      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-   %load_ext cython
+   Now import the Cython extension:
 
-As a first cythonization step we add the cython magic command with the 
-``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
-The yellow coloring in the output shows us the amount of pure Python:
+   .. code-block:: ipython
 
-.. figure:: img/cython_annotate.png
+      %load_ext cython
+
+   As a first cythonization step we add the cython magic command with the 
+   ``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
+   The yellow coloring in the output shows us the amount of pure Python:
+
+   .. figure:: img/cython_annotate.png
    
-   Output from code cell with ``%%cython -a``.
+      
+   Our task is to remove as much yellow as possible by explicitly declaring variables and functions.
+   We can start by simply compiling the code using Cython without any changes:
 
-Our task is to remove as much yellow as possible!
+   .. literalinclude:: example/integrate_cython.py 
 
-We can start by adding type annotation to the arguments of the 
-function :meth:`f`, which gets called a large number of times:
+   .. code-block:: ipython
 
-.. code-block:: python
+      %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
+      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-   def f(double x):
-       return x ** 2 - x
+   Now we can start adding data type annotation to the input variables:
 
-.. code-block:: python
+   .. literalinclude:: example/integrate_cython_dtype0.py 
 
-   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-   # 135 ms ± 6.44 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+   .. code-block:: ipython
 
-Enormous improvement already! We continue with the :meth:`integrate_f` function:
+      #this will not work
+      #%timeit apply_integrate_f_cython_dtype0(df['a'], df['b'], df['N'])
+      #but rather 
+      %timeit apply_integrate_f_cython_dtype0(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-.. code-block:: python
+   .. warning::
 
-   def integrate_f(double a, double b, int N):
-       s = 0
-       dx = (b - a) / N
-       for i in range(N):
-           s += f(a + i * dx)
-       return s * dx
+      You can not pass a Series directly since the Cython definition is specific to an array. 
+      Instead using the ``Series.to_numpy()`` to get the underlying NumPy array
+      which works nicely with Cython.
 
-.. code-block:: python
-
-   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-   # 48 ms ± 1.41 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
-
-Even better, almost full order of magnitude now. 
-We can now start adding types to variables inside the functions using ``cdef``:
-
-.. code-block:: python
-
-   def integrate_f(double a, double b, int N):
-       cdef double s 
-       s = 0
-       cdef double dx 
-       dx = (b - a) / N
-       cdef int i
-       for i in range(N):
-           s += f(a + i * dx)
-       return s * dx
-
-.. code-block:: python
-
-   %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-   # 26.5 ms ± 545 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
-
-The amount of yellow is decreasing and the speed is increasing.
-
-We can add even more type annotations: 
-
-- replacing ``def`` with ``cdef`` to have Cython treat our functions as pure C function, 
-  which requires that **all** types be declared
-- adding type declarations to :meth:`apply_integrate_f`, which requires us to convert 
-  the dataframe columns (Series objects) to numpy arrays:
-
-.. code-block:: python
+   Next step, we can start adding type annotation to the functions.
+   There are three ways of declaring functions: 
    
-   import numpy as np
-   
-   cdef f(double x):
-       return x * (x - 1)
-   
-   cdef integrate_f(double a, double b, int N):
-       cdef double s 
-       s = 0
-       cdef double dx 
-       dx = (b - a) / N
-       cdef int i
-       for i in range(N):
-           s += f_cython(a + i * dx)
-       return s * dx
-   
-   cdef apply_integrate_f(double[:] col_a, double[:] col_b, long[:] col_N):
-       cdef int n
-       n = len(col_N)
-       cdef double[:] res
-       res = np.empty(n)
-       cdef int i
-       for i in range(n):
-           res[i] = integrate_f_cython(col_a[i], col_b[i], col_N[i])
-       return res     
-   
-.. code-block:: python
+   - ``def`` - Python style:
 
-   %timeit apply_integrate_f(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-   # 15.1 ms ± 694 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+   Declaring the types of arguments and local types (thus return values) can allow Cython 
+   to generate optimised code which speeds up the execution. If the types are declared then 
+   a ``TypeError`` will be raised if the function is passed the wrong types.
 
-This might be as fast as we can get.
+   - ``cdef`` - C style:
+
+   Cython treats the function as pure C functions. All types **must** be declared. 
+   This will give you the best performance but there are a number of consequences. 
+   One should really take care of the ``cdef`` declared functions, since you are actually writing in C.
+
+   - ``cpdef`` - Python/C mixed:
+
+   ``cpdef`` functions combine both ``def`` and ``cdef``: one can use ``cdef`` for C types and ``def`` for Python types. 
+   In terms of performance, ``cpdef`` functions may be as fast as those using ``cdef`` and 
+   might be as slow as ``def`` declared functions.  
+
+   .. literalinclude:: example/integrate_cython_dtype1.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_cython_dtype1(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+
+   Last step, we can add type annotation to the local variables within the functions and output.
+
+   .. literalinclude:: example/integrate_cython_dtype2.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_cython_dtype2(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+   
+   Now it is over 400 XXX times faster than the original Python implementation, and we haven't really modified the code. 
 
 
 Numba
 ^^^^^
 
+An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with `Numba <https://numba.pydata.org/>`__. 
+Numba allows you to write a pure Python function which can be JIT compiled to native machine instructions, 
+similar in performance to C, C++ and Fortran, by simply adding the decorator ``@jit`` in your function. 
+However, the ``@jit`` compilation will add overhead to the runtime of the function, 
+i.e. the first time a function is run using Numba engine will be slow as Numba will have the function compiled. 
+Once the function is JIT compiled and cached, subsequent calls will be fast. So the performance benefits may not be 
+realized especially when using small datasets.
 
-An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with `Numba <https://numba.pydata.org/>`__.
-
-Numba allows you to write a pure Python function which can be JIT compiled to native machine instructions, similar in performance to C, C++ and Fortran, by simply adding the decorator ``@jit`` in your function.
-
-Numba supports compilation of Python to run on either CPU or GPU hardware and is designed to integrate with the Python scientific software stack. The optimized machine code is generated by the LLVM compiler infrastructure.
-
-.. note::
-
-    The ``@jit`` compilation will add overhead to the runtime of the function, so performance benefits may not be realized especially when using small data sets. In general, the Numba engine is performant with a larger amount of data points (e.g. 1+ million).
-    Consider `caching <https://numba.readthedocs.io/en/stable/developer/caching.html>`__ your function to avoid compilation overhead each time your function is run, i.e. the first time a function is run using the Numba engine will be slow as Numba will have some function compilation overhead. However, once the JIT compiled functions are cached, subsequent calls will be fast. 
+Numba supports compilation of Python to run on either CPU or GPU hardware and is designed to integrate with 
+the Python scientific software stack. The optimized machine code is generated by the LLVM compiler infrastructure.
 
 
-Numba can be used in 2 ways with pandas:
+.. demo:: Numba
 
-#. Specify the ``engine="numba"`` keyword in select pandas methods
-#. Define your own Python function decorated with ``@jit`` and pass the underlying NumPy array of :class:`Series` or :class:`DataFrame` (using ``to_numpy()``) into the function
+   Consider the integration example again using Numba this time:
 
-If Numba is installed, one can specify ``engine="numba"`` in select pandas methods to execute the method using Numba.
-Methods that support ``engine="numba"`` will also have an ``engine_kwargs`` keyword that accepts a dictionary that allows one to specify
-``"nogil"``, ``"nopython"`` and ``"parallel"`` keys with boolean values to pass into the ``@jit`` decorator.
-If ``engine_kwargs`` is not specified, it defaults to ``{"nogil": False, "nopython": True, "parallel": False}`` unless otherwise specified.
+   .. literalinclude:: example/integrate_numba.py 
+
+   .. code-block:: ipython
+
+      # try passing Pandas Series 
+      %timeit apply_integrate_f_numba(df['a'],df['b'],df['N'])
+      # 6.02 ms ± 56.5 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      # try passing NumPy array
+      %timeit apply_integrate_f_numba(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
+      # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+
+
+   .. note:: 
+   
+      Numba is best at accelerating functions that apply numerical functions to NumPy arrays. When used with Pandas, 
+      pass the underlying NumPy array of :class:`Series` or :class:`DataFrame` (using ``to_numpy()``) into the function.
+      If you try to @jit a function that contains unsupported Python or NumPy code, compilation will fall back to the object mode 
+      which will mostly likely be very slow. If you would prefer that Numba throw an error for such a case, 
+      you can do e.g. ``@numba.jit(nopython=True)`` or ``@numba.njit``. 
+
+
+   We can further add date type, although in this case there is not much performance improvement:
+
+   .. literalinclude:: example/integrate_numba_dtype.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_numba_dtype(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
+      # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+
+
 
 
 **WRITEME: use word-count example here**
 
 
 Exercises
----------
+^^^^^^^^^
 
-.. exercise:: Integration
-
-
-
-   Try to convert it to Cython or Numba (depending on your interest). Then benchmark your 
-   implementation(s) with ``%timeit``.
-
-   .. solution::
-
-      .. tabs:: 
-
-         .. tab:: cython
-
-                .. literalinclude:: example/integrate_cython.py 
-
-         .. tab:: numba
-
-                .. literalinclude:: example/integrate_numba.py 
-
+Here we have two exercises: the starting point is a Python function. Try to speed it up with 
+Numba or Cython (depending on what you find most interesting).
 
 .. exercise:: Pairwise distance
 
-   Consider the following pure Python function. Try to speed it up with NumPy, 
-   Numba and/or Cython (depending on what you find most interesting).
-
    .. literalinclude:: example/dis_python.py
+
+   .. code-block:: ipython
+
+      X = np.random.random((1000, 3))
+      %timeit dis_python(X)
+
 
    .. solution::
 
@@ -772,16 +758,30 @@ Exercises
          .. tab:: numpy
    
                 .. literalinclude:: example/dis_numpy.py 
+
+                .. code-block:: ipython
+
+                   X = np.random.random((1000, 3))
+                   %timeit dis_numpy(X)
+
    
          .. tab:: cython
    
                 .. literalinclude:: example/dis_cython.py 
+
+                .. code-block:: ipython
+
+                   X = np.random.random((1000, 3))
+                   %timeit dis_cython(X)
    
          .. tab:: numba
    
                 .. literalinclude:: example/dis_numba.py 
 
+                .. code-block:: ipython
 
+                   X = np.random.random((1000, 3))
+                   %timeit dis_numba(X)
 
 
 .. exercise:: Bubble sort
@@ -791,10 +791,14 @@ Exercises
 
    .. image:: img/Bubble-sort-example-300px.gif
 
-   Try to convert the following Bubblesort implementation in pure Python into Cython 
-   or Numba.
 
    .. literalinclude:: example/bs_python.py 
+
+   .. code-block:: ipython
+
+      import random
+      l = [random.randint(1,1000) for num in range(1, 1000)]
+      %timeit bs_python(l)
 
 
    .. solution:: 
@@ -805,14 +809,46 @@ Exercises
 
                 .. literalinclude:: example/bs_cython.py 
 
+                .. code-block:: ipython
+
+                   import random
+                   l = [random.randint(1,1000) for num in range(1, 1000)]
+                   l_arr = np.asarray(l)
+                   %timeit bs_cython(l_arr)
+
+             
+                We can further improve performance by using more C/C++ features: 
+
+                .. literalinclude:: example/bs_cython_adv.py 
+
+                .. code-block:: ipython
+
+                   import random
+                   l = [random.randint(1,1000) for num in range(1, 1000)]
+                   %timeit bs_clist(l)
+
+
          .. tab:: numba
 
                 .. literalinclude:: example/bs_numba.py 
+
+                .. code-block:: ipython
+
+                   import random
+                   l = [random.randint(1,1000) for num in range(1, 1000)]
+                   # first try using a list as input
+                   %timeit bs_numba(l)
+                   # try using a NumPy array
+                   l_arr = np.asarray(l)
+                   %timeit bs_numba(l_arr)
 
 
 
 
 .. note::
 
-   Note that the relative results also depend on what version of Python, Cython, Numba, and NumPy you are using. Also, the compiler choice for installing NumPy can account for differences in the results.
-   NumPy is really good at what it does. For simple operations, Numba is not going to outperform it, but when things get more complex Numba will save the day. 
+   Note that the results depend on what version of Python, Cython, Numba, and NumPy you are using. 
+   In addition, the different compiler choices used for installing NumPy can account for differences in the results.
+   
+   NumPy is really good at what it does. For simple operations or small data, Numba is not going to outperform it, 
+   but when things get more complex Numba will save the day. 
