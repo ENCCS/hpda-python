@@ -154,7 +154,7 @@ before turning them over the scheduler for execution.
    Contrary to normal computation, lazy execution mode is when all the computations 
    needed to generate results are symbolically represented, forming a queue of 
    tasks mapped over data blocks. Nothing is actually computed until the actual 
-   numerical values are needed, e.g., to print results to your screen or write to disk. 
+   numerical values are needed, e.g. plotting, to print results to the screen or write to disk. 
    At that point, data is loaded into memory and computation proceeds in a streaming 
    fashion, block-by-block. The actual computation is controlled by a multi-processing 
    or thread pool, which allows Dask to take full advantage of multiple processors 
@@ -170,19 +170,38 @@ before turning them over the scheduler for execution.
    ones_np.nbytes / 1e6
 
 
-Now let's create the same array using Dask's array interface. In addition to 
-providing the shape of the array, we also specify the ``chunks`` argument, 
+Now let's create the same array using Dask's array interface. 
+
+.. code-block:: python
+
+   import dask.array as da
+   shape = (1000, 4000)
+   ones = da.ones(shape)
+   ones
+
+Although this works, it is not optimized for parallel computation. In order to use all
+available computing resources, we also specify the ``chunks`` argument with Dask,
 which describes how the array is split up into sub-arrays:
 
 .. code-block:: python
 
    import dask.array as da
-   shape = (4000, 4000)
+   shape = (1000, 4000)
    chunk_shape = (1000, 1000)
    ones = da.ones(shape, chunks=chunk_shape)
    ones
 
-.. note::Other ways to specify ``chunks`` size can be found here https://docs.dask.org/en/stable/array-chunks.html#specifying-chunk-shapes
+.. note::
+
+   In this course, we will use a chunk shape, but other ways to specify ``chunks`` size can be found here 
+   https://docs.dask.org/en/stable/array-chunks.html#specifying-chunk-shapes
+
+
+Let us further calculate the sum of the dask array:
+
+.. code-block:: python
+
+   sum_da = ones.sum()
 
 
 So far, it is only a symbolic representation of the array. 
@@ -190,28 +209,18 @@ One way to trigger the computation is to call :meth:`compute`:
 
 .. code-block:: python
 
-   ones.compute()
-
-
-.. note::
-
-   Plotting also triggers computation, since the actual values are needed to produce the plot.
+   sum_da.compute()
+   # or
+   dask.compute(sum_da)
 
 
 We can visualize the symbolic operations by calling :meth:`visualize`:
 
 .. code-block:: python
 
-   ones.visualize()
-   # or 
-   dask.visualize(ones)
-
-Let us calculate the sum of the dask array and visualize it:
-
-.. code-block:: python
-
-   sum_da = ones.sum()
    sum_da.visualize()
+   # or 
+   dask.visualize(sum_da)
 
 
 You can find additional details and examples here 
@@ -352,9 +361,9 @@ specifically the step where we count words in a text.
       ddf = filtered.to_dataframe(columns=['words'])
       ddf['words'].value_counts().compute()[:10]
 
-.. callout:: When to use a Dask bag
+.. callout:: When to use a Dask
 
-   There is no benefit from using a Dask bag on small datasets. But imagine we were 
+   There is no benefit from using a Dask on small datasets. But imagine we were 
    analysing a very large text file (all tweets in a year? a genome?). Dask provides 
    both parallelisation and the ability to utilize RAM on multiple machines.
 
@@ -370,85 +379,70 @@ we can use ``dask.delayed`` which allows users to make function calls lazy
 and thus can be put into a task graph with dependencies. 
 
 
-Consider the following example. The functions are very simple, and they sleep 
-for a prescribed time to simulate real work.
+Consider the following example. The functions are very simple, and they *sleep* 
+for a prescribed time to simulate real work:
 
 .. literalinclude:: example/delay.py 
-   :language: python
 
 Let us run the example first, one after the other in sequence:
 
-.. sourcecode:: ipython
+.. code-block:: ipython
 
-    %%time
-    x = inc(1)
-    y = dec(2)
-    z = add(x, y)
-    z
+   %%timeit
+   x = inc(1)
+   y = dec(2)
+   z = add(x, y)
+   # 902 ms ± 367 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
 Note that the first two functions ``inc`` and ``dec`` don't depend on each other, 
 we could have called them in parallel. We can call ``dask.delayed`` on these funtions 
 to make them lazy and tasks into a graph which we will run later on parallel hardware.
 
-.. sourcecode:: ipython
+.. code-block:: ipython
 
-    import dask
-    inc = dask.delayed(inc)
-    dec = dask.delayed(dec)
-    add = dask.delayed(add)
+   import dask
+   inc_delay = dask.delayed(inc)
+   dec_delay = dask.delayed(dec)
+   add_delay = dask.delayed(add)
 
-    %%time
-    x = inc(1)
-    y = dec(2)
-    z = add(x, y)
-    z
-
-    z.visualize(rankdir='LR')
-
-    %%time
-    z.compute()
-
-
-Let us extend the example a little bit more by 
-applying the function on a data array using for loop:
 
 .. code-block:: ipython
 
-    def inc(x):
-        time.sleep(4)
-        return x + 1
+   %%timeit
+   x = inc_delay(1)
+   y = dec_delay(2)
+   z = add_delay(x, y)
+   # 59.6 µs ± 356 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
-    def dec(x):
-        time.sleep(3)
-        return x - 1
 
-    def add(x, y):
-        time.sleep(1)
-        return x + y
+.. code-block:: ipython
 
-    data = [1, 2, 3, 4, 5]
+   %%timeit
+   z.compute()
+   # 603 ms ± 181 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-    output = []
-    for x in data:
-        a = inc(x)
-        b = dec(x)
-        c = add(a, b)
-        output.append(c)
 
-    total = sum(output)
+.. challenge:: Dask delay
 
+   We extend the previous example a little bit more by applying the function 
+   on a data array using for loop and adding an *if* condition:
+
+   .. literalinclude:: example/delay_more.py 
+
+
+   Please add dask.delayed to parallelize the program as much as possible 
+   and check graph visualizations.
+
+   .. solution::
+
+      .. literalinclude:: example/delay_more_solution.py 
 
 
 .. challenge:: chunk size
 
-    The following example calculate the mean value of a ramdom generated array. 
-    Run the example and see the performance improvement by using dask.
-    But what happens if we use different chunk sizes?
-
-    - Try out with different chunk sizes:
-      What happens if the dask chunks=(20000,20000)
-      What happens if the dask chunks=(200,200)
+   The following example calculate the mean value of a ramdom generated array. 
+   Run the example and see the performance improvement by using dask.
 
    .. tabs::
 
@@ -463,51 +457,114 @@ applying the function on a data array using for loop:
             :language: python
 
 
-
-.. challenge:: Data from climate simulation
-
-    There are a couple of data in NetCDF files containing monthly global 2m air temperature. 
-
-
-.. code-block:: python
-
-    ds=xr.open_mfdataset('/home/x_qiali/qiang/hpda/airdata/tas*.nc', parallel=True)
-    ds
-    ds.tas
-    dask.visualize(ds.tas) 
-    
-    tas_mean=ds.tas.mean(axis=0) 
-    fig = plt.figure
-    plt.imshow(tas_mean, cmap='RdBu_r');
+   But what happens if we use different chunk sizes?
+   Try out with different chunk sizes:
+   
+   - What happens if the dask chunks=(20000,20000)
+   
+   - What happens if the dask chunks=(250,250)
 
 
+.. callout:: Choice of chunk size
 
-SVD 
----
+   The choice is problem dependent, but here are a few things to consider:
 
-We can use dask to compute SVD of certain matrix.
+   Each chunk of data should be small enough so that it fits comforably in each worker's available memory. 
+   Chunk sizes between 10MB-1GB are common, depending on the availability of RAM. Dask will likely 
+   manipulate as many chunks in parallel on one machine as you have cores on that machine. 
+   So if you have a machine with 10 cores and you choose chunks in the 1GB range, Dask is likely to use at least 
+   10 GB of memory. Additionally, there should be enough chunks available so that each worker always has something to work on.
 
-.. code-block:: python
-
-    import dask
-    import dask.array as da
-    X = da.random.random((200000, 100), chunks=(10000, 100))
-    u, s, v = da.linalg.svd(X)
-    dask.visualize(u, s, v)
-
-
-We could also use approximate algorithm
-
-.. code-block:: python
-
-    import dask
-    import dask.array as da
-    X = da.random.random((10000, 10000), chunks=(2000, 2000)).persist()
-    u, s, v = da.linalg.svd_compressed(X, k=5)
-    dask.visualize(u, s, v)
+   On the otherhand, you also want to avoid chunk sizes that are too small as we see in the exercise.
+   Every task comes with some overhead which is somewhere between 200us and 1ms. Very large graphs 
+   with millions of tasks will lead to overhead being in the range from minutes to hours which is not recommended.
 
 
+.. challenge:: Climate simulation data using Xarray
 
+   This exercise is working with NetCDF files using Xarray. The files contain 
+   monthly global 2m air temperature from a Last Millennium simulation. 
+   Xarray is chosen due to its ability to seamlessly integrate with Dask 
+   to support parallel computations on datasets.
+
+
+   We will first read data with Dask and Xarray. See 
+   https://xarray.pydata.org/en/stable/dask.html#reading-and-writing-data for more details.
+
+   .. code-block:: ipython
+
+      ds=xr.open_mfdataset('/home/x_qiali/qiang/hpda/airdata/tas*.nc', parallel=True)
+
+
+   ``open_mfdataset()`` is for reading multiple files and will chunk each file into a single Dask array by default. 
+   One could supply the chunks keyword argument to control the size of the resulting Dask arrays. 
+   Passing the keyword argument ``parallel=True`` to open_mfdataset() will speed up the reading of 
+   large multi-file datasets by executing those read tasks in parallel using ``dask.delayed``.
+
+
+   .. code-block:: ipython
+
+      ds
+      ds.tas
+      #dask.visualize(ds.tas) 
+      ds['tas'] = ds['tas'] - 273.15     # convert temperature unit
+      mean_tas=ds.tas.mean("time")  # lazy compuation
+      mean_tas.plot(cmap=plt.cm.RdBu_r,vmin=-50,vmax=50) # plotting triggers computation
+      tas_ann=ds.tas.groupby('time.year').mean() # lazy compuation
+      tas_sto=tas_ann.sel(lon=18.07, lat=59.33,method='nearest')  # slicing is lazy as well  
+      tas_sto.compute()
+      plt.plot(tas_sto)  # plotting trigers computation
+
+
+.. challenge:: SVD with large matrix
+
+   We can use dask to compute SVD of a large matrix which doesnot fit into the memory of a 
+   normal laptop/desktop.
+
+   .. code-block:: python
+
+       import dask
+       import dask.array as da
+       X = da.random.random((200000, 100), chunks=(10000, 100))
+       u, s, v = da.linalg.svd(X)
+       dask.visualize(u, s, v)
+
+
+   We could also use approximate algorithm.
+
+   .. code-block:: python
+
+       import dask
+       import dask.array as da
+       X = da.random.random((10000, 10000), chunks=(2000, 2000)).persist()
+       u, s, v = da.linalg.svd_compressed(X, k=5)
+       dask.visualize(u, s, v)
+
+
+.. callout:: Memory management
+
+   You may observe that there are different memory categories showing on the dashboard:
+
+   - process: Overall memory used by the worker process, as measured by the OS
+   - managed: Size of data that Dask holds in RAM, but most probably inaccurate, excluding spilled data.
+   - unmanaged: Memory that Dask is not directly aware of, this can be e.g. Python modules,
+     temporary arrays, memory leasks, memory not yet free()'d by the Python memory manager to the OS
+   - unmanaged recent: Unmanaged memory that has appeared within the last 30 seconds whch is not included 
+     in the "unmanaged" memory measure
+   - spilled: Memory spilled to disk
+
+   The sum of managed + unmanaged + unmanaged recent is equal by definition to the process memory.
+
+   When the managed memory exceeds 60% of the memory limit (target threshold), 
+   the worker will begin to dump the least recently used data to disk. 
+   Above 70% of the target memory usage based on process memory measurment (spill threshold), 
+   the worker will start dumping unused data to disk.
+         
+   At 80% process memory load, currently executing tasks continue to run, but no additional tasks 
+   in the worker's queue will be started.
+
+   At 95% process memory load (terminate threshold), all workers will be terminated. Tasks will be cancelled 
+   as well and data on the worker will be lost and need to be recomputed.
 
 
 How does Dask work?
