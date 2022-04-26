@@ -37,9 +37,9 @@ computing.
    15 min ; :doc:`motivation`
    35 min ; :doc:`scientific-data`
    50 min ; :doc:`stack`
-   60 min ; :doc:`performance`
-   110 min ; :doc:`parallel-computing`
-   110 min ; :doc:`dask`
+   80 min ; :doc:`parallel-computing`
+   80 min ; :doc:`performance`
+   80 min ; :doc:`dask`
    110 min ; :doc:`GPU-computing`
 
 
@@ -50,8 +50,8 @@ computing.
    motivation
    scientific-data
    stack
-   performance
    parallel-computing
+   performance
    dask
    GPU-computing
    

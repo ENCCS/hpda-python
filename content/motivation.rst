@@ -7,6 +7,10 @@ Motivation
 
    - Understand why high-performance data analytics techniques are needed
 
+.. instructor-note::
+
+   - 10 min teaching/type-along
+
 
 Big data
 --------
