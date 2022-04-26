@@ -567,24 +567,23 @@ to make them lazy and tasks into a graph which we will run later on parallel har
    as well and data on the worker will be lost and need to be recomputed.
 
 
-How does Dask work?
--------------------
-
-
-Common use cases
-----------------
-
-
-
 Comparison to Spark
 -------------------
 
-Dask has much in common with the 
-[Apache Spark](https://spark.apache.org/).
+Dask has much in common with the `Apache Spark <https://spark.apache.org/>`__.
+Here are `some differences <https://docs.dask.org/en/stable/spark.html>`__ 
+between the two frameworks:
 
-- ref: https://docs.dask.org/en/stable/spark.html
-
-
+- Dask is smaller and more lightweight but is used together with other packages in 
+  the Python ecosystem. Spark is an all-in-one project with its own ecosystem. 
+- Spark is written in Scala, with some support for Python and R, while Dask is in Python. 
+- Spark is more focused on business intelligence (SQL, lightweight machine learning) while 
+  Dask is more general and is used more in scientific applications.
+- Both Dask and Spark can scale from one to thousands of nodes.
+- Dask supports the NumPy model for multidimensional arrays which Spark doesn't.
+- Spark generally expects users to compose computations out of high-level primitives 
+  (map, reduce, groupby, join, etc.), while Dask allows to specify arbitrary task 
+  graphs for more complex and custom systems.
 
 Exercises
 ---------
