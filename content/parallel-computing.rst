@@ -10,6 +10,11 @@ Parallel computing
    - Understand the difference between multithreading and multiprocessing
    - Learn the basics of *multiprocessing*, *threading*, *ipyparallel* and *MPI4Py*
 
+.. instructor-note::
+
+   - 40 min teaching/type-along
+   - 40 min exercises
+
 
 The performance of a single CPU core has stagnated over the last ten years,
 and as such most of the speed-up in modern CPUs is coming from using multiple

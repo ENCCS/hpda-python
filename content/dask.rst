@@ -8,6 +8,10 @@ Dask for scalable analytics
    - Understand how Dask achieves parallelism
    - Learn a few common workflows with Dask
 
+.. instructor-note::
+
+   - 40 min teaching/type-along
+   - 40 min exercises
 
 Overview
 --------
@@ -584,6 +588,7 @@ between the two frameworks:
 - Spark generally expects users to compose computations out of high-level primitives 
   (map, reduce, groupby, join, etc.), while Dask allows to specify arbitrary task 
   graphs for more complex and custom systems.
+
 
 Exercises
 ---------

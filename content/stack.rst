@@ -10,7 +10,10 @@ Python software stack
    - Learn to use several of NumPy's numerical computing tools 
    - Learn to use data structures and analysis tools from Pandas
 
-.. 
+.. instructor-note::
+
+   - 30 min teaching/type-along
+   - 20 min exercises
 
   This episode is inspired by and derived from this 
   `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
@@ -494,53 +497,51 @@ Tidy vs untidy data
 
 Let's first look at the following two dataframes:
 
-.. callout:: 1500m Running event
+.. tabs:: 
 
-   .. tabs:: 
+   .. tab:: Untidy data format
 
-      .. tab:: Untidy data format
+      .. code-block:: python
 
-         .. code-block:: python
+         runners = pd.DataFrame([
+               {'Runner': 'Runner 1', 400: 64, 800: 128, 1200: 192, 1500: 240},
+               {'Runner': 'Runner 2', 400: 80, 800: 160, 1200: 240, 1500: 300},
+               {'Runner': 'Runner 3', 400: 96, 800: 192, 1200: 288, 1500: 360},
+            ])
+         runners
 
-            runners = pd.DataFrame([
-                  {'Runner': 'Runner 1', 400: 64, 800: 128, 1200: 192, 1500: 240},
-                  {'Runner': 'Runner 2', 400: 80, 800: 160, 1200: 240, 1500: 300},
-                  {'Runner': 'Runner 3', 400: 96, 800: 192, 1200: 288, 1500: 360},
-              ])
-            runners
+         # returns:
 
-            # returns:
+         #      Runner  400  800  1200  1500
+         # 0  Runner 1   64  128   192   240
+         # 1  Runner 2   80  160   240   300
+         # 2  Runner 3   96  192   288   360
 
-	   		#      Runner  400  800  1200  1500
-	   		# 0  Runner 1   64  128   192   240
-	   		# 1  Runner 2   80  160   240   300
-	   		# 2  Runner 3   96  192   288   360
+   .. tab:: Tidy data format
 
-      .. tab:: Tidy data format
+      .. code-block:: python
 
-         .. code-block:: python
+         # "melt" the data (opposite of "pivot")
+         runners = pd.melt(runners, id_vars="Runner", 
+                           value_vars=[400, 800, 1200, 1500], 
+                           var_name="distance", 
+                           value_name="time"
+                           )
+         # returns:
 
-            # "melt" the data (opposite of "pivot")
-            runners = pd.melt(runners, id_vars="Runner", 
-                              value_vars=[400, 800, 1200, 1500], 
-                              var_name="distance", 
-                              value_name="time"
-                             )
-            # returns:
-
-   			#       Runner distance  time
-   			# 0   Runner 1      400    64
-   			# 1   Runner 2      400    80
-   			# 2   Runner 3      400    96
-   			# 3   Runner 1      800   128
-   			# 4   Runner 2      800   160
-   			# 5   Runner 3      800   192
-   			# 6   Runner 1     1200   192
-   			# 7   Runner 2     1200   240
-   			# 8   Runner 3     1200   288
-   			# 9   Runner 1     1500   240
-   			# 10  Runner 2     1500   300
-   			# 11  Runner 3     1500   360
+         #       Runner distance  time
+         # 0   Runner 1      400    64
+         # 1   Runner 2      400    80
+         # 2   Runner 3      400    96
+         # 3   Runner 1      800   128
+         # 4   Runner 2      800   160
+         # 5   Runner 3      800   192
+         # 6   Runner 1     1200   192
+         # 7   Runner 2     1200   240
+         # 8   Runner 3     1200   288
+         # 9   Runner 1     1500   240
+         # 10  Runner 2     1500   300
+         # 11  Runner 3     1500   360
 
 
 Most tabular data is either in a tidy format or a untidy format 

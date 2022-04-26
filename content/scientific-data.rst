@@ -11,8 +11,13 @@ Scientific data
    - Discuss the pros and cons of open science
    - Learn how to mint a DOI for your project   
 
-What is a data?
----------------
+.. instructor-note::
+
+   - 30 min teaching/type-along
+   - 20 min exercises
+
+What is data?
+-------------
 
 bit and byte
 ^^^^^^^^^^^^
@@ -306,7 +311,7 @@ platform and filter by country, content type, discipline, etc.
    Digital object identifiers (DOI) are the backbone of the academic
    reference and metrics system. In this exercise we will see how to
    make a GitHub repository citable by archiving it on the
-   [Zenodo](http://about.zenodo.org/) archiving service. Zenodo is a
+   `Zenodo <http://about.zenodo.org/>`__ archiving service. Zenodo is a
    general-purpose open access repository created by OpenAIRE and CERN.
    
    1. Sign in to Zenodo using your GitHub account. For this exercise, use the

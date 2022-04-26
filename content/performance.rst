@@ -3,6 +3,18 @@
 Optimization
 ============
 
+.. objectives::
+
+   - Learn how to benchmark and profile Python code
+   - Understand how optimisation can be algorithmic or based on CPU or memory usage
+   - Learn how to boost performance using Numba and Cython
+
+.. instructor-note::
+
+   - 40 min teaching/type-along
+   - 40 min exercises
+
+
 Once your code is working reliably, you can start thinking of optimizing it.
 
 
