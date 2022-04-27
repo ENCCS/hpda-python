@@ -15,15 +15,13 @@ Python software stack
    - 30 min teaching/type-along
    - 20 min exercises
 
-  This episode is inspired by and derived from this 
-  `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
-  this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
+
+This episode is inspired by and derived from this 
+`repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
+this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
 
 Why can Python be slow?
 -----------------------
-
-Python is very flexible and dynamic language, but the flexibility comes with
-a price.
 
 Computer programs are nowadays practically always written in a high-level
 human readable programming language and then translated to the actual machine

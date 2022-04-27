@@ -1,0 +1,29 @@
+name: pyhpda
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+dependencies:
+  - numpy
+  - scipy
+  - pandas
+  - cython
+  - numba
+  - cudatoolkit
+  - cupy
+  - h5py
+  - hdf5
+  - netcdf4 
+  - matplotlib
+  - dask
+  - ipywidgets
+  - widgetsnbextension 
+  - dask-jobqueue
+  - dask-labextension   
+  - snakemake-minimal
+  - multiprocessing
+  - ipyparallel
+  - xarray
+  - jupyter
+  - jupyterlab
+  

@@ -60,6 +60,14 @@ Now activate the environment by:
 
    conda activate hpda
 
+mpi4py
+^^^^^^
+
+To use MPI4Py you also need to load a module:
+
+.. code-block:: bash
+
+   ml add mpi4py/3.1.1-gompi-2020b
 
 Running jobs
 ^^^^^^^^^^^^
@@ -108,38 +116,6 @@ Go back to the terminal running Jupyter-Lab on the compute node, and copy-paste 
 
 If everything is working as it should, you should now be able to create a new Jupyter notebook in your browser 
 which is connected to a Karolina compute node and the ``hpda`` conda environment.
-=======
-   xarray
-
-
-MeluXina
---------
-
-- instructions for getting an account
-- login instructions
-
-Software on MeluXina is available through a module system. The modules are however 
-only available on compute nodes, so to load modules you first have to allocate resources  
-through the SLURM job scheduler. To allocate resources you will need the project ID, which 
-you can see by typing:
-
-.. code-block:: bash
-
-   sacctmgr show user $USER withassoc format=user,account,defaultaccount
-
-Resources can be allocated both through batch jobs (submitting a script to the scheduler)
-and interactively. To allocate one interactive node for 1 hour on 1 node in the CPU partition:
-
-.. code-block:: bash
-
-   salloc -A pNNNNNN -t 01:00:00 -q dev --res cpudev -p cpu -N 1
-
-Once your interactive allocation starts, the prompt will change and you will be on a compute 
-node. To see available modules you can now type:
-
-.. code-block:: bash
-
-   module avail
 
 Local installation
 ------------------
@@ -175,7 +151,14 @@ This will create a new environment ``hpda`` which you need to activate by:
 
    conda activate hpda
 
-Now open a Jupyter-Lab instance in your browser:
+To use MPI4Py on your computer you need to install MPI libraries. With conda, these libraries are 
+installed automatically when installing the mpi4py package:
+
+.. code-block:: bash
+
+   conda install -c conda-forge mpi4py
+
+Finally, open Jupyter-Lab in your browser:
 
 .. code-block:: bash
 
