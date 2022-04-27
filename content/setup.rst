@@ -1,19 +1,6 @@
 Setup
 =====
 
-This lesson requires Python3 and a number of Python libraries:
-
-.. code-block:: bash
-
-   numpy
-   scipy
-   pandas
-   matplotlib
-   dask
-   ipython
-   ipyparallel
-   mpi4py
-
 Karolina
 --------
 
@@ -44,7 +31,7 @@ Now download the environment.yml file:
 
 .. code-block:: bash
 
-   wget FIXME (add env file to lesson repo)
+   wget https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
 
 and create a new environment with all required dependencies by:
 
@@ -58,7 +45,7 @@ Now activate the environment by:
 
 .. code-block:: bash
 
-   conda activate hpda
+   conda activate pyhpda
 
 mpi4py
 ^^^^^^
@@ -143,13 +130,15 @@ With conda installed, download the environment.yml file above and install the re
 
 .. code-block:: bash
 
+   wget https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+
    conda env create -f environment.yml
 
-This will create a new environment ``hpda`` which you need to activate by:
+This will create a new environment ``pyhpda`` which you need to activate by:
 
 .. code-block:: bash
 
-   conda activate hpda
+   conda activate pyhpda
 
 To use MPI4Py on your computer you need to install MPI libraries. With conda, these libraries are 
 installed automatically when installing the mpi4py package:
