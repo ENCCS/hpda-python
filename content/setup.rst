@@ -72,7 +72,7 @@ browser.
 First make sure to:
 
 - Allocate an interactive compute node for a sufficiently long time
-- Switch to the hpda conda environment.
+- Switch to the pyhpda conda environment.
 
 After allocating an interactive node your terminal session will be connected to that node.
 Find out the name of your compute node. Your terminal prompt should show it but you can also run the 
@@ -96,7 +96,7 @@ Go back to the terminal running Jupyter-Lab on the compute node, and copy-paste 
 ``127.0.0.1`` with ``localhost``.
 
 If everything is working as it should, you should now be able to create a new Jupyter notebook in your browser 
-which is connected to a Karolina compute node and the ``hpda`` conda environment.
+which is connected to a Karolina compute node and the ``pyhpda`` conda environment.
 
 Local installation
 ------------------
@@ -125,7 +125,7 @@ With conda installed, install the required dependencies by running:
 .. code-block:: bash
 
    conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
-   
+
 This will create a new environment ``pyhpda`` which you need to activate by:
 
 .. code-block:: bash

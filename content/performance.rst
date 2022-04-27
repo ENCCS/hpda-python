@@ -35,12 +35,12 @@ If you're using a Jupyter notebook, the best choice will be to use
 
 .. code-block:: ipython
 
-   In [1]: import numpy as np
+   import numpy as np
 
-   In [2]: a = np.arange(1000)
+   a = np.arange(1000)
 
-   In [3]: %timeit a ** 2
-   100000 loops, best of 3: 5.73 us per loop
+   %timeit a ** 2
+   #  100000 loops, best of 3: 5.73 us per loop
 
 .. note::
 
@@ -93,7 +93,7 @@ output which is difficult to read.
 
 .. code-block:: console
 
-   $  python -m cProfile -o walk.prof walk.py
+   $ python -m cProfile -o walk.prof walk.py
 
 
 It's also possible to write the profile 
@@ -103,8 +103,10 @@ or profile visualisation tools like
 `Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
 or `profile-viewer <https://pypi.org/project/profile-viewer/>`__.
 
-Similar functionality is available in interactive IPython or Jupyter sessions with the 
-magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
+.. note::
+
+   Similar functionality is available in interactive IPython or Jupyter sessions with the 
+   magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
 
 
 Line-profiler
@@ -129,14 +131,14 @@ line-by-line breakdown of where time is being spent. For this information, we ca
 
    .. code-block:: ipython
 
-      In [1]: %load_ext line_profiler
+      %load_ext line_profiler
 
    If the :meth:`walk` and :meth:`step` functions are defined in code cells, we can get the line-profiling 
    information by:
 
    .. code-block:: ipython
 
-      In [2]: %lprun -f walk -f step walk(10000)
+      %lprun -f walk -f step walk(10000)
 
 
    - Based on the output, can you spot a mistake which is affecting performance?
@@ -224,19 +226,19 @@ scipy are richer then those in numpy and should be preferred.
 
 .. sourcecode:: ipython
 
-    In [3]: %timeit np.linalg.svd(data)
-    1 loops, best of 3: 14.5 s per loop
+    %timeit np.linalg.svd(data)
+    # 1 loops, best of 3: 14.5 s per loop
 
-    In [4]: from scipy import linalg
+    from scipy import linalg
 
-    In [5]: %timeit linalg.svd(data)
-    1 loops, best of 3: 14.2 s per loop
+    %timeit linalg.svd(data)
+    # 1 loops, best of 3: 14.2 s per loop
 
-    In [6]: %timeit linalg.svd(data, full_matrices=False)
-    1 loops, best of 3: 295 ms per loop
+    %timeit linalg.svd(data, full_matrices=False)
+    # 1 loops, best of 3: 295 ms per loop
 
-    In [7]: %timeit np.linalg.svd(data, full_matrices=False)
-    1 loops, best of 3: 293 ms per loop
+    %timeit np.linalg.svd(data, full_matrices=False)
+    # 1 loops, best of 3: 293 ms per loop
 
 
 CPU usage optimization
@@ -464,40 +466,40 @@ other things that **smaller strides are faster**:
 
   .. sourcecode:: ipython
 
-    In [1]: c = np.zeros((1e4, 1e4), order='C')
+    c = np.zeros((1e4, 1e4), order='C')
 
-    In [2]: %timeit c.sum(axis=0)
-    1 loops, best of 3: 3.89 s per loop
+    %timeit c.sum(axis=0)
+    # 1 loops, best of 3: 3.89 s per loop
 
-    In [3]: %timeit c.sum(axis=1)
-    1 loops, best of 3: 188 ms per loop
+    %timeit c.sum(axis=1)
+    # 1 loops, best of 3: 188 ms per loop
 
-    In [4]: c.strides
-    Out[4]: (80000, 8)
+    c.strides
+    # Out[4]: (80000, 8)
 
   This is the reason why Fortran ordering or C ordering may make a big
   difference on operations:
 
   .. sourcecode:: ipython
 
-    In [5]: a = np.random.rand(20, 2**18)
+    a = np.random.rand(20, 2**18)
 
-    In [6]: b = np.random.rand(20, 2**18)
+    b = np.random.rand(20, 2**18)
 
-    In [7]: %timeit np.dot(b, a.T)
-    1 loops, best of 3: 194 ms per loop
+    %timeit np.dot(b, a.T)
+    # 1 loops, best of 3: 194 ms per loop
 
-    In [8]: c = np.ascontiguousarray(a.T)
+    c = np.ascontiguousarray(a.T)
 
-    In [9]: %timeit np.dot(b, c)
-    10 loops, best of 3: 84.2 ms per loop
+    %timeit np.dot(b, c)
+    # 10 loops, best of 3: 84.2 ms per loop
 
   Note that copying the data to work around this effect may not be worth it:
 
   .. sourcecode:: ipython
 
-    In [10]: %timeit c = np.ascontiguousarray(a.T)
-    10 loops, best of 3: 106 ms per loop
+    %timeit c = np.ascontiguousarray(a.T)
+    # 10 loops, best of 3: 106 ms per loop
 
   Using `numexpr <http://code.google.com/p/numexpr/>`_ can be useful to
   automatically optimize code for such effects.
