@@ -25,4 +25,7 @@ dependencies:
   - xarray
   - jupyter
   - jupyterlab
-  
+  - pip
+  - pip:
+    - line_profiler
+    
