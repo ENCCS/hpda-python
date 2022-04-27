@@ -27,17 +27,11 @@ The following command adds the necessary configuration to your ``.bashrc`` file:
 
 You now need to either log in to Karolina again or start a new shell session by typing ``bash``.
 
-Now download the environment.yml file:
+Now create a new environment with all required dependencies by:
 
 .. code-block:: bash
 
-   wget https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
-
-and create a new environment with all required dependencies by:
-
-.. code-block:: bash
-
-   conda env create -f environment.yml
+   conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
 
 The installation will take a few minutes.   
 
@@ -126,14 +120,12 @@ Make sure that both Python and conda are correctly installed:
    conda --version
    # should give something like conda 4.10.2
 
-With conda installed, download the environment.yml file above and install the required dependencies by running:
+With conda installed, install the required dependencies by running:
 
 .. code-block:: bash
 
-   wget https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
-
-   conda env create -f environment.yml
-
+   conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+   
 This will create a new environment ``pyhpda`` which you need to activate by:
 
 .. code-block:: bash
