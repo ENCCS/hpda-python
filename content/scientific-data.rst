@@ -16,8 +16,8 @@ Scientific data
    - 30 min teaching/type-along
    - 20 min exercises
 
-What is data?
--------------
+Types of scientific data 
+------------------------
 
 bit and byte
 ^^^^^^^^^^^^
@@ -30,11 +30,9 @@ Organising bytes in different ways could further represent
 different types of information, i.e. data.
 
 
-Types of scientific data 
-^^^^^^^^^^^^^^^^^^^^^^^^
 
-Numerical Data
-**************
+Numerical data
+^^^^^^^^^^^^^^
 
 Different numerial data types (integer and floating-point) can be encoded as bytes. 
 The more bytes we use for each value, the more range or precision we get, 
@@ -52,7 +50,7 @@ to make sure the inaccuracy is under control and does not lead to unsteady solut
 .. note:: In climate community, it is common practice to use single precision in some part of the model to achieve better performance at a small cost to the accuracy.
 
 Text Data
-*********
+^^^^^^^^^
 
 When it comes to text data, the simplest character encoding 
 is ASCII (American Standard Code for Information Interchange) and was the most 
@@ -72,17 +70,17 @@ In real applications, the scientific data is more complex and usually contains b
 Here we list a few of the data and file storage formats commonly used:
 
 Tabular Data
-************
+~~~~~~~~~~~~
 
 A very common type of data is the so-called "tabular data". The data is structured 
 typically into rows and columns. Each column usually have a name and a specific data type 
 while each row is a distinct sample which provides data according to each column including missing value.
 The simplest and most common way to save tablular data is via the so-called CSV (comma-separated values) file.
 
-Grided Data
-***********
+Gridded Data
+~~~~~~~~~~~~
 
-Grided data is another very common type, and usually the numerical data is saved 
+Gridded data is another very common type, and usually the numerical data is saved 
 in a multi-dimentional rectangular grid. Most probably it is saved in one of the following formats:
 
 - Hierarchical Data Format (HDF5) - Container for many arrays
@@ -90,12 +88,12 @@ in a multi-dimentional rectangular grid. Most probably it is saved in one of the
 - Zarr - New cloud-optimized format for array storage
 
 Metadata
-********
+~~~~~~~~
 
 Metadata consists of the information about the data. 
 Different types of data may have different metadata conventions. 
 
-In Earth and Environmental science, there are widespread robust practices around metdata. 
+In Earth and Environmental science, there are widespread robust practices around metadata. 
 For NetCDF files, metadata can be embedded directly into the data files. 
 The most common metadata convention is Climate and Forecast (CF) Conventions, commonly used with NetCDF data
 
@@ -106,7 +104,7 @@ works in all cases, choose a file format that best suits you.
 
 
 CSV (comma-separated values)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Key features
 
@@ -130,14 +128,14 @@ However, it is not the best format to use when you're working with big data.
     When working with floating point numbers, you should be careful to save the data 
     with enough decimal places so that you won't lose precision.
 
-1. you may lose data precision simply because you do not save the data with enough decimals
+1. You may lose data precision simply because you do not save the data with enough decimals
 2. CSV writing routines in Pandas and numpy try to avoid problems such as these 
    by writing the floating point numbers with enough precision, but even they are not infallible.
 3. Storage of these high-precision CSV files is usually very inefficient storage-wise.
 4. Binary files, where floating point numbers are represented in their native binary format, do not suffer from such problems.
 
 HDF5 (Hierarchical Data Format version 5)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Key features
 
@@ -158,11 +156,12 @@ It is especially popular in fields where you need to store big multidimensional 
 
 
 NetCDF4 (Network Common Data Form version 4)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. important::
+.. callout:: xarray 
 
-    A great NetCDF4 interface is provided by a `xarray-package <https://xarray.pydata.org/en/stable/getting-started-guide/quick-overview.html#read-write-netcdf-files>`__.
+   A great NetCDF4 interface is provided by the 
+   `xarray <https://xarray.pydata.org/en/stable/getting-started-guide/quick-overview.html#read-write-netcdf-files>`__ package.
     
   
 .. admonition:: Key features
@@ -188,7 +187,80 @@ NetCDF4 is by far the most common format for storing large data from big simulat
 The advantage of NetCDF4 compared to HDF5 is that one can easily add other metadata e.g. spatial dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
 As the format is standardized, many programs can use this metadata for visualization and further analysis.
 
+Xarray
+~~~~~~
 
+`Xarray <https://docs.xarray.dev/en/stable/>`__ is a Python package that builds on NumPy but adds *labels* to 
+multi-dimensional arrays. It also borrows heavily from the Pandas package for labelled tabular data and 
+integrates tightly with dask for parallel computing. NumPy, Pandas and Dask will be covered in later episodes.
+
+Xarray is particularly tailored to working with NetCDF files. It reads and writes to NetCDF files using the 
+:meth:`open_dataset` / :meth:`open_dataarray` functions and the :meth:`to_netcdf` method. Explore these in the 
+exercise below!
+
+
+.. exercise:: Use Xarray to work with NetCDF files
+
+   This exercise is derived from `this tutorial <https://xarray-contrib.github.io/xarray-tutorial/scipy-tutorial/01_datastructures_and_io.html#NetCDF>`__,
+   which is distributed under an Apache-2.0 License.
+
+   First create an Xarray dataset: 
+
+   .. code-block:: python
+
+      import numpy as np
+      import xarray as xr
+
+      ds1 = xr.Dataset(
+          data_vars={
+              "a": (("x", "y"), np.random.randn(4, 2)),
+              "b": (("z", "x"), np.random.randn(6, 4)),
+          },
+          coords={
+              "x": np.arange(4),
+              "y": np.arange(-2, 0),
+              "z": np.arange(-3, 3),
+          },
+      )
+      ds2 = xr.Dataset(
+          data_vars={
+              "a": (("x", "y"), np.random.randn(7, 3)),
+              "b": (("z", "x"), np.random.randn(2, 7)),
+          },
+          coords={
+              "x": np.arange(6, 13),
+              "y": np.arange(3),
+              "z": np.arange(3, 5),
+          },
+      )
+
+   Then write the datasets to disk using :meth:`to_netcdf` method:
+
+   .. code-block:: python
+
+      ds1.to_netcdf("ds1.nc")
+      ds2.to_netcdf("ds2.nc")
+
+   You can read an individual file from disk by:
+
+   .. code-block:: python
+
+      ds1 = xr.open_dataset("ds1.nc")
+
+   But you can also read both at once into an aggregated dataset object using the :meth:`open_mfdataset` method:
+
+   .. code-block:: python
+
+      ds = xr.open_mfdataset('ds*.nc')
+
+   Tasks:
+
+   - Explore the hierarchical structure of the ``ds1`` and ``ds2`` datasets in a Jupyter notebook by typing the 
+     variable names in a code cell and execute. Click the disk-looking objects on the right to expand the fields.
+   - Explore the ``ds`` dataset and compare its dimensions to the ``ds1`` and ``ds2`` datasets. Have the two 
+     datasets been merged?
+
+   
 
 Sharing data
 ------------
