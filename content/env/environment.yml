@@ -21,7 +21,6 @@ dependencies:
   - dask-jobqueue
   - dask-labextension   
   - snakemake-minimal
-  - multiprocessing
   - ipyparallel
   - xarray
   - jupyter
