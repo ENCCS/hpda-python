@@ -1,7 +1,57 @@
 Setup
 =====
 
-This lesson requires Python3 and a number of Python libraries. 
+This lesson requires Python3 and a number of Python libraries:
+
+.. code-block:: bash
+
+   numpy
+   scipy
+   pandas
+   matplotlib
+   dask
+   ipython
+   ipyparallel
+   mpi4py
+   xarray
+
+
+MeluXina
+--------
+
+- instructions for getting an account
+- login instructions
+
+Software on MeluXina is available through a module system. The modules are however 
+only available on compute nodes, so to load modules you first have to allocate resources  
+through the SLURM job scheduler. To allocate resources you will need the project ID, which 
+you can see by typing:
+
+.. code-block:: bash
+
+   sacctmgr show user $USER withassoc format=user,account,defaultaccount
+
+Resources can be allocated both through batch jobs (submitting a script to the scheduler)
+and interactively. To allocate one interactive node for 1 hour on 1 node in the CPU partition:
+
+.. code-block:: bash
+
+   salloc -A pNNNNNN -t 01:00:00 -q dev --res cpudev -p cpu -N 1
+
+Once your interactive allocation starts, the prompt will change and you will be on a compute 
+node. To see available modules you can now type:
+
+.. code-block:: bash
+
+   module avail
+
+
+
+
+Local installation
+------------------
+
+>>>>>>> Stashed changes
 If you already have a preferred way to manage Python versions and 
 libraries, you can stick to that. If not, we recommend that you 
 install Python3 and all libraries using 
