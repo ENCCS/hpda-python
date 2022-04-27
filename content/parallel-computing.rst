@@ -94,38 +94,38 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    Head over to https://github.com/enccs/word-count-hpda and clone the repository:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      git clone git@github.com:ENCCS/word-count-hpda.git
+      $ git clone git@github.com:ENCCS/word-count-hpda.git
 
    This toy project is about analyzing the frequency of words in texts. The ``data``
    directory contains 64 public domain books from Project Gutenberg and source files 
    under ``source`` can be used to count words:
 
-   .. code-block:: bash
+   .. code-block:: console
 
       # count words in two books
-      python source/wordcount.py data/pg10.txt > processed_data/pg10.dat
-      python source/wordcount.py data/pg65.txt > processed_data/pg65.dat
+      $ python source/wordcount.py data/pg10.txt > processed_data/pg10.dat
+      $ python source/wordcount.py data/pg65.txt > processed_data/pg65.dat
       
       # print frequency of 10 most frequent words in both books to file
-      python source/zipf_test.py 10 pg10.dat pg65.dat > results.txt
+      $ python source/zipf_test.py 10 pg10.dat pg65.dat > results.txt
       
    This workflow is encoded in the ``Snakefile`` which can be used to run
    through all data files:
 
-   .. code-block:: bash
+   .. code-block:: console
 
       # run workflow in serial
-      snakemake -j 1      
+      $ snakemake -j 1      
 
 
    The workflow can be visualised in a directed-acyclic graph:
 
-   .. code-block:: bash
+   .. code-block:: console
 
       # requires dot from Graphviz
-      snakemake -j 1 --dag | dot -Tpng  > dag.png
+      $ snakemake -j 1 --dag | dot -Tpng  > dag.png
 
    .. figure:: img/dag.png
       :align: center
@@ -133,12 +133,12 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    The workflow can be parallelized to utilize multiple cores:
 
-   .. code-block:: bash
+   .. code-block:: console
 
       # first clear all output
-      snakemake -j 1 --delete-all-output      
+      $ snakemake -j 1 --delete-all-output      
       # run in parallel on 4 processes
-      snakemake -j 4
+      $ snakemake -j 4
 
    **Task:**
 
@@ -206,9 +206,9 @@ Depending on configuration, NumPy will often use multiple threads by default,
 but we can use the environment variable ``OMP_NUM_THREADS`` to set the number 
 of threads manually:
 
-.. code-block:: bash
+.. code-block:: console
 
-   export OMP_NUM_THREADS=<N>
+   $ export OMP_NUM_THREADS=<N>
 
 After setting this environment variable we continue as usual 
 and multithreading will be turned on.
@@ -232,13 +232,13 @@ and multithreading will be turned on.
 
    Let us test it with 1 and 4 threads:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      export OMP_NUM_THREADS=1
-      python omp_test.py
+      $ export OMP_NUM_THREADS=1
+      $ python omp_test.py
 
-      export OMP_NUM_THREADS=4
-      python omp_test.py
+      $ export OMP_NUM_THREADS=4
+      $ python omp_test.py
 
 Multithreaded I/O
 ^^^^^^^^^^^^^^^^^
@@ -450,10 +450,10 @@ This is how a hello world MPI program looks like in Python:
 To run this code with a specific number of processes we use the ``mpirun`` command which 
 comes with the MPI library:
 
-.. code-block:: bash
+.. code-block:: console
 
    # on some HPC systems you might need 'srun -n 4' instead of 'mpirun -np 4'  
-   mpirun -np 4 hello.py
+   $ mpirun -np 4 hello.py
 
 A number of available MPI libraries have been developed (`OpenMPI <https://www.open-mpi.org/>`__, 
 `MPICH <https://www.mpich.org/>`__, `IntelMPI <https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html#gs.up6uyn>`__, 
@@ -694,9 +694,9 @@ Exercises
    - :meth:`word_autocorr_average` loops over a list of words and computes their average autocorrelation
    - To run this code: 
 
-     .. code-block:: bash
+     .. code-block:: console
 
-        python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
+        $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
 
    .. discussion:: Where to parallelise?
 
@@ -963,9 +963,9 @@ Exercises
 
    Try running your code and time the result for different number of tanks!
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      time mpirun -np <N> python source/autocorrelation.py data/pg58.txt processed_data/pg58.dat results/pg58_acf.csv
+      $ time mpirun -np <N> python source/autocorrelation.py data/pg58.txt processed_data/pg58.dat results/pg58_acf.csv
 
 
    .. solution:: 
@@ -975,13 +975,13 @@ Exercises
       <https://github.com/ENCCS/word-count-hpda/blob/autocorr-mpi/source/autocorrelation.py>`__.
       You can also switch to the branch in your repository:
 
-      .. code-block:: bash
+      .. code-block:: console
 
          # first commit any work you have done:
-         git add -u 
-         git commit -m "save my work"
+         $ git add -u 
+         $ git commit -m "save my work"
          # switch branch
-         git checkout autocorr-mpi
+         $ git checkout autocorr-mpi
                 
 .. exercise:: Extend the Snakefile
 
