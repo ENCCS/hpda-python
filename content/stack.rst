@@ -1,7 +1,7 @@
 .. _stack:
 
-Python software stack
-=====================
+Efficient array computing
+=========================
 
 .. objectives::
 
@@ -16,9 +16,10 @@ Python software stack
    - 20 min exercises
 
 
-This episode is inspired by and derived from this 
+This episode is partly based on material from this 
 `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
-this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
+this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__, 
+distributed under MIT and CC-BY-4.0 licenses, respectively.
 
 Why can Python be slow?
 -----------------------
@@ -344,7 +345,7 @@ Array Reshaping
 ^^^^^^^^^^^^^^^
 
 Sometimes, you need to change the dimension of an array. 
-One of the most common need is to trasnposing the matrix 
+One of the most common need is to transposing the matrix 
 during the dot product. Switching the dimensions of 
 a NumPy array is also quite common in more advanced cases.
 
@@ -728,12 +729,52 @@ The workflow of :meth:`groupby` can be divided into three general steps:
 For an overview of other data wrangling methods built into pandas, have a look 
 at :doc:`pandas-extra`.
 
+
+Scipy
+-----
+
+`SciPy <https://docs.scipy.org/doc/scipy/reference/>`__ is a library that builds 
+on top of NumPy. It contains a lot of interfaces to battle-tested numerical routines 
+written in Fortran or C, as well as Python implementations of many common algorithms.
+
+What's in SciPy?
+^^^^^^^^^^^^^^^^
+
+Briefly, it contains functionality for
+
+- Special functions (Bessel, Gamma, etc.)
+- Numerical integration
+- Optimization
+- Interpolation
+- Fast Fourier Transform (FFT)
+- Signal processing
+- Linear algebra (more complete than in NumPy)
+- Sparse matrices
+- Statistics
+- More I/O routine, e.g. Matrix Market format for sparse matrices,
+  MATLAB files (.mat), etc.
+
+Many of these are not written specifically for SciPy, but use
+the best available open source C or Fortran libraries.  Thus, you get
+the best of Python and the best of compiled languages.
+
+Most functions are documented very well from a scientific
+standpoint: you aren't just using some unknown function, but have a
+full scientific description and citation to the method and
+implementation.
+
 Exercises
 ---------
 
 .. challenge:: Further analysis of the Titanic passenger list dataset
 
-   Consider the titanic dataset.
+   Consider the titanic dataset. If you haven't done so already, load it into a dataframe:
+
+   .. code-block:: python
+
+      import pandas as pd
+      url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
+      titanic = pd.read_csv(url, index_col="Name")
 
    1. Compute the mean age of the first 10 passengers by slicing and the ``mean`` method
    2. Using boolean indexing, compute the survival rate 
@@ -764,44 +805,11 @@ Exercises
    
 
 
-Scipy
------
-
-`SciPy <https://docs.scipy.org/doc/scipy/reference/>`__ is a library that builds 
-on top of NumPy. It contains a lot of interfaces to battle-tested numerical routines 
-written in Fortran or C, as well as python implementations of many common algorithms.
-
-What's in SciPy?
-^^^^^^^^^^^^^^^^
-
-Briefly, it contains functionality for
-
-- Special functions (Bessel, Gamma, etc.)
-- Numerical integration
-- Optimization
-- Interpolation
-- Fast Fourier Transform (FFT)
-- Signal processing
-- Linear algebra (more complete than in NumPy)
-- Sparse matrices
-- Statistics
-- More I/O routine, e.g. Matrix Market format for sparse matrices,
-  MATLAB files (.mat), etc.
-
-Many of these are not written specifically for SciPy, but use
-the best available open source C or Fortran libraries.  Thus, you get
-the best of Python and the best of compiled languages.
-
-Most functions are documented very well from a scientific
-standpoint: you aren't just using some unknown function, but have a
-full scientific description and citation to the method and
-implementation.
-
 See also
 --------
 
+- NumPy `documentation <https://numpy.org/doc/stable/>`__
 - Pandas  `getting started guide <https://pandas.pydata.org/getting_started.html>`__ 
-  (including tutorials and a 10 minute flash intro)
 - Pandas `documentation <https://pandas.pydata.org/docs/>`__ containing a user guide, 
   API reference and contribution guide.
 - Pandas `cheatsheet <https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf>`__ 

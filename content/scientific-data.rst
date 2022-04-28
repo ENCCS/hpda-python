@@ -47,7 +47,13 @@ numerical algorithms have to be carefully chosen and
 floating-point numbers are usally allocated with 8 bytes  
 to make sure the inaccuracy is under control and does not lead to unsteady solutions.
 
-.. note:: In climate community, it is common practice to use single precision in some part of the model to achieve better performance at a small cost to the accuracy.
+.. discussion:: Single vs double precision
+   
+   In many computational modeling domains, it is common practice to use single precision in 
+   some parts of the modeling to achieve better performance at an affordable cost to the 
+   accuracy. For example in climate simulations, molecular dynamics and machine learning.
+
+   Have you used single precision in your modeling? Did you observe higher performance?
 
 Text Data
 ^^^^^^^^^
@@ -156,13 +162,7 @@ It is especially popular in fields where you need to store big multidimensional 
 
 
 NetCDF4 (Network Common Data Form version 4)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. callout:: xarray 
-
-   A great NetCDF4 interface is provided by the 
-   `xarray <https://xarray.pydata.org/en/stable/getting-started-guide/quick-overview.html#read-write-netcdf-files>`__ package.
-    
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
   
 .. admonition:: Key features
 
@@ -407,6 +407,6 @@ See also
 
 .. keypoints::
 
-   - 1
-   - 2
-   - Consider sharing other research outputs than articles.
+   - File formats matter. For large datasets, use HDF5, NetCDF or similar.
+   - The Xarray package provides high-level methods to work with data in NetCDF format.
+   - Consider sharing other research outputs than articles. It is easy to mint DOIs and get cited!

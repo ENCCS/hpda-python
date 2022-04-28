@@ -1,7 +1,7 @@
 .. _performance:
 
-Optimization
-============
+Profiling and optimising
+========================
 
 .. objectives::
 
@@ -15,7 +15,7 @@ Optimization
    - 40 min exercises
 
 
-Once your code is working reliably, you can start thinking of optimizing it.
+Once your code is working reliably, you can start thinking of optimising it.
 
 
 .. warning::

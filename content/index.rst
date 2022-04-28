@@ -15,10 +15,10 @@ special-purpose and/or domain-specific packages, often supported by large develo
 communities and stable funding sources.
 
 This lesson is meant to give an overview of working with research data in 
-Python using general libraries for storing, processing and analysing and sharing data. 
+Python using general libraries for storing, processing, analysing and sharing data. 
 The focus is on high performance. After covering tools for performant 
-processing on single workstations the focus shifts to parallel and distributed 
-computing.
+processing on single workstations the focus shifts to profiling and optimising, parallel 
+and distributed computing and finally GPU computing.
 
 
 

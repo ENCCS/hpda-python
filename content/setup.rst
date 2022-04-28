@@ -216,9 +216,9 @@ Make sure that both Python and conda are correctly installed:
 .. code-block:: console
 
    $ python --version
-   # should give something like Python 3.9.7
+   $ # should give something like Python 3.9.7
    $ conda --version
-   # should give something like conda 4.10.2
+   $ # should give something like conda 4.10.2
 
 With conda installed, install the required dependencies by running:
 

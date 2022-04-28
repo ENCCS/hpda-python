@@ -38,8 +38,8 @@ packages which can efficiently take advantage of the hardware.
 This course focuses on high-performace data analytics (HPDA), a subset of high-performance 
 computing which focuses on working with large data. 
 The data can come from either computer models and simulations or from experiments and 
-observations, and the goal is to preprocess, analyse and visualise it go generate 
-scientific insight.
+observations, and the goal is to preprocess, analyse and visualise it to generate 
+scientific results.
 
 
 Python
