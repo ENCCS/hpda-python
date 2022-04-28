@@ -88,7 +88,7 @@ and IP address (the name of the compute node).
 
    $ ssh cn0709
    $ conda activate pyhpda
-   $ jupyter-notebook --no-browser --port=8123 --ip=cn0709
+   $ jupyter-lab --no-browser --port=8123 --ip=cn0709
 
 Now create an SSH tunnel **from a new terminal on your local machine** to the correct port and IP:
 
