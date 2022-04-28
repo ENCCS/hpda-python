@@ -404,14 +404,6 @@ At the end of this episode you can turn your attention back to the word-count pr
 and practice using ``multiprocessing`` pools of processes.
 
 
-ipyparallel
------------
-
-- https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a
-- https://coderefinery.github.io/jupyter/examples/#parallel-python-with-ipyparallel
-- https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial
-
-
 MPI
 ---
 
@@ -575,6 +567,29 @@ Examples
    communication is required between the subdomains between e.g. timesteps or iterations.
    The word-count problem is simpler than that and MPI is somewhat overkill, but in an exercise 
    below you will learn to use point-to-point communication to parallelize it.
+
+ipyparallel
+-----------
+
+`ipyparallel <https://ipyparallel.readthedocs.io/en/latest/>`, also known as IPython Parallel, 
+is yet another tool for parallel computing in Python. However, it's more than parallel Python, 
+it's parallel *IPython*, and this adds interactivity to parallel computing.
+
+The architecture of ipyparallel for parallel and distributed computing abstracts out parallelism in a 
+general way and this enables many different styles of parallelism, including:
+
+- Single program, multiple data (SPMD) parallelism
+- Multiple program, multiple data (MPMD) parallelism
+- Message passing using MPI
+- Task farming
+- Data parallel
+- Combinations of these approaches
+- Custom user-defined approaches
+
+This is similar to Dask which will be covered in a later episode. 
+
+WRITEME: simple example with ipyparallel, probably together with MPI since MPI is not 
+interactive itself and that's what ipyparallel can contribute (many other use cases fit better with dask)
 
 
 Exercises
@@ -1004,6 +1019,8 @@ See also
   and `part 2 <https://www.kth.se/blogs/pdc/2019/03/parallel-programming-in-python-multiprocessing-part-2/>`__
 - Parallel programming in Python with mpi4py, `part 1 <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
   and `part 2 <https://www.kth.se/blogs/pdc/2019/11/parallel-programming-in-python-mpi4py-part-2/>`__
+- `IPython Parallel in 2021 <https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a>`__
+- `ipyparallel tutorial <https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial>`__
 
 
 
