@@ -104,19 +104,19 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    .. code-block:: console
 
-      # count words in two books
-      $ python source/wordcount.py data/pg10.txt > processed_data/pg10.dat
-      $ python source/wordcount.py data/pg65.txt > processed_data/pg65.dat
+      $ # count words in two books
+      $ python source/wordcount.py data/pg10.txt processed_data/pg10.dat
+      $ python source/wordcount.py data/pg65.txt processed_data/pg65.dat
       
-      # print frequency of 10 most frequent words in both books to file
-      $ python source/zipf_test.py 10 pg10.dat pg65.dat > results.txt
+      $ # print frequency of 10 most frequent words in both books to file
+      $ python source/zipf_test.py 10 processed_data/pg10.dat processed_data/pg65.dat > results.txt
       
    This workflow is encoded in the ``Snakefile`` which can be used to run
    through all data files:
 
    .. code-block:: console
 
-      # run workflow in serial
+      $ # run workflow in serial
       $ snakemake -j 1      
 
 
@@ -124,7 +124,7 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    .. code-block:: console
 
-      # requires dot from Graphviz
+      $ # requires dot from Graphviz
       $ snakemake -j 1 --dag | dot -Tpng  > dag.png
 
    .. figure:: img/dag.png
@@ -135,9 +135,9 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    .. code-block:: console
 
-      # first clear all output
+      $ # first clear all output
       $ snakemake -j 1 --delete-all-output      
-      # run in parallel on 4 processes
+      $ # run in parallel on 4 processes
       $ snakemake -j 4
 
    **Task:**
@@ -977,10 +977,10 @@ Exercises
 
       .. code-block:: console
 
-         # first commit any work you have done:
+         $ # first commit any work you have done:
          $ git add -u 
          $ git commit -m "save my work"
-         # switch branch
+         $ # switch branch
          $ git checkout autocorr-mpi
                 
 .. exercise:: Extend the Snakefile
