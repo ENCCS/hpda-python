@@ -96,7 +96,7 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    .. code-block:: console
 
-      $ git clone git@github.com:ENCCS/word-count-hpda.git
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
 
    This toy project is about analyzing the frequency of words in texts. The ``data``
    directory contains 64 public domain books from Project Gutenberg and source files 
