@@ -1,15 +1,115 @@
 Setup
 =====
 
+Vega
+----
+
+Thanks to `IZUM <https://www.izum.si/en/hpc-en/>`__ in Slovenia we will have an allocation on the 
+`Vega <https://en-vegadocs.vega.izum.si/>`__ EuroHPC system for the duration of the workshop.
+Here are instructions for accessing Vega, setting up the Python environment and running jobs.
+
+Software on Karolina is available through a module system. 
+First load the Anaconda module to get access to the ``conda`` package manager:
+
+.. code-block:: console
+
+   $ ml add Anaconda3/2020.11
+
+To be able to create conda environments in your home directory you need to initialize it. 
+The following command adds the necessary configuration to your ``.bashrc`` file:
+
+.. code-block:: console
+
+   $ conda init bash
+
+You now need to either log in to Vega again or start a new shell session by typing ``bash``.
+
+Now create a new environment with all required dependencies by:
+
+.. code-block:: console
+
+   $ conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+
+The installation will take a few minutes.   
+
+Now activate the environment by:
+
+.. code-block:: console
+
+   $ conda activate pyhpda
+
+mpi4py
+^^^^^^
+
+To use MPI4Py you need to load an module which contains MPI libraries and then install ``mpi4py``
+using ``pip``:
+
+.. code-block:: console
+
+   $ module load foss/2020b
+   $ CC=gcc MPICC=mpicc python3 -m pip install mpi4py --no-binary=mpi4py
+
+
+Running jobs
+^^^^^^^^^^^^
+
+Resources can be allocated both through batch jobs (submitting a script to the scheduler)
+and interactively. To allocate one interactive node for 1 hour on 1 node in the CPU partition:
+
+.. code-block:: console
+
+   $ salloc -N 1 -A vega-training-users --partition=cpu --reservation=FIXME -t 01:00:00
+
+To instead book a GPU node, type:
+
+.. code-block:: console
+
+   $ salloc -n 1 -A vega-training-users --partition=cpu --gres=gpu:1 --reservation=FIXME --cpus-per-task 1 -t 01:00:00
+
+
+Running Jupyter
+^^^^^^^^^^^^^^^
+
+The following procedure starts a Jupyter-Lab server on a compute node, creates an SSH tunnel from 
+your local machine to the compute node, and then connects to the remote Jupyter-Lab server from your 
+browser.
+
+First make sure to:
+
+- Allocate an interactive compute node for a sufficiently long time
+- Switch to the pyhpda conda environment.
+
+After allocating an interactive node you will see the name of the node in the output, e.g. 
+``salloc: Nodes cn0709 are ready for job``. You now need to ssh to that node, switch to the pyhpda 
+conda environment, and start the Jupyter-Lab server on a particular port (choose one between 8000 and 9000) 
+and IP address (the name of the compute node). 
+
+.. code-block:: console
+
+   $ ssh cn0709
+   $ conda activate pyhpda
+   $ jupyter-notebook --no-browser --port=8123 --ip=cn0709
+
+Now create an SSH tunnel **from a new terminal on your local machine** to the correct port and IP:
+
+.. code-block:: console
+
+   $ ssh -TN -f YourUsername@login6.vega.izum.si -L localhost:8123:cn0709:8123
+
+Go back to the terminal running Jupyter-Lab on the compute node, and copy-paste the URL starting with 
+``127.0.0.1`` which contains a long token into your local browser. If that does not work, try replacing 
+``127.0.0.1`` with ``localhost``.
+
+If everything is working as it should, you should now be able to create a new Jupyter notebook in your browser 
+which is connected to a Vega compute node and the ``pyhpda`` conda environment.
+
+
 Karolina
 --------
 
-Thanks to `IT4I <https://www.it4i.cz/en>`__, we will have an allocation on the Karolina supercomputer for the whole 
+Thanks to `IT4I <https://www.it4i.cz/en>`__, we will have an allocation on the Karolina supercomputer for the  
 duration of the workshop. Here are instructions for accessing Karolina, setting up the Python environment and 
 running jobs.
-
-- instructions for getting an account
-- login instructions
 
 Software on Karolina is available through a module system. 
 First load the Anaconda module to get access to the ``conda`` package manager:
