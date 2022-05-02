@@ -474,7 +474,7 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
    .. tabs::
 
 
-      .. tab:: numba gpu
+      .. tab:: ufunc gpu
 
          .. literalinclude:: example/math_numba_gpu.py
             :language: python
@@ -491,8 +491,11 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
 
       .. tab:: CUDA kernel
 
-	.. code-block:: python
+	.. code-block:: ipython
 
+                import numpy as np
+                import math
+                import numba
 		a = np.random.rand(10000000)
 		b = np.random.rand(10000000)
 		c = np.random.rand(10000000)
@@ -503,8 +506,11 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
 
       .. tab:: CUDA kernel without data transfer
 
-	.. code-block:: python
+	.. code-block:: ipython
 
+                import numpy as np
+                import math
+                import numba
 		a = np.random.rand(10000000)
 		b = np.random.rand(10000000)
 		c = np.random.rand(10000000)
@@ -660,7 +666,7 @@ Exercise
 We will start from one implementation of a faster version of the square matrix multiplication using shared memory.
 This example is taken from Numba official document, however there are arguably at least two errors in it:
 
-   .. hint:: 
+   .. solution:: Hint
 
      - data range check
      - cuda.syncthreads() in conditional code
