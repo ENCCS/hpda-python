@@ -31,7 +31,7 @@ Timeit
 ^^^^^^
 
 If you're using a Jupyter notebook, the best choice will be to use 
-`timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
+`%timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
 
 .. code-block:: ipython
 
@@ -41,6 +41,8 @@ If you're using a Jupyter notebook, the best choice will be to use
 
    %timeit a ** 2
    #  100000 loops, best of 3: 5.73 us per loop
+
+One can also use the cell magic ``%%timeit`` to benchmark a full cell.
 
 .. note::
 
@@ -185,15 +187,6 @@ line-by-line breakdown of where time is being spent. For this information, we ca
       which is called thousands of times! Moving the module import to the top level saves 
       considerable time.
 
-.. exercise:: Profile the word-autocorrelation code
-
-   Revisit the word-autocorrelation code. Add ``@profile`` to the :meth:`word_autocorr` and 
-   :meth:`word_autocorr_average` function, and run ``kernprof.py`` from the command line.
-
-   .. solution:: autocorrelation.py
-
-
-
 Performance optimization 
 ------------------------
 
@@ -251,89 +244,40 @@ Arithmetic is one place where numpy performance outperforms python list and the 
 A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
 In such cases, vectorization is key for better performance.
 
-.. exercise::  vectorized operation vs for loop 
 
-   Consider the following code:
+Consider the following code:
 
-   .. code-block:: python
+.. code-block:: python
 
-      import numpy as np
-      a = np.arange(1000)
-      a_dif = np.zeros(999, np.int64)
-      for i in range(1, len(a)):
-            a_dif[i-1] = a[i] - a[i-1]
+   %%timeit
 
-   Try to vectorize the ``for`` loop!
+   import numpy as np
+   a = np.arange(1000)
+   a_dif = np.zeros(999, np.int64)
+   for i in range(1, len(a)):
+       a_dif[i-1] = a[i] - a[i-1]
 
-   .. solution::
+   # 564 µs ± 25.2 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-      .. code-block:: python
+How can the ``for`` loop be vectorized? We need to use clever indexing to get rid of the 
+loop:
 
-			import numpy as np
-         a = np.arange(1000)
-			a_dif = a[1:] - a[:-1]
+.. code-block:: python
 
-.. exercise:: Profile the word-autocorrelation code
+   %%timeit
 
-   Use line-profiling on the word-autocorrelation code!
+   import numpy as np
+   a = np.arange(1000)
+   a_dif = a[1:] - a[:-1]
 
-   .. solution:: 
+   # 2.12 µs ± 25.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
-      WRITEME
+So one should consider using *vectorized* operations whenever possible, not only for 
+performance but also because the vectorized version can be more convenient. 
 
-.. exercise:: Is the :meth:`word_autocorr` function efficient?
-
-   Have another look at the :meth:`word_autocorr` function from the word-count project. 
-
-   .. code-block:: python
-
-      def word_autocorr(word, text, timesteps):
-          """
-          Calculate word-autocorrelation function for given word 
-          in a text. Each word in the text corresponds to one "timestep".
-          """
-          acf = np.zeros((timesteps,))
-          mask = [w==word for w in text]
-          nwords_chosen = np.sum(mask)
-          nwords_total = len(text)
-          for t in range(timesteps):
-              for i in range(1,nwords_total-t):
-                  acf[t] += mask[i]*mask[i+t]
-              acf[t] /= nwords_chosen      
-          return acf
-      
-   Do you think there is any room for improvement? How would you go about optimizing 
-   this function?
-
-   .. solution:: 
-
-      The function uses a Python object (``mask``) inside a double for-loop, 
-      which is guaranteed to be suboptimal. There are a number of ways to speed 
-      it up. One is to use ``numba`` and just-in-time compilation, as we shall 
-      see below. 
-
-      Another is to find an in-built vectorized NumPy function which can calculate the 
-      autocorrelation for us! Here's one way to do it:
-
-      .. code-block:: python
-
-         def word_autocorr_numpy(word, text, timesteps):
-             """
-             Calculate word-autocorrelation function for given word 
-             in a text using numpy.correlate function. 
-             Each word in the text corresponds to one "timestep".
-             """
-             acf = np.zeros((timesteps,))
-             mask = np.array([w==word for w in text]).astype(np.float64)
-             nwords_chosen = np.sum(mask)
-             acf = np.correlate(mask, mask, mode='full') / nwords_chosen
-             return acf[int(acf.size/2):int(acf.size/2)+timesteps]         
-
-
-So one should consider use "vectorized" operations whenever possible.
-Not only for performance, sometimes the vectorized function is also convenient. 
-
-Let's define a simple function f which takes scalars as input only, 
+What if we have a function that only take scalar values as input, but we want to apply it 
+element-by-element on an array? We can vectorize the function!  
+Let's define a simple function ``f`` which takes scalars input: 
 
 .. code-block:: python
 
@@ -341,21 +285,31 @@ Let's define a simple function f which takes scalars as input only,
    def f(x, y):
        return x**3 + 4*math.sin(y) 
 
-if we pass an array, 
+If we pass an array we get an error 
    
-.. code-block:: console
+.. code-block:: python
 
-   >>> x = np.ones(10000, dtype=np.int8)
-   >>> f(x,x)
-   Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
-     File "<stdin>", line 2, in f
-   TypeError: only size-1 arrays can be converted to Python scalars
+   x = np.ones(10000, dtype=np.int8)
+   f(x,x)
+   
+   # Traceback (most recent call last):
+   #   File "<stdin>", line 1, in <module>
+   #   File "<stdin>", line 2, in f
+   # TypeError: only size-1 arrays can be converted to Python scalars
 
+We could loop over the array:
 
-In order to pass an numpy array, we could vectorize it.
-For universal functions (or ``ufunc`` for short), 
-NumPy provides the ``vectorize`` function.
+.. code-block:: python
+
+   %%timeit 
+   for i in x:
+       f(i,i)
+
+   # 49.9 ms ± 3.84 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+However, in order to pass a numpy array it is better to vectorize the function using :meth:`np.vectorize`
+which takes a nested sequence of objects or numpy arrays as inputs and returns a single 
+numpy array or a tuple of numpy arrays:
 
 .. code-block:: python
 
@@ -370,17 +324,11 @@ NumPy provides the ``vectorize`` function.
    # benchmark
    x = np.ones(10000, dtype=np.int8)
    %timeit f_numpy(x,x)
+   # 4.84 ms ± 75.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 
-.. note:: 
-   
-   As stated in the NumPy document: 
-   The vectorize function is provided primarily for convenience, not for performance. The implementation is essentially a for loop.
-
-
-
-For high performance vectorization, one choice is to use Numba. 
-Adding the decorator in a function, Numba will figure out the rest for you. 
+For high performance vectorization, another choice is to use Numba. 
+Adding the decorator in a function, Numba will figure out the rest for you:
 
 .. code-block:: python
 
@@ -396,6 +344,7 @@ Adding the decorator in a function, Numba will figure out the rest for you.
    x = np.ones(10000, dtype=np.int8)
    %timeit f_numba(x,x)
 
+   # 89.2 µs ± 1.74 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 
 Memory usage optimization
@@ -725,7 +674,7 @@ the Python scientific software stack. The optimized machine code is generated by
       # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 
 
-   .. note:: 
+   .. warning:: 
    
       Numba is best at accelerating functions that apply numerical functions to NumPy arrays. When used with Pandas, 
       pass the underlying NumPy array of :class:`Series` or :class:`DataFrame` (using ``to_numpy()``) into the function.
@@ -745,31 +694,88 @@ the Python scientific software stack. The optimized machine code is generated by
 
 
 
-
-**WRITEME: use word-count example here**
-
-
 Exercises
-^^^^^^^^^
+---------
 
-Here we have two exercises: the starting point is a Python function. Try to speed it up with 
-Numba or Cython (depending on what you find most interesting).
+.. exercise:: Profile the word-autocorrelation code
+
+   Revisit the word-autocorrelation code. Add ``@profile`` to the :meth:`word_autocorr` and 
+   :meth:`word_autocorr_average` function, and run ``kernprof.py`` from the command line.
+
+   .. solution:: autocorrelation.py
+
+.. exercise:: Is the :meth:`word_autocorr` function efficient?
+
+   Have another look at the :meth:`word_autocorr` function from the word-count project. 
+
+   .. code-block:: python
+
+      def word_autocorr(word, text, timesteps):
+          """
+          Calculate word-autocorrelation function for given word 
+          in a text. Each word in the text corresponds to one "timestep".
+          """
+          acf = np.zeros((timesteps,))
+          mask = [w==word for w in text]
+          nwords_chosen = np.sum(mask)
+          nwords_total = len(text)
+          for t in range(timesteps):
+              for i in range(1,nwords_total-t):
+                  acf[t] += mask[i]*mask[i+t]
+              acf[t] /= nwords_chosen      
+          return acf
+      
+   Do you think there is any room for improvement? How would you go about optimizing 
+   this function?
+
+   .. solution:: 
+
+      The function uses a Python object (``mask``) inside a double for-loop, 
+      which is guaranteed to be suboptimal. There are a number of ways to speed 
+      it up. One is to use ``numba`` and just-in-time compilation, as we shall 
+      see below. 
+
+      Another is to find an in-built vectorized NumPy function which can calculate the 
+      autocorrelation for us! Here's one way to do it:
+
+      .. code-block:: python
+
+         def word_autocorr_numpy(word, text, timesteps):
+             """
+             Calculate word-autocorrelation function for given word 
+             in a text using numpy.correlate function. 
+             Each word in the text corresponds to one "timestep".
+             """
+             acf = np.zeros((timesteps,))
+             mask = np.array([w==word for w in text]).astype(np.float64)
+             nwords_chosen = np.sum(mask)
+             acf = np.correlate(mask, mask, mode='full') / nwords_chosen
+             return acf[int(acf.size/2):int(acf.size/2)+timesteps]         
+
 
 .. exercise:: Pairwise distance
 
+   Consider the following Python function:
+
    .. literalinclude:: example/dis_python.py
+
+   Start by profiling it in Jupyter:
 
    .. code-block:: ipython
 
       X = np.random.random((1000, 3))
       %timeit dis_python(X)
 
+   Now try to speed it up with NumPy (i.e. *vectorise* the function),
+   Numba or Cython (depending on what you find most interesting).
+   Make sure that you're getting the correct result, and then benchmark it 
+   with ``%timeit``.
 
    .. solution::
 
       .. tabs:: 
    
-         .. tab:: numpy
+         .. tab:: NumPy
    
                 .. literalinclude:: example/dis_numpy.py 
 
@@ -779,7 +785,7 @@ Numba or Cython (depending on what you find most interesting).
                    %timeit dis_numpy(X)
 
    
-         .. tab:: cython
+         .. tab:: Cython
    
                 .. literalinclude:: example/dis_cython.py 
 
@@ -788,7 +794,7 @@ Numba or Cython (depending on what you find most interesting).
                    X = np.random.random((1000, 3))
                    %timeit dis_cython(X)
    
-         .. tab:: numba
+         .. tab:: Numba
    
                 .. literalinclude:: example/dis_numba.py 
 
@@ -805,8 +811,11 @@ Numba or Cython (depending on what you find most interesting).
 
    .. image:: img/Bubble-sort-example-300px.gif
 
+   Here is a function that performs bubble-sort:
 
    .. literalinclude:: example/bs_python.py 
+
+   And this is how you can benchmark it:
 
    .. code-block:: ipython
 
@@ -814,12 +823,15 @@ Numba or Cython (depending on what you find most interesting).
       l = [random.randint(1,1000) for num in range(1, 1000)]
       %timeit bs_python(l)
 
+   Now try to speed it up with Numba or Cython (depending on what you find 
+   most interesting). Make sure that you're getting the correct result, 
+   and then benchmark it with ``%timeit``.
 
    .. solution:: 
    
       .. tabs:: 
 
-         .. tab:: cython
+         .. tab:: Cython
 
                 .. literalinclude:: example/bs_cython.py 
 
@@ -842,7 +854,7 @@ Numba or Cython (depending on what you find most interesting).
                    %timeit bs_clist(l)
 
 
-         .. tab:: numba
+         .. tab:: Numba
 
                 .. literalinclude:: example/bs_numba.py 
 
