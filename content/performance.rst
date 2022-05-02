@@ -557,12 +557,14 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
 
    .. code-block:: ipython
 
+      import pandas as pd
+
       df = pd.DataFrame({"a": np.random.randn(1000),
                         "b": np.random.randn(1000),
                         "N": np.random.randint(100, 1000, (1000))})                
 
       %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      # 321 ms ± 10.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
    Now import the Cython extension:
 
@@ -575,8 +577,7 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    The yellow coloring in the output shows us the amount of pure Python:
 
    .. figure:: img/cython_annotate.png
-   
-      
+       
    Our task is to remove as much yellow as possible by explicitly declaring variables and functions.
    We can start by simply compiling the code using Cython without any changes:
 
@@ -585,7 +586,7 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    .. code-block:: ipython
 
       %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      # 276 ms ± 20.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
    Now we can start adding data type annotation to the input variables:
 
@@ -593,11 +594,11 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
 
    .. code-block:: ipython
 
-      #this will not work
+      # this will not work
       #%timeit apply_integrate_f_cython_dtype0(df['a'], df['b'], df['N'])
-      #but rather 
+      # but rather 
       %timeit apply_integrate_f_cython_dtype0(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      # 41.4 ms ± 1.27 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
    .. warning::
 
@@ -631,8 +632,7 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    .. code-block:: ipython
 
       %timeit apply_integrate_f_cython_dtype1(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
+      # 37.2 ms ± 556 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
    Last step, we can add type annotation to the local variables within the functions and output.
 
@@ -641,10 +641,10 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    .. code-block:: ipython
 
       %timeit apply_integrate_f_cython_dtype2(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
+      # 696 µs ± 8.71 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
    
-   Now it is over 400 XXX times faster than the original Python implementation, and we haven't really modified the code. 
+   Now it is over 400 times faster than the original Python implementation, and all we have done is to add 
+   type declarations!
 
 
 Numba
@@ -703,10 +703,56 @@ Exercises
 
 .. exercise:: Profile the word-autocorrelation code
 
-   Revisit the word-autocorrelation code. Add ``@profile`` to the :meth:`word_autocorr` and 
-   :meth:`word_autocorr_average` function, and run ``kernprof.py`` from the command line.
+   Revisit the word-autocorrelation code. To clone the repository (if you haven't already):
 
-   .. solution:: autocorrelation.py
+   .. code-block:: console
+
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
+   
+   To run the code, type:
+
+   .. code-block:: console
+
+      $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+
+   Add ``@profile`` to the :meth:`word_autocorr` function, and run ``kernprof.py`` (or just ``kernprof``) 
+   from the command line. What lines of this function are the most expensive?
+
+   .. solution:: 
+
+      .. code-block:: console
+
+         $ kernprof -l -v source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+
+      Output: 
+
+      .. code-block:: text
+
+         Wrote profile results to autocorrelation.py.lprof
+         Timer unit: 1e-06 s
+         
+         Total time: 15.5976 s
+         File: source/autocorrelation.py
+         Function: word_autocorr at line 24
+         
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+             24                                           @profile
+             25                                           def word_autocorr(word, text, timesteps):
+             26                                               """
+             27                                               Calculate word-autocorrelation function for given word 
+             28                                               in a text. Each word in the text corresponds to one "timestep".
+             29                                               """
+             30        10       1190.0    119.0      0.0      acf = np.zeros((timesteps,))
+             31        10      15722.0   1572.2      0.1      mask = [w==word for w in text]
+             32        10       6072.0    607.2      0.0      nwords_chosen = np.sum(mask)
+             33        10         14.0      1.4      0.0      nwords_total = len(text)
+             34      1010        658.0      0.7      0.0      for t in range(timesteps):
+             35  11373500    4675124.0      0.4     30.0          for i in range(1,nwords_total-t):
+             36  11372500   10897305.0      1.0     69.9              acf[t] += mask[i]*mask[i+t]
+             37      1000       1542.0      1.5      0.0          acf[t] /= nwords_chosen      
+             38        10         10.0      1.0      0.0      return acf
+         
 
 .. exercise:: Is the :meth:`word_autocorr` function efficient?
 
