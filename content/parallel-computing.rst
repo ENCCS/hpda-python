@@ -290,6 +290,7 @@ and then initialize a Pool object in a context manager and inside of it call the
 :meth:`Pool.map` method to parallelize the computation:
 
 .. code-block:: python
+   :emphasize-lines: 1, 11-12
 
    import multiprocessing as mp
    
@@ -309,6 +310,7 @@ For functions that take multiple arguments one can instead use the :meth:`Pool.s
 function:
 
 .. code-block:: python
+   :emphasize-lines: 1, 10-11
 
    import multiprocessing as mp
 
@@ -382,6 +384,11 @@ comes with the MPI library:
    # on some HPC systems you might need 'srun -n 4' instead of 'mpirun -np 4'  
    $ mpirun -np 4 hello.py
 
+   # Hello from process 1 out of 4
+   # Hello from process 0 out of 4
+   # Hello from process 2 out of 4
+   # Hello from process 3 out of 4
+
 A number of available MPI libraries have been developed (`OpenMPI <https://www.open-mpi.org/>`__, 
 `MPICH <https://www.mpich.org/>`__, `IntelMPI <https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html#gs.up6uyn>`__, 
 `MVAPICH <http://mvapich.cse.ohio-state.edu/>`__) and HPC centers normally offer one or more of these for users 
@@ -438,6 +445,7 @@ Examples
    .. tab:: send/recv
 
       .. code-block:: python
+         :emphasize-lines: 11, 16
 
          from mpi4py import MPI
    
@@ -460,6 +468,7 @@ Examples
    .. tab:: broadcast
 
       .. code-block:: python
+         :emphasize-lines: 14
             
          from mpi4py import MPI
    
@@ -482,6 +491,7 @@ Examples
    .. tab:: gather
       
       .. code-block:: python
+         :emphasize-lines: 10
          
          from mpi4py import MPI
    
@@ -523,6 +533,31 @@ general way and this enables many different styles of parallelism, including:
 
 This is similar to Dask which will be covered in a later episode. 
 
+
+Let's explore how ``ipyparallel`` can be used together with MPI. We start with Hello World. 
+The following code cell in Jupyter will initialize 4 MPI engines, create a "broadcast view" 
+to the engines (which is more efficient than a "direct view" for MPI-type problems), and finally 
+use the :meth:`apply_sync` function to run the :meth:`mpi_example` function on the MPI engines:
+
+.. code-block:: python
+
+   import ipyparallel as ipp
+
+   def mpi_example():
+      from mpi4py import MPI
+      comm = MPI.COMM_WORLD
+      return f"Hello World from rank {comm.Get_rank()}. total ranks={comm.Get_size()}"
+
+   # request an MPI cluster with 4 engines
+   with ipp.Cluster(engines='mpi', n=4) as rc:
+       # get a broadcast_view on the cluster which is best suited for MPI style computation
+       view = rc.broadcast_view()
+       # run the mpi_example function on all engines in parallel
+       r = view.apply_sync(mpi_example)
+       # Retrieve and print the result from the engines
+       print("\n".join(r))
+   # at this point, the cluster processes have been shutdown
+
 WRITEME: simple example with ipyparallel, probably together with MPI since MPI is not 
 interactive itself and that's what ipyparallel can contribute (many other use cases fit better with dask)
 
@@ -544,7 +579,7 @@ Exercises
 
    .. code-block:: console
 
-      time snakemake -j 1
+      $ time snakemake -j 1
 
    Now compare the execution time when using more processes! How much improvement can be obtained?
    Of course, the more time-consuming each job in the workflow is, the larger will the parallel efficiency be.
@@ -668,17 +703,17 @@ Exercises
 
         $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
 
-   .. discussion:: Where to parallelise?
-
-      Think about what this code is doing and try to find a good place to parallelize it using 
-      a pool of processes. With or without having a look at the hints below, try to parallelize 
-      the code using ``multiprocessing`` and use :meth:`time.time()` to measure the speedup when running 
-      it for one book.
+   - Think about what this code is doing and try to find a good place to parallelize it using 
+     a pool of processes. 
+   - With or without having a look at the hints below, try to parallelize 
+     the code using ``multiprocessing`` and use :meth:`time.time()` to measure the speedup when running 
+     it for one book.
+   - **Note**: You will not be able to use Jupyter for this task due to the above-mentioned limitation of ``multiprocessing``.
 
    .. solution:: Hints
  
       The most time-consuming parts of this code is the double-loop inside 
-      :meth:`word_autocorr` (you can confirm this in an exercise below). 
+      :meth:`word_autocorr` (you can confirm this in an exercise in the next episode). 
       This function is called 10 times in the :meth:`word_autocorr_average`
       function, once for each word in the top-10 list. This looks like a perfect place to use a multiprocessing 
       pool of processes!
@@ -974,6 +1009,7 @@ See also
   and `part 2 <https://www.kth.se/blogs/pdc/2019/03/parallel-programming-in-python-multiprocessing-part-2/>`__
 - Parallel programming in Python with mpi4py, `part 1 <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
   and `part 2 <https://www.kth.se/blogs/pdc/2019/11/parallel-programming-in-python-mpi4py-part-2/>`__
+- `ipyparallel documentation <https://ipyparallel.readthedocs.io/en/latest/>`__
 - `IPython Parallel in 2021 <https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a>`__
 - `ipyparallel tutorial <https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial>`__
 
