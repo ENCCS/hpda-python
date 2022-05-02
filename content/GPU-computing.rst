@@ -123,7 +123,6 @@ Summary
 Numba for GPUs
 --------------
 
-
 Terminology
 ^^^^^^^^^^^
 
@@ -306,15 +305,9 @@ Numba ``@vectroize`` is limited to scalar arguments in the core function, for mu
    - Data was copied back from GPU to CPU
 
 
-
-CUDA kernel: CUDA JIT decorator 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 Alough it is simple to use ufuncs(gfuncs) to run on GPU, the performance is the price we have to pay. 
 In addition, not all functions can be written as ufuncs in practice. To have much more flexibility, 
 one needs to write a kernel on GPU or device function, which requires more understanding of the GPU programming. 
-
-
 
 GPU Programming Model
 ^^^^^^^^^^^^^^^^^^^^^
@@ -331,7 +324,7 @@ to take advantage of the GPU. The kernel calls are asynchronous, the control is 
 to the host after a kernel calls. All kernels are executed sequentially. 
 
 GPU Autopsy. Volta GPU
-^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: img/volta-architecture.png
     :align: center
@@ -366,7 +359,7 @@ NVIDIA Volta streaming multiprocessor (SM):
 
 
 Thread hierarchy
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~
 
 In order to take advantage of the accelerators it is needed to use parallelism.  
 When a kernel is launched,  tens of thousands of threads are created. 
@@ -483,7 +476,7 @@ With many cores trying to access the memory simultaneously and with little cache
 the accelerator can run out of memory very quickly. This makes the data and memory management an essential task on the GPU.
 
 Data transfer
-^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 
 Although Numba could transfer data automatically from/to the device, these data transfers are slow, 
 sometimes even more than the actual on-device computation. 
@@ -507,7 +500,7 @@ To transfer data on the device back to the host, one can use the ``copy_to_host(
 
 
 Memory hierarchy
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~
 
 .. figure:: img/memory-hierarchy.png
    :align: center
@@ -527,8 +520,8 @@ However, only a limited amount of shared memory can be allocated on the device f
 CUDA JIT decorator 
 ^^^^^^^^^^^^^^^^^^
 
-Kernel and device functions are created with the ``numba.cuda.jit`` decorator on Nvidia GPUs.
-Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thread positions.
+CUDA Kernel and device functions are created with the ``numba.cuda.jit`` decorator on Nvidia GPUs.
+We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thread positions.
 
 
 
@@ -662,7 +655,6 @@ GPU can be easily misused and which leads to a low performance. One should condi
 	- data types: 64bit data types (integer and floating point) have a significant cost when running on GPU compared to 32bit.
 
 
-
 Asynchronous execution
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -733,7 +725,7 @@ This example is taken from Numba official document, however there is arguably at
 
    .. solution:: Hint
 
-     - data range check: we require either x or y is out of range. The **and** should have been an **or**.
+     - data range check: we require neither x nor y is out of range. The **and** should have been an **or**.
      - ``numba.cuda.syncthreads()`` in conditional code: __syncthreads() is allowed in conditional code but only if 
        the conditional evaluates identically across the entire thread block, otherwise the code execution is 
        likely to hang or produce unintended side effects. 
