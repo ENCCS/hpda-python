@@ -144,7 +144,7 @@ NumPy arrays are transferred between the CPU and the GPU automatically.
 .. note:: Kernel declaration
 
    A kernel function is a GPU function that is meant to be called from CPU code. 
-It contains two fundamental characteristics:
+   It contains two fundamental characteristics:
 
    - kernels cannot explicitly return a value; all result data must be written to an array passed to the function 
      (if computing a scalar, you will probably pass a one-element array);
