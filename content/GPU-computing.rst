@@ -669,7 +669,7 @@ This example is taken from Numba official document, however there are arguably a
    .. solution:: Hint
 
      - data range check
-     - cuda.syncthreads() in conditional code
+     - numba.cuda.syncthreads() in conditional code
 
 
    .. literalinclude:: example/matmul_sm.py
@@ -703,13 +703,14 @@ optimize it to run on both CPU and GPU using what we learned so far.
 
       .. tab:: python
 
-	.. literalinclude:: exercise/lap2d.py
+         .. literalinclude:: exercise/lap2d.py
             :language: python
 
-      .. tab:: benchmark
 
-	.. literalinclude:: exercise/lap2d_benchmark.py
-            :language: python
+         benchmark 
+
+	 .. literalinclude:: exercise/lap2d_benchmark.py
+            :language: ipython
 
 
 .. solution::  
