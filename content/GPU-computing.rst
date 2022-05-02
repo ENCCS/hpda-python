@@ -35,7 +35,7 @@ GPU Intro
 
 
 Moore's law
-~~~~~~~~~~~
+^^^^^^^^^^^
 
 The number of transistors in a dense integrated circuit doubles about every two years.
 More transistors means smaller size of a single element, so higher core frequency can be achieved.
@@ -60,7 +60,7 @@ Achieving performance has been based on two main strategies over the years:
 
 
 Why use GPUs?
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
 
 The Graphics Processing Unit (GPU) have been the most common accelerators 
 during the last few years. The term *GPU* sometimes is used interchangeably 
@@ -70,7 +70,7 @@ and memory bandwidth than CPU within a similar price and power envelope.
 
 
 How do GPUs differ from CPUs?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 CPUs and GPUs were designed with different goals in mind. While the CPU 
 is designed to excel at executing a sequence of operations, called a thread, 
@@ -113,28 +113,11 @@ both of which are expensive in terms of transistors.
 
 
 Summary
-~~~~~~~
+^^^^^^^
 
 - GPUs are highly parallel devices that can execute certain parts of the program in many parallel threads.
 - CPU controls the works flow and makes all the allocations and data transfers.
 - In order to use the GPU efficiently, one has to split their the problem  in many parts that can run simultaneously.
-
-
-
-
-Supported Python features in CUDA Python
-----------------------------------------
-
-This page lists the Python features supported in the CUDA Python. 
-This includes all kernel and device functions compiled with 
-@numba.cuda.jit and other higher level Numba decorators that targets the CUDA GPU.
-
-Execution Model
-
-CUDA Python maps directly to the single-instruction multiple-thread execution (SIMT) model of CUDA. 
-Each instruction is implicitly executed by multiple threads in parallel. With this execution model, 
-array expressions are less useful because we don't want multiple threads to perform the same task. 
-Instead, we want threads to perform a task in a cooperative fashion.
 
 
 Numba for GPUs
@@ -142,7 +125,7 @@ Numba for GPUs
 
 
 Terminology
-~~~~~~~~~~~
+^^^^^^^^^^^
 
 Numba supports GPUs from both Nvidia and AMD, but we will use terminology from Nvidia 
 as examples in the rest of the course. 
@@ -184,7 +167,7 @@ NumPy arrays are transferred between the CPU and the GPU automatically.
 
 
 ufunc (gufunc) decorator
-~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using ufuncs (and generalized ufuncs) is the easist way to run on a GPU with Numba, 
 and it requires minimal understanding of GPU programming. Numba ``@vectroize`` 
@@ -192,7 +175,7 @@ will produce a ufunc-like object. This object is a close analog but not fully co
 with a regular NumPy ufunc. Generating a ufunc for GPU requires the explicit 
 type signature and  target attribute.
 
-.. demo:: Numba ufunc 
+.. demo:: Demo: Numba ufunc 
    
    Let's revisit our example during the episode of optimization.
 
@@ -262,7 +245,7 @@ Numba ``@vectroize`` is limited to scalar arguments in the core function, for mu
    there are plenty of existing libraries available. 
 
 
-.. demo::  Numba gufunc  
+.. demo:: Demo:  Numba gufunc  
 
    .. tabs::
 
@@ -325,7 +308,7 @@ Numba ``@vectroize`` is limited to scalar arguments in the core function, for mu
 
 
 CUDA kernel: CUDA JIT decorator 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Alough it is simple to use ufuncs(gfuncs) to run on GPU, the performance is the price we have to pay. 
 In addition, not all functions can be written as ufuncs in practice. To have much more flexibility, 
@@ -334,7 +317,7 @@ one needs to write a kernel on GPU or device function, which requires more under
 
 
 GPU Programming Model
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 Accelerators are a separate main circuit board with the processor, memory, power management, etc., 
 but they can not operate by themselves. They are always part of a system (host) in which 
@@ -382,7 +365,7 @@ NVIDIA Volta streaming multiprocessor (SM):
     A scheme of NVIDIA Volta streaming multiprocessor.
 
 
-thread hierarchy
+Thread hierarchy
 ^^^^^^^^^^^^^^^^
 
 In order to take advantage of the accelerators it is needed to use parallelism.  
@@ -419,8 +402,6 @@ The dimension of the thread block is accessible within the kernel through the bu
 :attr:`numba.cuda.blockDim` variable.  The global index of a thread should be 
 computed from its in-block index, the index of execution block and the block size. 
 For 1D, it is numba.cuda.threadIdx.x + numba.cuda.blockIdx.x * numba.cuda.blockDim.x. 
-Numba provides method to automate such calculations by using :attr:`numba.cuda.grid(ndim)` 
-where *ndim* is the number of dimensions declared when invoking the kernel.
 
 .. note:: 
 
@@ -434,6 +415,8 @@ where *ndim* is the number of dimensions declared when invoking the kernel.
    These objects can be 1D, 2D or 3D, depending on how the kernel was invoked. To access 
    the value at each dimension, use the ``x``, ``y`` and ``z`` attributes of these objects, respectively.
 
+   Numba provides method to automate such calculations by using :attr:`numba.cuda.grid(ndim)` 
+   where *ndim* is the number of dimensions declared when invoking the kernel.
 
 
 .. figure:: img/MappingBlocksToSMs.png
@@ -494,7 +477,7 @@ values like 128, 256 or 512 are frequently used
 
 
 Data and Memory management
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 With many cores trying to access the memory simultaneously and with little cache available, 
 the accelerator can run out of memory very quickly. This makes the data and memory management an essential task on the GPU.
@@ -542,14 +525,14 @@ However, only a limited amount of shared memory can be allocated on the device f
 
 
 CUDA JIT decorator 
-~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^
 
 Kernel and device functions are created with the ``numba.cuda.jit`` decorator on Nvidia GPUs.
 Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thread positions.
 
 
 
-.. demo:: CUDA kernel
+.. demo:: Demo: CUDA kernel
 
    .. tabs::
 
@@ -603,7 +586,7 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
                 # 62.3 µs ± 81.2 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 
-.. demo:: CUDA kernel matrix multiplication
+.. demo:: Demo: CUDA kernel matrix multiplication
 
    .. tabs::
 
@@ -681,7 +664,7 @@ GPU can be easily misused and which leads to a low performance. One should condi
 
 
 Asynchronous execution
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 Although the evaluation of computation heavy kernels is noticeable quicker on a GPU, 
 we still have some room for improvement. A typical GPU program that does not explore 
