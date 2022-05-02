@@ -17,6 +17,12 @@ GPU computing
    - Understand what types of computation is suitable for GPUs
    - Learn the basics of Numba for GPUs and PyCUDA
 
+.. instructor-note::
+
+   - 70 min teaching/type-along
+   - 40 min exercises
+
+
 .. prereq::
 
    1. Basic C or FORTRAN

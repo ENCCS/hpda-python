@@ -10,6 +10,11 @@ Parallel computing
    - Understand the difference between multithreading and multiprocessing
    - Learn the basics of *multiprocessing*, *threading*, *ipyparallel* and *MPI4Py*
 
+.. instructor-note::
+
+   - 40 min teaching/type-along
+   - 40 min exercises
+
 
 The performance of a single CPU core has stagnated over the last ten years,
 and as such most of the speed-up in modern CPUs is coming from using multiple
@@ -32,7 +37,7 @@ There are three main models of parallel computing:
  
   - Parallel threads do separate work and communicate via the same memory and write to shared variables.
   - Multiple threads in a single Python program cannot execute at the same time (see GIL below)
-  - Running multiple threads in Python is *only effective for I/O-bound tasks*
+  - Running multiple threads in Python is *only effective for certain I/O-bound tasks*
   - External libraries in other languages (e.g. C) which are called from Python can still use multithreading
 
 - **Distributed memory parallelism (multiprocessing):** Different processes manage their own memory segments and 
@@ -85,42 +90,42 @@ use the inherent ("embarrassing") parallelism of the problem and perform these s
 
 Let us have a look at a toy example which many of us can hopefully relate to. 
 
-.. demo:: The word-count project
+.. demo:: Demo: The word-count project
 
    Head over to https://github.com/enccs/word-count-hpda and clone the repository:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      git clone git@github.com:ENCCS/word-count-hpda.git
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
 
    This toy project is about analyzing the frequency of words in texts. The ``data``
    directory contains 64 public domain books from Project Gutenberg and source files 
    under ``source`` can be used to count words:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      # count words in two books
-      python source/wordcount.py data/pg10.txt > processed_data/pg10.dat
-      python source/wordcount.py data/pg65.txt > processed_data/pg65.dat
+      $ # count words in two books
+      $ python source/wordcount.py data/pg10.txt processed_data/pg10.dat
+      $ python source/wordcount.py data/pg65.txt processed_data/pg65.dat
       
-      # print frequency of 10 most frequent words in both books to file
-      python source/zipf_test.py 10 pg10.dat pg65.dat > results.txt
+      $ # print frequency of 10 most frequent words in both books to file
+      $ python source/zipf_test.py 10 processed_data/pg10.dat processed_data/pg65.dat > results/results.txt
       
    This workflow is encoded in the ``Snakefile`` which can be used to run
    through all data files:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      # run workflow in serial
-      snakemake -j 1      
+      $ # run workflow in serial
+      $ snakemake -j 1      
 
 
    The workflow can be visualised in a directed-acyclic graph:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      # requires dot from Graphviz
-      snakemake -j 1 --dag | dot -Tpng  > dag.png
+      $ # requires dot from Graphviz
+      $ snakemake -j 1 --dag | dot -Tpng  > dag.png
 
    .. figure:: img/dag.png
       :align: center
@@ -128,16 +133,14 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
    The workflow can be parallelized to utilize multiple cores:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      # first clear all output
-      snakemake -j 1 --delete-all-output      
-      # run in parallel on 4 processes
-      snakemake -j 4
+      $ # first clear all output
+      $ snakemake -j 1 --delete-all-output      
+      $ # run in parallel on 4 processes
+      $ snakemake -j 4
 
-   **Task:**
-
-   - Compare the execution time when using 1, 2 and 4 processes
+    For embarrassingly parallel work one can achieve significant speedup with parallel Snakemake execution.
 
 The Snakefile describes the workflow in declarative style, i.e. we describe 
 the dependencies but let Snakemake figure out the series of steps to produce 
@@ -201,14 +204,14 @@ Depending on configuration, NumPy will often use multiple threads by default,
 but we can use the environment variable ``OMP_NUM_THREADS`` to set the number 
 of threads manually:
 
-.. code-block:: bash
+.. code-block:: console
 
-   export OMP_NUM_THREADS=<N>
+   $ export OMP_NUM_THREADS=<N>
 
 After setting this environment variable we continue as usual 
 and multithreading will be turned on.
 
-.. demo:: Multithreading NumPy 
+.. demo:: Demo: Multithreading NumPy 
 
    Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
    To run it, we can save it in a file named `omp_test.py`.
@@ -227,13 +230,13 @@ and multithreading will be turned on.
 
    Let us test it with 1 and 4 threads:
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      export OMP_NUM_THREADS=1
-      python omp_test.py
+      $ export OMP_NUM_THREADS=1
+      $ python omp_test.py
 
-      export OMP_NUM_THREADS=4
-      python omp_test.py
+      $ export OMP_NUM_THREADS=4
+      $ python omp_test.py
 
 Multithreaded I/O
 ^^^^^^^^^^^^^^^^^
@@ -247,83 +250,20 @@ This is how an I/O-bound application might look:
    From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
 
 The `threading library <https://docs.python.org/dev/library/threading.html#>`__ 
-provides an API for creating and working with threads. We restrict our discussion 
-here to using the ``ThreadPoolExecutor`` class to multithread reading and writing 
-to files. For further details on ``threading`` refer to the **See also** section below.
+provides an API for creating and working with threads. The simplest approach to 
+create and manage threads is to use the ``ThreadPoolExecutor`` class.
+An example use case could be to download data from multiple websites using 
+multiple threads:
 
+.. code-block:: python
 
-.. demo:: Multithreading file I/O
+   import concurrent.futures
 
-   We continue with the word-count project and explore how we can use multithreading 
-   for I/O. After running ``snakemake -j 1`` we should have 64 ``.dat`` files in the 
-   ``processed_data`` directory. Let's say we want to convert them all to csv format.
-
-   The easiest way to use multithreading is to use the ``ThreadPoolExecutor``
-   from ``concurrent.futures``. Here is a comparison of serial and multithreaded 
-   code to accomplish this:
-
-   .. tabs:: 
-
-      .. tab:: Serial
-
-         .. code-block:: python
-      
-            import glob
-            import time
-            
-            def csvify_file(file):
-                with open(file, 'r') as f:
-                    lines = f.readlines()
-                with open(file.replace('.dat', '.csv'), 'w') as f:
-                    for line in lines:
-                        f.write(line.replace(' ', ','))
-            
-            def csvify_all_files(files):
-                for file in files:
-                    csvify_file(file)
-                    #break
-                    
-            if __name__ == '__main__':
-                files = glob.glob("processed_data/*.dat")
-                start_time = time.time()
-                csvify_all_files(files)
-                duration = time.time() - start_time
-                print(f"Read {len(files)} in {duration} seconds")   
-
-      .. tab:: Multithreaded
-
-         .. code-block:: python
-            :emphasize-lines: 2, 13-14
-
-            import glob
-            import concurrent.futures
-            import time
-
-            def csvify_file(file):
-                with open(file, 'r') as f:
-                    lines = f.readlines()
-                with open(file.replace('.dat', '.csv'), 'w') as f:
-                    for line in lines:
-                        f.write(line.replace(' ', ','))        
-
-            def csvify_all_files(files):
-                with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-                    executor.map(read_file, files)
-
-            if __name__ == '__main__':
-                files = glob.glob("processed_data/*.dat")
-                start_time = time.time()
-                csvify_all_files(files)
-                duration = time.time() - start_time
-                print(f"Read {len(files)} in {duration} seconds")      
-
-   Tasks:
-
-   1. Run these codes and observe the timing information.
-   2. You will likely not see a speedup. Try increasing the I/O by multiplying the data before writing 
-      it to file, i.e. insert ``line *= 100`` just before ``f.write(...)``. Does multithreading now pay off?
+   def download_all_sites(sites):
+       with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+           executor.map(my_download_function, sites)
   
-The speedup gained from multithreading our problem can be understood from the following image.
+The speedup gained from multithreading I/O bound problems can be understood from the following image.
 
 .. figure:: img/Threading.png
   :align: center
@@ -331,7 +271,7 @@ The speedup gained from multithreading our problem can be understood from the fo
 
   From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
 
-
+Further details on threading in Python can be found in the **See also** section below.
 
 
 Multiprocessing
@@ -350,6 +290,7 @@ and then initialize a Pool object in a context manager and inside of it call the
 :meth:`Pool.map` method to parallelize the computation:
 
 .. code-block:: python
+   :emphasize-lines: 1, 11-12
 
    import multiprocessing as mp
    
@@ -369,6 +310,7 @@ For functions that take multiple arguments one can instead use the :meth:`Pool.s
 function:
 
 .. code-block:: python
+   :emphasize-lines: 1, 10-11
 
    import multiprocessing as mp
 
@@ -397,14 +339,6 @@ of external resources that cover these methods.
 
 At the end of this episode you can turn your attention back to the word-count problem 
 and practice using ``multiprocessing`` pools of processes.
-
-
-ipyparallel
------------
-
-- https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a
-- https://coderefinery.github.io/jupyter/examples/#parallel-python-with-ipyparallel
-- https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial
 
 
 MPI
@@ -445,10 +379,15 @@ This is how a hello world MPI program looks like in Python:
 To run this code with a specific number of processes we use the ``mpirun`` command which 
 comes with the MPI library:
 
-.. code-block:: bash
+.. code-block:: console
 
    # on some HPC systems you might need 'srun -n 4' instead of 'mpirun -np 4'  
-   mpirun -np 4 hello.py
+   $ mpirun -np 4 hello.py
+
+   # Hello from process 1 out of 4
+   # Hello from process 0 out of 4
+   # Hello from process 2 out of 4
+   # Hello from process 3 out of 4
 
 A number of available MPI libraries have been developed (`OpenMPI <https://www.open-mpi.org/>`__, 
 `MPICH <https://www.mpich.org/>`__, `IntelMPI <https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html#gs.up6uyn>`__, 
@@ -506,6 +445,7 @@ Examples
    .. tab:: send/recv
 
       .. code-block:: python
+         :emphasize-lines: 11, 16
 
          from mpi4py import MPI
    
@@ -528,6 +468,7 @@ Examples
    .. tab:: broadcast
 
       .. code-block:: python
+         :emphasize-lines: 14
             
          from mpi4py import MPI
    
@@ -550,6 +491,7 @@ Examples
    .. tab:: gather
       
       .. code-block:: python
+         :emphasize-lines: 10
          
          from mpi4py import MPI
    
@@ -571,9 +513,77 @@ Examples
    The word-count problem is simpler than that and MPI is somewhat overkill, but in an exercise 
    below you will learn to use point-to-point communication to parallelize it.
 
+ipyparallel
+-----------
+
+`ipyparallel <https://ipyparallel.readthedocs.io/en/latest/>`__, also known as IPython Parallel, 
+is yet another tool for parallel computing in Python. However, it's more than just parallel Python, 
+it's parallel *IPython*, and this adds interactivity to parallel computing.
+
+The architecture of ipyparallel for parallel and distributed computing abstracts out parallelism in a 
+general way and this enables many different styles of parallelism, including:
+
+- Single program, multiple data (SPMD) parallelism
+- Multiple program, multiple data (MPMD) parallelism
+- Message passing using MPI
+- Task farming
+- Data parallel
+- Combinations of these approaches
+- Custom user-defined approaches
+
+This is similar to Dask which will be covered in a later episode. 
+
+
+Let's explore how ``ipyparallel`` can be used together with MPI. We start with Hello World. 
+The following code cell in Jupyter will initialize 4 MPI engines, create a "broadcast view" 
+to the engines (which is more efficient than a "direct view" for MPI-type problems), and finally 
+use the :meth:`apply_sync` function to run the :meth:`mpi_example` function on the MPI engines:
+
+.. code-block:: python
+
+   import ipyparallel as ipp
+
+   def mpi_example():
+      from mpi4py import MPI
+      comm = MPI.COMM_WORLD
+      return f"Hello World from rank {comm.Get_rank()}. total ranks={comm.Get_size()}"
+
+   # request an MPI cluster with 4 engines
+   with ipp.Cluster(engines='mpi', n=4) as rc:
+       # get a broadcast_view on the cluster which is best suited for MPI style computation
+       view = rc.broadcast_view()
+       # run the mpi_example function on all engines in parallel
+       r = view.apply_sync(mpi_example)
+       # Retrieve and print the result from the engines
+       print("\n".join(r))
+   # at this point, the cluster processes have been shutdown
+
+WRITEME: simple example with ipyparallel, probably together with MPI since MPI is not 
+interactive itself and that's what ipyparallel can contribute (many other use cases fit better with dask)
+
 
 Exercises
 ---------
+
+.. exercise:: Measure Snakemake parallelisation efficiency
+
+   Explore the parallel efficiency of Snakemake for the word-count project.
+
+   First clone the repo:
+
+   .. code-block:: console
+
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
+
+   Run the workflow on one core and time it:
+
+   .. code-block:: console
+
+      $ time snakemake -j 1
+
+   Now compare the execution time when using more processes! How much improvement can be obtained?
+   Of course, the more time-consuming each job in the workflow is, the larger will the parallel efficiency be.
+
 
 .. exercise:: Word-autocorrelation: parallelizing word-count with multiprocessing
 
@@ -689,21 +699,21 @@ Exercises
    - :meth:`word_autocorr_average` loops over a list of words and computes their average autocorrelation
    - To run this code: 
 
-     .. code-block:: bash
+     .. code-block:: console
 
-        python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
+        $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
 
-   .. discussion:: Where to parallelise?
-
-      Think about what this code is doing and try to find a good place to parallelize it using 
-      a pool of processes. With or without having a look at the hints below, try to parallelize 
-      the code using ``multiprocessing`` and use :meth:`time.time()` to measure the speedup when running 
-      it for one book.
+   - Think about what this code is doing and try to find a good place to parallelize it using 
+     a pool of processes. 
+   - With or without having a look at the hints below, try to parallelize 
+     the code using ``multiprocessing`` and use :meth:`time.time()` to measure the speedup when running 
+     it for one book.
+   - **Note**: You will not be able to use Jupyter for this task due to the above-mentioned limitation of ``multiprocessing``.
 
    .. solution:: Hints
  
       The most time-consuming parts of this code is the double-loop inside 
-      :meth:`word_autocorr` (you can confirm this in an exercise below). 
+      :meth:`word_autocorr` (you can confirm this in an exercise in the next episode). 
       This function is called 10 times in the :meth:`word_autocorr_average`
       function, once for each word in the top-10 list. This looks like a perfect place to use a multiprocessing 
       pool of processes!
@@ -958,9 +968,9 @@ Exercises
 
    Try running your code and time the result for different number of tanks!
 
-   .. code-block:: bash
+   .. code-block:: console
 
-      time mpirun -np <N> python source/autocorrelation.py data/pg58.txt processed_data/pg58.dat results/pg58_acf.csv
+      $ time mpirun -np <N> python source/autocorrelation.py data/pg58.txt processed_data/pg58.dat results/pg58_acf.csv
 
 
    .. solution:: 
@@ -970,13 +980,13 @@ Exercises
       <https://github.com/ENCCS/word-count-hpda/blob/autocorr-mpi/source/autocorrelation.py>`__.
       You can also switch to the branch in your repository:
 
-      .. code-block:: bash
+      .. code-block:: console
 
-         # first commit any work you have done:
-         git add -u 
-         git commit -m "save my work"
-         # switch branch
-         git checkout autocorr-mpi
+         $ # first commit any work you have done:
+         $ git add -u 
+         $ git commit -m "save my work"
+         $ # switch branch
+         $ git checkout autocorr-mpi
                 
 .. exercise:: Extend the Snakefile
 
@@ -999,6 +1009,9 @@ See also
   and `part 2 <https://www.kth.se/blogs/pdc/2019/03/parallel-programming-in-python-multiprocessing-part-2/>`__
 - Parallel programming in Python with mpi4py, `part 1 <https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/>`__
   and `part 2 <https://www.kth.se/blogs/pdc/2019/11/parallel-programming-in-python-mpi4py-part-2/>`__
+- `ipyparallel documentation <https://ipyparallel.readthedocs.io/en/latest/>`__
+- `IPython Parallel in 2021 <https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a>`__
+- `ipyparallel tutorial <https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial>`__
 
 
 

@@ -8,6 +8,10 @@ Dask for scalable analytics
    - Understand how Dask achieves parallelism
    - Learn a few common workflows with Dask
 
+.. instructor-note::
+
+   - 40 min teaching/type-along
+   - 40 min exercises
 
 Overview
 --------
@@ -311,7 +315,7 @@ preprocessing log files, JSON records, or other user defined Python objects.
 We will content ourselves with implementing a dask version of the word-count problem, 
 specifically the step where we count words in a text. 
 
-.. demo:: Dask version of word-count
+.. demo:: Demo: Dask version of word-count
 
    First navigate to the ``word-count-hpda`` directory. The serial version (wrapped in 
    multiple functions in the ``source/wordcount.py`` code) looks like this:
@@ -567,23 +571,23 @@ to make them lazy and tasks into a graph which we will run later on parallel har
    as well and data on the worker will be lost and need to be recomputed.
 
 
-How does Dask work?
--------------------
-
-
-Common use cases
-----------------
-
-
-
 Comparison to Spark
 -------------------
 
-Dask has much in common with the 
-[Apache Spark](https://spark.apache.org/).
+Dask has much in common with the `Apache Spark <https://spark.apache.org/>`__.
+Here are `some differences <https://docs.dask.org/en/stable/spark.html>`__ 
+between the two frameworks:
 
-- ref: https://docs.dask.org/en/stable/spark.html
-
+- Dask is smaller and more lightweight but is used together with other packages in 
+  the Python ecosystem. Spark is an all-in-one project with its own ecosystem. 
+- Spark is written in Scala, with some support for Python and R, while Dask is in Python. 
+- Spark is more focused on business intelligence (SQL, lightweight machine learning) while 
+  Dask is more general and is used more in scientific applications.
+- Both Dask and Spark can scale from one to thousands of nodes.
+- Dask supports the NumPy model for multidimensional arrays which Spark doesn't.
+- Spark generally expects users to compose computations out of high-level primitives 
+  (map, reduce, groupby, join, etc.), while Dask allows to specify arbitrary task 
+  graphs for more complex and custom systems.
 
 
 Exercises

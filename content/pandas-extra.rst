@@ -175,7 +175,7 @@ Each row in this new dataframe respresents the average values for the months (1=
 	    return (x - x.mean())/x.std()
 	anomaly = df.groupby(df.index.month).transform(standardize)
 
-Transfromation
+Transformation
 ~~~~~~~~~~~~~~
 
 The key difference between aggregation and transformation is that 

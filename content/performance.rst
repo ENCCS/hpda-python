@@ -1,9 +1,21 @@
 .. _performance:
 
-Optimization
-============
+Profiling and optimising
+========================
 
-Once your code is working reliably, you can start thinking of optimizing it.
+.. objectives::
+
+   - Learn how to benchmark and profile Python code
+   - Understand how optimisation can be algorithmic or based on CPU or memory usage
+   - Learn how to boost performance using Numba and Cython
+
+.. instructor-note::
+
+   - 40 min teaching/type-along
+   - 40 min exercises
+
+
+Once your code is working reliably, you can start thinking of optimising it.
 
 
 .. warning::
@@ -19,16 +31,18 @@ Timeit
 ^^^^^^
 
 If you're using a Jupyter notebook, the best choice will be to use 
-`timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
+`%timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
 
 .. code-block:: ipython
 
-   In [1]: import numpy as np
+   import numpy as np
 
-   In [2]: a = np.arange(1000)
+   a = np.arange(1000)
 
-   In [3]: %timeit a ** 2
-   100000 loops, best of 3: 5.73 us per loop
+   %timeit a ** 2
+   #  100000 loops, best of 3: 5.73 us per loop
+
+One can also use the cell magic ``%%timeit`` to benchmark a full cell.
 
 .. note::
 
@@ -81,7 +95,7 @@ output which is difficult to read.
 
 .. code-block:: console
 
-   $  python -m cProfile -o walk.prof walk.py
+   $ python -m cProfile -o walk.prof walk.py
 
 
 It's also possible to write the profile 
@@ -91,8 +105,10 @@ or profile visualisation tools like
 `Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
 or `profile-viewer <https://pypi.org/project/profile-viewer/>`__.
 
-Similar functionality is available in interactive IPython or Jupyter sessions with the 
-magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
+.. note::
+
+   Similar functionality is available in interactive IPython or Jupyter sessions with the 
+   magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
 
 
 Line-profiler
@@ -102,7 +118,7 @@ The cProfile tool tells us which function takes most of the time but it does not
 line-by-line breakdown of where time is being spent. For this information, we can use the 
 `line_profiler <https://github.com/pyutils/line_profiler/>`__ tool. 
 
-.. demo:: Line profiling
+.. demo:: Demo: line profiling
 
    For line-profiling source files from the command line, we can add a decorator ``@profile`` 
    to the functions of interests. If we do this for the :meth:`step` and :meth:`walk` function 
@@ -117,14 +133,14 @@ line-by-line breakdown of where time is being spent. For this information, we ca
 
    .. code-block:: ipython
 
-      In [1]: %load_ext line_profiler
+      %load_ext line_profiler
 
    If the :meth:`walk` and :meth:`step` functions are defined in code cells, we can get the line-profiling 
    information by:
 
    .. code-block:: ipython
 
-      In [2]: %lprun -f walk -f step walk(10000)
+      %lprun -f walk -f step walk(10000)
 
 
    - Based on the output, can you spot a mistake which is affecting performance?
@@ -171,15 +187,6 @@ line-by-line breakdown of where time is being spent. For this information, we ca
       which is called thousands of times! Moving the module import to the top level saves 
       considerable time.
 
-.. exercise:: Profile the word-autocorrelation code
-
-   Revisit the word-autocorrelation code. Add ``@profile`` to the :meth:`word_autocorr` and 
-   :meth:`word_autocorr_average` function, and run ``kernprof.py`` from the command line.
-
-   .. solution:: autocorrelation.py
-
-
-
 Performance optimization 
 ------------------------
 
@@ -209,23 +216,27 @@ but only the first few rows of its first returned argument. If
 we use the ``svd`` implementation from scipy, we can ask for an incomplete
 version of the SVD. Note that implementations of linear algebra in
 scipy are richer then those in numpy and should be preferred.
+The following example demonstrates the performance benefit for a "slim" array
+(i.e. much larger along one axis):
 
 .. sourcecode:: ipython
 
-    In [3]: %timeit np.linalg.svd(data)
-    1 loops, best of 3: 14.5 s per loop
+   import numpy as np
+   data = np.random.random((4000,100))
 
-    In [4]: from scipy import linalg
+   %timeit np.linalg.svd(data)
+   # 1.09 s ± 19.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-    In [5]: %timeit linalg.svd(data)
-    1 loops, best of 3: 14.2 s per loop
+   from scipy import linalg
 
-    In [6]: %timeit linalg.svd(data, full_matrices=False)
-    1 loops, best of 3: 295 ms per loop
+   %timeit linalg.svd(data)
+   # 1.03 s ± 24.9 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-    In [7]: %timeit np.linalg.svd(data, full_matrices=False)
-    1 loops, best of 3: 293 ms per loop
+   %timeit linalg.svd(data, full_matrices=False)
+   # 21.2 ms ± 716 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
+   %timeit np.linalg.svd(data, full_matrices=False)
+   # 23.8 ms ± 3.06 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 CPU usage optimization
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -237,35 +248,515 @@ Arithmetic is one place where numpy performance outperforms python list and the 
 A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
 In such cases, vectorization is key for better performance.
 
-.. exercise::  vectorized operation vs for loop 
 
-   Consider the following code:
+Consider the following code:
 
-   .. code-block:: python
+.. code-block:: python
 
-      import numpy as np
-      a = np.arange(1000)
-      a_dif = np.zeros(999, np.int64)
-      for i in range(1, len(a)):
-            a_dif[i-1] = a[i] - a[i-1]
+   %%timeit
 
-   Try to vectorize the ``for`` loop!
+   import numpy as np
+   a = np.arange(1000)
+   a_dif = np.zeros(999, np.int64)
+   for i in range(1, len(a)):
+       a_dif[i-1] = a[i] - a[i-1]
 
-   .. solution::
+   # 564 µs ± 25.2 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-      .. code-block:: python
+How can the ``for`` loop be vectorized? We need to use clever indexing to get rid of the 
+loop:
 
-			import numpy as np
-         a = np.arange(1000)
-			a_dif = a[1:] - a[:-1]
+.. code-block:: python
+
+   %%timeit
+
+   import numpy as np
+   a = np.arange(1000)
+   a_dif = a[1:] - a[:-1]
+
+   # 2.12 µs ± 25.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+
+So one should consider using *vectorized* operations whenever possible, not only for 
+performance but also because the vectorized version can be more convenient. 
+
+What if we have a function that only take scalar values as input, but we want to apply it 
+element-by-element on an array? We can vectorize the function!  
+Let's define a simple function ``f`` which takes scalars input: 
+
+.. code-block:: python
+
+   import math
+   def f(x, y):
+       return x**3 + 4*math.sin(y) 
+
+If we pass an array we get an error 
+   
+.. code-block:: python
+
+   x = np.ones(10000, dtype=np.int8)
+   f(x,x)
+   
+   # Traceback (most recent call last):
+   #   File "<stdin>", line 1, in <module>
+   #   File "<stdin>", line 2, in f
+   # TypeError: only size-1 arrays can be converted to Python scalars
+
+We could loop over the array:
+
+.. code-block:: python
+
+   %%timeit 
+   for i in x:
+       f(i,i)
+
+   # 49.9 ms ± 3.84 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+However, in order to pass a numpy array it is better to vectorize the function using :meth:`np.vectorize`
+which takes a nested sequence of objects or numpy arrays as inputs and returns a single 
+numpy array or a tuple of numpy arrays:
+
+.. code-block:: python
+
+   import numpy as np
+   import math
+
+   def f(x, y):
+       return x**3 + 4*math.sin(y) 
+
+   f_numpy = np.vectorize(f)
+
+   # benchmark
+   x = np.ones(10000, dtype=np.int8)
+   %timeit f_numpy(x,x)
+   # 4.84 ms ± 75.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+
+For high performance vectorization, another choice is to use Numba. 
+Adding the decorator in a function, Numba will figure out the rest for you:
+
+.. code-block:: python
+
+   import numba
+   import math
+
+   def f(x, y):
+       return x**3 + 4*math.sin(y) 
+
+   f_numba = numba.vectorize(f)
+
+   # benchmark
+   x = np.ones(10000, dtype=np.int8)
+   %timeit f_numba(x,x)
+
+   # 89.2 µs ± 1.74 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+
+Memory usage optimization
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Broadcasting
+~~~~~~~~~~~~
+
+Basic operations of numpy are elementwise, and the shape of the arrays should be compatible.
+However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
+NumPy expands the arrays such that the operation becomes viable.
+
+.. note:: Broadcasting Rules  
+
+  - Dimensions match when they are equal, or when either is 1 or None.   
+  - In the latter case, the dimension of the output array is expanded to the larger of the two.
+  - Broadcasted arrays are never physically constructed, which saves memory.
+
+
+.. challenge:: Broadcasting
+
+   .. tabs:: 
+
+      .. tab:: 1D
+
+         .. code-block:: py
+
+            import numpy as np
+            a = np.array([1, 2, 3])
+            b = 4 
+            a + b
+
+            .. figure:: img/bc_1d.svg 
+
+
+      .. tab:: 2D
+
+         .. code-block:: python
+
+            import numpy as np
+            a = np.array([[0, 0, 0],[10, 10, 10],[20, 20, 20],[30, 30, 30]])
+            b = np.array([1, 2, 3])
+            a + b                      
+
+            .. figure:: img/bc_2d_1.svg 
+
+
+         .. code-block:: python
+
+            import numpy as np
+            a = np.array([0, 10, 20,30])
+            b = np.array([1, 2, 3]) 
+            a + b                       # array([[11, 12, 13],
+                              			 #        [14, 15, 16]]) 
+				# XXXXX fixing 
+
+         .. figure:: img/bc_2d_2.svg 
+
+
+
+
+Cache effects
+~~~~~~~~~~~~~
+
+Memory access is cheaper when it is grouped: accessing a big array in a 
+continuous way is much faster than random access. This implies amongst 
+other things that **smaller strides are faster**:
+
+.. code-block:: python
+
+   c = np.zeros((1e4, 1e4), order='C')
+
+   %timeit c.sum(axis=0)
+   # 1 loops, best of 3: 3.89 s per loop
+
+   %timeit c.sum(axis=1)
+   # 1 loops, best of 3: 188 ms per loop
+
+   c.strides
+   # (80000, 8)
+
+This is the reason why Fortran ordering or C ordering may make a big
+difference on operations:
+
+.. code-block:: python
+
+   a = np.random.rand(20, 2**18)
+   b = np.random.rand(20, 2**18)
+
+   %timeit np.dot(b, a.T)
+   # 1 loops, best of 3: 194 ms per loop
+
+   c = np.ascontiguousarray(a.T)
+
+   %timeit np.dot(b, c)
+   # 10 loops, best of 3: 84.2 ms per loop
+
+Note that copying the data to work around this effect may not be worth it:
+
+.. code-block:: python
+
+   %timeit c = np.ascontiguousarray(a.T)
+   # 10 loops, best of 3: 106 ms per loop
+
+Using `numexpr <http://code.google.com/p/numexpr/>`_ can be useful to
+automatically optimize code for such effects.
+
+
+Temporary arrays
+~~~~~~~~~~~~~~~~
+
+- In complex expressions, NumPy stores intermediate values in
+  temporary arrays
+- Memory consumption can be higher than expected
+
+.. code-block:: python
+
+   a = numpy.random.random((1024, 1024, 50))
+   b = numpy.random.random((1024, 1024, 50))
+   
+   # two temporary arrays will be created
+   c = 2.0 * a - 4.5 * b
+   
+   # four temporary arrays will be created due to unnecessary parenthesis
+   c = (2.0 * a - 4.5 * b) + (numpy.sin(a) + numpy.cos(b))
+
+   # solution
+   # apply the operation one by one for really large arrays
+   c = 2.0 * a
+   c = c - 4.5 * b
+   c = c + numpy.sin(a)
+   c = c + numpy.cos(b)
+
+- Broadcasting approaches can lead also to hidden temporary arrays  
+
+  - Input data M x 3 array
+  - Output data M x M array 
+  - There is a temporary M x M x 3 array
+
+.. code-block:: python
+
+   import numpy as np
+   X = np.random.random((M, 3))
+   D = npy.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
+
+
+Numexpr
+~~~~~~~
+
+- Evaluation of complex expressions with one operation at a time can lead
+  also into suboptimal performance
+    
+    - Effectively, one carries out multiple *for* loops in the NumPy C-code
+
+- Numexpr package provides fast evaluation of array expressions
+
+.. code-block:: python
+
+   import numexpr as ne
+   x = numpy.random.random((1000000, 1))
+   y = numpy.random.random((1000000, 1))
+   poly = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
+
+- By default, numexpr tries to use multiple threads
+- Number of threads can be queried and set with
+  ``ne.set_num_threads(nthreads)``
+- Supported operators and functions:
+  +,-,\*,/,\*\*, sin, cos, tan, exp, log, sqrt
+- Speedups in comparison to NumPy are typically between 0.95 and 4
+- Works best on arrays that do not fit in CPU cache
+
+
+
+
+Performance boosting
+--------------------
+
+For many user cases, using NumPy or Pandas is sufficient. However, in some computationally heavy applications, 
+it is possible to improve the performance by pre-compiling expensive functions.
+`Cython <https://cython.org/>`__ and `Numba <https://numba.pydata.org/>`__ 
+are among the popular choices and both of them have good support for numpy arrays. 
+
+
+Cython
+^^^^^^
+
+Cython is a superset of Python that additionally supports calling C functions and 
+declaring C types on variables and class attributes. Under Cython, source code gets 
+translated into optimized C/C++ code and compiled as Python extension modules. 
+
+Developers can run the ``cython`` command-line utility to produce a ``.c`` file from 
+a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library 
+which can then be directly imported in a Python program. There is, however, also an easy 
+way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic 
+command. We will restrict the discussion here to the Jupyter-way - for a full overview 
+of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
+
+
+.. demo:: Demo: Cython
+
+   Consider the following pure Python code which integrates a function:
+
+   .. literalinclude:: example/integrate_python.py 
+
+   We generate a dataframe and apply the :meth:`apply_integrate_f` function on its columns, timing the execution:
+
+   .. code-block:: ipython
+
+      import pandas as pd
+
+      df = pd.DataFrame({"a": np.random.randn(1000),
+                        "b": np.random.randn(1000),
+                        "N": np.random.randint(100, 1000, (1000))})                
+
+      %timeit apply_integrate_f(df['a'], df['b'], df['N'])
+      # 321 ms ± 10.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+   Now import the Cython extension:
+
+   .. code-block:: ipython
+
+      %load_ext cython
+
+   As a first cythonization step we add the cython magic command with the 
+   ``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
+   The yellow coloring in the output shows us the amount of pure Python:
+
+   .. figure:: img/cython_annotate.png
+       
+   Our task is to remove as much yellow as possible by explicitly declaring variables and functions.
+   We can start by simply compiling the code using Cython without any changes:
+
+   .. literalinclude:: example/integrate_cython.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
+      # 276 ms ± 20.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+   Now we can start adding data type annotation to the input variables:
+
+   .. literalinclude:: example/integrate_cython_dtype0.py 
+
+   .. code-block:: ipython
+
+      # this will not work
+      #%timeit apply_integrate_f_cython_dtype0(df['a'], df['b'], df['N'])
+      # but rather 
+      %timeit apply_integrate_f_cython_dtype0(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+      # 41.4 ms ± 1.27 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+   .. warning::
+
+      You can not pass a Series directly since the Cython definition is specific to an array. 
+      Instead using the ``Series.to_numpy()`` to get the underlying NumPy array
+      which works nicely with Cython.
+
+   Next step, we can start adding type annotation to the functions.
+   There are three ways of declaring functions: 
+   
+   - ``def`` - Python style:
+
+   Declaring the types of arguments and local types (thus return values) can allow Cython 
+   to generate optimised code which speeds up the execution. If the types are declared then 
+   a ``TypeError`` will be raised if the function is passed the wrong types.
+
+   - ``cdef`` - C style:
+
+   Cython treats the function as pure C functions. All types **must** be declared. 
+   This will give you the best performance but there are a number of consequences. 
+   One should really take care of the ``cdef`` declared functions, since you are actually writing in C.
+
+   - ``cpdef`` - Python/C mixed:
+
+   ``cpdef`` functions combine both ``def`` and ``cdef``: one can use ``cdef`` for C types and ``def`` for Python types. 
+   In terms of performance, ``cpdef`` functions may be as fast as those using ``cdef`` and 
+   might be as slow as ``def`` declared functions.  
+
+   .. literalinclude:: example/integrate_cython_dtype1.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_cython_dtype1(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+      # 37.2 ms ± 556 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+   Last step, we can add type annotation to the local variables within the functions and output.
+
+   .. literalinclude:: example/integrate_cython_dtype2.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_cython_dtype2(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+      # 696 µs ± 8.71 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+   
+   Now it is over 400 times faster than the original Python implementation, and all we have done is to add 
+   type declarations! If we add the ``-a`` annotation flag we indeed see much less Python interaction in the 
+   code.
+
+   .. figure:: img/cython_annotate_2.png
+
+
+
+Numba
+^^^^^
+
+An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with `Numba <https://numba.pydata.org/>`__. 
+Numba allows you to write a pure Python function which can be JIT compiled to native machine instructions, 
+similar in performance to C, C++ and Fortran, by simply adding the decorator ``@jit`` in your function. 
+However, the ``@jit`` compilation will add overhead to the runtime of the function, 
+i.e. the first time a function is run using Numba engine will be slow as Numba will have the function compiled. 
+Once the function is JIT compiled and cached, subsequent calls will be fast. So the performance benefits may not be 
+realized especially when using small datasets.
+
+Numba supports compilation of Python to run on either CPU or GPU hardware and is designed to integrate with 
+the Python scientific software stack. The optimized machine code is generated by the LLVM compiler infrastructure.
+
+
+.. demo:: Demo: Numba
+
+   Consider the integration example again using Numba this time:
+
+   .. literalinclude:: example/integrate_numba.py 
+
+   .. code-block:: ipython
+
+      # try passing Pandas Series 
+      %timeit apply_integrate_f_numba(df['a'],df['b'],df['N'])
+      # 6.02 ms ± 56.5 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      # try passing NumPy array
+      %timeit apply_integrate_f_numba(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
+      # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+
+
+   .. warning:: 
+   
+      Numba is best at accelerating functions that apply numerical functions to NumPy arrays. When used with Pandas, 
+      pass the underlying NumPy array of :class:`Series` or :class:`DataFrame` (using ``to_numpy()``) into the function.
+      If you try to @jit a function that contains unsupported Python or NumPy code, compilation will fall back to the object mode 
+      which will mostly likely be very slow. If you would prefer that Numba throw an error for such a case, 
+      you can do e.g. ``@numba.jit(nopython=True)`` or ``@numba.njit``. 
+
+
+   We can further add date type, although in this case there is not much performance improvement:
+
+   .. literalinclude:: example/integrate_numba_dtype.py 
+
+   .. code-block:: ipython
+
+      %timeit apply_integrate_f_numba_dtype(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
+      # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+
+
+
+Exercises
+---------
 
 .. exercise:: Profile the word-autocorrelation code
 
-   Use line-profiling on the word-autocorrelation code!
+   Revisit the word-autocorrelation code. To clone the repository (if you haven't already):
+
+   .. code-block:: console
+
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
+   
+   To run the code, type:
+
+   .. code-block:: console
+
+      $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+
+   Add ``@profile`` to the :meth:`word_autocorr` function, and run ``kernprof.py`` (or just ``kernprof``) 
+   from the command line. What lines of this function are the most expensive?
 
    .. solution:: 
 
-      WRITEME
+      .. code-block:: console
+
+         $ kernprof -l -v source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+
+      Output: 
+
+      .. code-block:: text
+
+         Wrote profile results to autocorrelation.py.lprof
+         Timer unit: 1e-06 s
+         
+         Total time: 15.5976 s
+         File: source/autocorrelation.py
+         Function: word_autocorr at line 24
+         
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+             24                                           @profile
+             25                                           def word_autocorr(word, text, timesteps):
+             26                                               """
+             27                                               Calculate word-autocorrelation function for given word 
+             28                                               in a text. Each word in the text corresponds to one "timestep".
+             29                                               """
+             30        10       1190.0    119.0      0.0      acf = np.zeros((timesteps,))
+             31        10      15722.0   1572.2      0.1      mask = [w==word for w in text]
+             32        10       6072.0    607.2      0.0      nwords_chosen = np.sum(mask)
+             33        10         14.0      1.4      0.0      nwords_total = len(text)
+             34      1010        658.0      0.7      0.0      for t in range(timesteps):
+             35  11373500    4675124.0      0.4     30.0          for i in range(1,nwords_total-t):
+             36  11372500   10897305.0      1.0     69.9              acf[t] += mask[i]*mask[i+t]
+             37      1000       1542.0      1.5      0.0          acf[t] /= nwords_chosen      
+             38        10         10.0      1.0      0.0      return acf
+         
 
 .. exercise:: Is the :meth:`word_autocorr` function efficient?
 
@@ -316,446 +807,29 @@ In such cases, vectorization is key for better performance.
              return acf[int(acf.size/2):int(acf.size/2)+timesteps]         
 
 
-So one should consider use "vectorized" operations whenever possible.
-Not only for performance, sometimes the vectorized function is also convenient. 
-
-Let's define a simple function f which takes scalars as input only, 
-
-.. code-block:: python
-
-   import math
-   def f(x, y):
-       return x**3 + 4*math.sin(y) 
-
-if we pass an array, 
-   
-.. code-block:: console
-
-   >>> x = np.ones(10000, dtype=np.int8)
-   >>> f(x,x)
-   Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
-     File "<stdin>", line 2, in f
-   TypeError: only size-1 arrays can be converted to Python scalars
-
-
-In order to pass an numpy array, we could vectorize it.
-For universal functions (or ``ufunc`` for short), 
-NumPy provides the ``vectorize`` function.
-
-.. code-block:: python
-
-   import numpy as np
-   import math
-
-   def f(x, y):
-       return x**3 + 4*math.sin(y) 
-
-   f_numpy = np.vectorize(f)
-
-   # benchmark
-   x = np.ones(10000, dtype=np.int8)
-   %timeit f_numpy(x,x)
-
-
-.. note:: 
-   
-   As stated in the NumPy document: 
-   The vectorize function is provided primarily for convenience, not for performance. The implementation is essentially a for loop.
-
-
-
-For high performance vectorization, one choice is to use Numba. 
-Adding the decorator in a function, Numba will figure out the rest for you. 
-
-.. code-block:: python
-
-   import numba
-   import math
-
-   def f(x, y):
-       return x**3 + 4*math.sin(y) 
-
-   f_numba = numba.vectorize(f)
-
-   # benchmark
-   x = np.ones(10000, dtype=np.int8)
-   %timeit f_numba(x,x)
-
-
-
-Memory usage optimization
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Broadcasting
-~~~~~~~~~~~~
-
-Basic operations of numpy are elementwise, and the shape of the arrays should be compatible.
-However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
-NumPy expands the arrays such that the operation becomes viable.
-
-.. note:: Broadcasting Rules  
-
-  - Dimensions match when they are equal, or when either is 1 or None.   
-  - In the latter case, the dimension of the output array is expanded to the larger of the two.
-  - Broadcasted arrays are never physically constructed, which saves memory.
-
-
-.. challenge:: broadcasting
-
-   .. tabs:: 
-
-      .. tab:: 1D
-
-             .. code-block:: py
-
-			import numpy as np
-                        a = np.array([1, 2, 3])
-                        b = 4 
-                        a + b
-
-             .. figure:: img/bc_1d.svg 
-
-
-      .. tab:: 2D
-
-             .. code-block:: python
-
-			     import numpy as np
-			     a = np.array([[0, 0, 0],[10, 10, 10],[20, 20, 20],[30, 30, 30]])
-			     b = np.array([1, 2, 3])
-			     a + b                      
-
-             .. figure:: img/bc_2d_1.svg 
-
-
-             .. code-block:: python
-
-			     import numpy as np
-			     a = np.array([0, 10, 20,30])
-			     b = np.array([1, 2, 3]) 
-			     a + b                       # array([[11, 12, 13],
-                                			 #        [14, 15, 16]]) 
-				XXXXX fixing 
-
-             .. figure:: img/bc_2d_2.svg 
-
-
-
-
-Cache effects
-~~~~~~~~~~~~~
-
-Memory access is cheaper when it is grouped: accessing a big array in a 
-continuous way is much faster than random access. This implies amongst 
-other things that **smaller strides are faster**:
-
-  .. sourcecode:: ipython
-
-    In [1]: c = np.zeros((1e4, 1e4), order='C')
-
-    In [2]: %timeit c.sum(axis=0)
-    1 loops, best of 3: 3.89 s per loop
-
-    In [3]: %timeit c.sum(axis=1)
-    1 loops, best of 3: 188 ms per loop
-
-    In [4]: c.strides
-    Out[4]: (80000, 8)
-
-  This is the reason why Fortran ordering or C ordering may make a big
-  difference on operations:
-
-  .. sourcecode:: ipython
-
-    In [5]: a = np.random.rand(20, 2**18)
-
-    In [6]: b = np.random.rand(20, 2**18)
-
-    In [7]: %timeit np.dot(b, a.T)
-    1 loops, best of 3: 194 ms per loop
-
-    In [8]: c = np.ascontiguousarray(a.T)
-
-    In [9]: %timeit np.dot(b, c)
-    10 loops, best of 3: 84.2 ms per loop
-
-  Note that copying the data to work around this effect may not be worth it:
-
-  .. sourcecode:: ipython
-
-    In [10]: %timeit c = np.ascontiguousarray(a.T)
-    10 loops, best of 3: 106 ms per loop
-
-  Using `numexpr <http://code.google.com/p/numexpr/>`_ can be useful to
-  automatically optimize code for such effects.
-
-
-Temporary arrays
-~~~~~~~~~~~~~~~~
-
-- In complex expressions, NumPy stores intermediate values in
-  temporary arrays
-- Memory consumption can be higher than expected
-
-.. code-block:: python
-
-   a = numpy.random.random((1024, 1024, 50))
-   b = numpy.random.random((1024, 1024, 50))
-   
-   # two temporary arrays will be created
-   c = 2.0 * a - 4.5 * b
-   
-   # four temporary arrays will be created due to unnecessary parenthesis
-   c = (2.0 * a - 4.5 * b) + (numpy.sin(a) + numpy.cos(b))
-
-   # solution
-   # apply the operation one by one for really large arrays
-   c = 2.0 * a
-   c = c - 4.5 * b
-   c = c + numpy.sin(a)
-   c = c + numpy.cos(b)
-
-- Broadcasting approaches can lead also to hidden temporary arrays  
-   - Input data M x 3 array
-   - Output data M x M array 
-   - There is a temporary M x M x 3 array
-
-.. code-block:: python
-
-   import numpy as np
-   X = np.random.random((M, 3))
-   D = npy.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
-
-
-Numexpr
-~~~~~~~
-
-- Evaluation of complex expressions with one operation at a time can lead
-  also into suboptimal performance
-    
-    - Effectively, one carries out multiple *for* loops in the NumPy C-code
-
-- Numexpr package provides fast evaluation of array expressions
-
-.. code-block:: python
-
-   import numexpr as ne
-   x = numpy.random.random((1000000, 1))
-   y = numpy.random.random((1000000, 1))
-   poly = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
-
-- By default, numexpr tries to use multiple threads
-- Number of threads can be queried and set with
-  `ne.set_num_threads(nthreads)`
-- Supported operators and functions:
-  +,-,\*,/,\*\*, sin, cos, tan, exp, log, sqrt
-- Speedups in comparison to NumPy are typically between 0.95 and 4
-- Works best on arrays that do not fit in CPU cache
-
-
-
-
-Performance boosting
---------------------
-
-For many user cases, using NumPy or Pandas is sufficient. However, in some computationally heavy applications, 
-it is possible to improve the performance by pre-compiling expensive functions.
-`Cython <https://cython.org/>`__ and `Numba <https://numba.pydata.org/>`__ 
-are among the popular choices and both of them have good support for numpy arrays. 
-
-
-Cython
-^^^^^^
-
-Cython is a superset of Python that additionally supports calling C functions and 
-declaring C types on variables and class attributes. Under Cython, source code gets 
-translated into optimized C/C++ code and compiled as Python extension modules. 
-
-Developers can run the ``cython`` command-line utility to produce a ``.c`` file from 
-a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library 
-which can then be directly imported in a Python program. There is, however, also an easy 
-way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic 
-command. We will restrict the discussion here to the Jupyter-way - for a full overview 
-of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
-
-
-.. demo:: Cython
-
-   Consider the following pure Python code which integrates a function:
-
-   .. literalinclude:: example/integrate_python.py 
-
-   We generate a dataframe and apply the :meth:`apply_integrate_f` function on its columns, timing the execution:
-
-   .. code-block:: ipython
-
-      df = pd.DataFrame({"a": np.random.randn(1000),
-                        "b": np.random.randn(1000),
-                        "N": np.random.randint(100, 1000, (1000))})                
-
-      %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-   Now import the Cython extension:
-
-   .. code-block:: ipython
-
-      %load_ext cython
-
-   As a first cythonization step we add the cython magic command with the 
-   ``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
-   The yellow coloring in the output shows us the amount of pure Python:
-
-   .. figure:: img/cython_annotate.png
-   
-      
-   Our task is to remove as much yellow as possible by explicitly declaring variables and functions.
-   We can start by simply compiling the code using Cython without any changes:
-
-   .. literalinclude:: example/integrate_cython.py 
-
-   .. code-block:: ipython
-
-      %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-   Now we can start adding data type annotation to the input variables:
-
-   .. literalinclude:: example/integrate_cython_dtype0.py 
-
-   .. code-block:: ipython
-
-      #this will not work
-      #%timeit apply_integrate_f_cython_dtype0(df['a'], df['b'], df['N'])
-      #but rather 
-      %timeit apply_integrate_f_cython_dtype0(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-   .. warning::
-
-      You can not pass a Series directly since the Cython definition is specific to an array. 
-      Instead using the ``Series.to_numpy()`` to get the underlying NumPy array
-      which works nicely with Cython.
-
-   Next step, we can start adding type annotation to the functions.
-   There are three ways of declaring functions: 
-   
-   - ``def`` - Python style:
-
-   Declaring the types of arguments and local types (thus return values) can allow Cython 
-   to generate optimised code which speeds up the execution. If the types are declared then 
-   a ``TypeError`` will be raised if the function is passed the wrong types.
-
-   - ``cdef`` - C style:
-
-   Cython treats the function as pure C functions. All types **must** be declared. 
-   This will give you the best performance but there are a number of consequences. 
-   One should really take care of the ``cdef`` declared functions, since you are actually writing in C.
-
-   - ``cpdef`` - Python/C mixed:
-
-   ``cpdef`` functions combine both ``def`` and ``cdef``: one can use ``cdef`` for C types and ``def`` for Python types. 
-   In terms of performance, ``cpdef`` functions may be as fast as those using ``cdef`` and 
-   might be as slow as ``def`` declared functions.  
-
-   .. literalinclude:: example/integrate_cython_dtype1.py 
-
-   .. code-block:: ipython
-
-      %timeit apply_integrate_f_cython_dtype1(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-
-   Last step, we can add type annotation to the local variables within the functions and output.
-
-   .. literalinclude:: example/integrate_cython_dtype2.py 
-
-   .. code-block:: ipython
-
-      %timeit apply_integrate_f_cython_dtype2(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-      # 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-   
-   Now it is over 400 XXX times faster than the original Python implementation, and we haven't really modified the code. 
-
-
-Numba
-^^^^^
-
-An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with `Numba <https://numba.pydata.org/>`__. 
-Numba allows you to write a pure Python function which can be JIT compiled to native machine instructions, 
-similar in performance to C, C++ and Fortran, by simply adding the decorator ``@jit`` in your function. 
-However, the ``@jit`` compilation will add overhead to the runtime of the function, 
-i.e. the first time a function is run using Numba engine will be slow as Numba will have the function compiled. 
-Once the function is JIT compiled and cached, subsequent calls will be fast. So the performance benefits may not be 
-realized especially when using small datasets.
-
-Numba supports compilation of Python to run on either CPU or GPU hardware and is designed to integrate with 
-the Python scientific software stack. The optimized machine code is generated by the LLVM compiler infrastructure.
-
-
-.. demo:: Numba
-
-   Consider the integration example again using Numba this time:
-
-   .. literalinclude:: example/integrate_numba.py 
-
-   .. code-block:: ipython
-
-      # try passing Pandas Series 
-      %timeit apply_integrate_f_numba(df['a'],df['b'],df['N'])
-      # 6.02 ms ± 56.5 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
-      # try passing NumPy array
-      %timeit apply_integrate_f_numba(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
-      # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
-
-
-   .. note:: 
-   
-      Numba is best at accelerating functions that apply numerical functions to NumPy arrays. When used with Pandas, 
-      pass the underlying NumPy array of :class:`Series` or :class:`DataFrame` (using ``to_numpy()``) into the function.
-      If you try to @jit a function that contains unsupported Python or NumPy code, compilation will fall back to the object mode 
-      which will mostly likely be very slow. If you would prefer that Numba throw an error for such a case, 
-      you can do e.g. ``@numba.jit(nopython=True)`` or ``@numba.njit``. 
-
-
-   We can further add date type, although in this case there is not much performance improvement:
-
-   .. literalinclude:: example/integrate_numba_dtype.py 
-
-   .. code-block:: ipython
-
-      %timeit apply_integrate_f_numba_dtype(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
-      # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
-
-
-
-
-**WRITEME: use word-count example here**
-
-
-Exercises
-^^^^^^^^^
-
-Here we have two exercises: the starting point is a Python function. Try to speed it up with 
-Numba or Cython (depending on what you find most interesting).
-
 .. exercise:: Pairwise distance
 
+   Consider the following Python function:
+
    .. literalinclude:: example/dis_python.py
+
+   Start by profiling it in Jupyter:
 
    .. code-block:: ipython
 
       X = np.random.random((1000, 3))
       %timeit dis_python(X)
 
+   Now try to speed it up with NumPy (i.e. *vectorise* the function),
+   Numba or Cython (depending on what you find most interesting).
+   Make sure that you're getting the correct result, and then benchmark it 
+   with ``%timeit``.
 
    .. solution::
 
       .. tabs:: 
    
-         .. tab:: numpy
+         .. tab:: NumPy
    
                 .. literalinclude:: example/dis_numpy.py 
 
@@ -765,7 +839,7 @@ Numba or Cython (depending on what you find most interesting).
                    %timeit dis_numpy(X)
 
    
-         .. tab:: cython
+         .. tab:: Cython
    
                 .. literalinclude:: example/dis_cython.py 
 
@@ -774,7 +848,7 @@ Numba or Cython (depending on what you find most interesting).
                    X = np.random.random((1000, 3))
                    %timeit dis_cython(X)
    
-         .. tab:: numba
+         .. tab:: Numba
    
                 .. literalinclude:: example/dis_numba.py 
 
@@ -791,8 +865,11 @@ Numba or Cython (depending on what you find most interesting).
 
    .. image:: img/Bubble-sort-example-300px.gif
 
+   Here is a function that performs bubble-sort:
 
    .. literalinclude:: example/bs_python.py 
+
+   And this is how you can benchmark it:
 
    .. code-block:: ipython
 
@@ -800,12 +877,15 @@ Numba or Cython (depending on what you find most interesting).
       l = [random.randint(1,1000) for num in range(1, 1000)]
       %timeit bs_python(l)
 
+   Now try to speed it up with Numba or Cython (depending on what you find 
+   most interesting). Make sure that you're getting the correct result, 
+   and then benchmark it with ``%timeit``.
 
    .. solution:: 
    
       .. tabs:: 
 
-         .. tab:: cython
+         .. tab:: Cython
 
                 .. literalinclude:: example/bs_cython.py 
 
@@ -828,7 +908,7 @@ Numba or Cython (depending on what you find most interesting).
                    %timeit bs_clist(l)
 
 
-         .. tab:: numba
+         .. tab:: Numba
 
                 .. literalinclude:: example/bs_numba.py 
 

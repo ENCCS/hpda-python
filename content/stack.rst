@@ -1,7 +1,7 @@
 .. _stack:
 
-Python software stack
-=====================
+Efficient array computing
+=========================
 
 .. objectives::
 
@@ -10,17 +10,19 @@ Python software stack
    - Learn to use several of NumPy's numerical computing tools 
    - Learn to use data structures and analysis tools from Pandas
 
-.. 
+.. instructor-note::
 
-  This episode is inspired by and derived from this 
-  `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
-  this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__.
+   - 30 min teaching/type-along
+   - 20 min exercises
+
+
+This episode is partly based on material from this 
+`repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
+this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__, 
+distributed under MIT and CC-BY-4.0 licenses, respectively.
 
 Why can Python be slow?
 -----------------------
-
-Python is very flexible and dynamic language, but the flexibility comes with
-a price.
 
 Computer programs are nowadays practically always written in a high-level
 human readable programming language and then translated to the actual machine
@@ -343,7 +345,7 @@ Array Reshaping
 ^^^^^^^^^^^^^^^
 
 Sometimes, you need to change the dimension of an array. 
-One of the most common need is to trasnposing the matrix 
+One of the most common need is to transposing the matrix 
 during the dot product. Switching the dimensions of 
 a NumPy array is also quite common in more advanced cases.
 
@@ -494,53 +496,51 @@ Tidy vs untidy data
 
 Let's first look at the following two dataframes:
 
-.. callout:: 1500m Running event
+.. tabs:: 
 
-   .. tabs:: 
+   .. tab:: Untidy data format
 
-      .. tab:: Untidy data format
+      .. code-block:: python
 
-         .. code-block:: python
+         runners = pd.DataFrame([
+               {'Runner': 'Runner 1', 400: 64, 800: 128, 1200: 192, 1500: 240},
+               {'Runner': 'Runner 2', 400: 80, 800: 160, 1200: 240, 1500: 300},
+               {'Runner': 'Runner 3', 400: 96, 800: 192, 1200: 288, 1500: 360},
+            ])
+         runners
 
-            runners = pd.DataFrame([
-                  {'Runner': 'Runner 1', 400: 64, 800: 128, 1200: 192, 1500: 240},
-                  {'Runner': 'Runner 2', 400: 80, 800: 160, 1200: 240, 1500: 300},
-                  {'Runner': 'Runner 3', 400: 96, 800: 192, 1200: 288, 1500: 360},
-              ])
-            runners
+         # returns:
 
-            # returns:
+         #      Runner  400  800  1200  1500
+         # 0  Runner 1   64  128   192   240
+         # 1  Runner 2   80  160   240   300
+         # 2  Runner 3   96  192   288   360
 
-	   		#      Runner  400  800  1200  1500
-	   		# 0  Runner 1   64  128   192   240
-	   		# 1  Runner 2   80  160   240   300
-	   		# 2  Runner 3   96  192   288   360
+   .. tab:: Tidy data format
 
-      .. tab:: Tidy data format
+      .. code-block:: python
 
-         .. code-block:: python
+         # "melt" the data (opposite of "pivot")
+         runners = pd.melt(runners, id_vars="Runner", 
+                           value_vars=[400, 800, 1200, 1500], 
+                           var_name="distance", 
+                           value_name="time"
+                           )
+         # returns:
 
-            # "melt" the data (opposite of "pivot")
-            runners = pd.melt(runners, id_vars="Runner", 
-                              value_vars=[400, 800, 1200, 1500], 
-                              var_name="distance", 
-                              value_name="time"
-                             )
-            # returns:
-
-   			#       Runner distance  time
-   			# 0   Runner 1      400    64
-   			# 1   Runner 2      400    80
-   			# 2   Runner 3      400    96
-   			# 3   Runner 1      800   128
-   			# 4   Runner 2      800   160
-   			# 5   Runner 3      800   192
-   			# 6   Runner 1     1200   192
-   			# 7   Runner 2     1200   240
-   			# 8   Runner 3     1200   288
-   			# 9   Runner 1     1500   240
-   			# 10  Runner 2     1500   300
-   			# 11  Runner 3     1500   360
+         #       Runner distance  time
+         # 0   Runner 1      400    64
+         # 1   Runner 2      400    80
+         # 2   Runner 3      400    96
+         # 3   Runner 1      800   128
+         # 4   Runner 2      800   160
+         # 5   Runner 3      800   192
+         # 6   Runner 1     1200   192
+         # 7   Runner 2     1200   240
+         # 8   Runner 3     1200   288
+         # 9   Runner 1     1500   240
+         # 10  Runner 2     1500   300
+         # 11  Runner 3     1500   360
 
 
 Most tabular data is either in a tidy format or a untidy format 
@@ -729,12 +729,52 @@ The workflow of :meth:`groupby` can be divided into three general steps:
 For an overview of other data wrangling methods built into pandas, have a look 
 at :doc:`pandas-extra`.
 
+
+Scipy
+-----
+
+`SciPy <https://docs.scipy.org/doc/scipy/reference/>`__ is a library that builds 
+on top of NumPy. It contains a lot of interfaces to battle-tested numerical routines 
+written in Fortran or C, as well as Python implementations of many common algorithms.
+
+What's in SciPy?
+^^^^^^^^^^^^^^^^
+
+Briefly, it contains functionality for
+
+- Special functions (Bessel, Gamma, etc.)
+- Numerical integration
+- Optimization
+- Interpolation
+- Fast Fourier Transform (FFT)
+- Signal processing
+- Linear algebra (more complete than in NumPy)
+- Sparse matrices
+- Statistics
+- More I/O routine, e.g. Matrix Market format for sparse matrices,
+  MATLAB files (.mat), etc.
+
+Many of these are not written specifically for SciPy, but use
+the best available open source C or Fortran libraries.  Thus, you get
+the best of Python and the best of compiled languages.
+
+Most functions are documented very well from a scientific
+standpoint: you aren't just using some unknown function, but have a
+full scientific description and citation to the method and
+implementation.
+
 Exercises
 ---------
 
 .. challenge:: Further analysis of the Titanic passenger list dataset
 
-   Consider the titanic dataset.
+   Consider the titanic dataset. If you haven't done so already, load it into a dataframe:
+
+   .. code-block:: python
+
+      import pandas as pd
+      url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
+      titanic = pd.read_csv(url, index_col="Name")
 
    1. Compute the mean age of the first 10 passengers by slicing and the ``mean`` method
    2. Using boolean indexing, compute the survival rate 
@@ -765,44 +805,11 @@ Exercises
    
 
 
-Scipy
------
-
-`SciPy <https://docs.scipy.org/doc/scipy/reference/>`__ is a library that builds 
-on top of NumPy. It contains a lot of interfaces to battle-tested numerical routines 
-written in Fortran or C, as well as python implementations of many common algorithms.
-
-What's in SciPy?
-^^^^^^^^^^^^^^^^
-
-Briefly, it contains functionality for
-
-- Special functions (Bessel, Gamma, etc.)
-- Numerical integration
-- Optimization
-- Interpolation
-- Fast Fourier Transform (FFT)
-- Signal processing
-- Linear algebra (more complete than in NumPy)
-- Sparse matrices
-- Statistics
-- More I/O routine, e.g. Matrix Market format for sparse matrices,
-  MATLAB files (.mat), etc.
-
-Many of these are not written specifically for SciPy, but use
-the best available open source C or Fortran libraries.  Thus, you get
-the best of Python and the best of compiled languages.
-
-Most functions are documented very well from a scientific
-standpoint: you aren't just using some unknown function, but have a
-full scientific description and citation to the method and
-implementation.
-
 See also
 --------
 
+- NumPy `documentation <https://numpy.org/doc/stable/>`__
 - Pandas  `getting started guide <https://pandas.pydata.org/getting_started.html>`__ 
-  (including tutorials and a 10 minute flash intro)
 - Pandas `documentation <https://pandas.pydata.org/docs/>`__ containing a user guide, 
   API reference and contribution guide.
 - Pandas `cheatsheet <https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf>`__ 

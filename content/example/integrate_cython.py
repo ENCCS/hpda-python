@@ -10,7 +10,7 @@ def integrate_f_cython(a, b, N):
     s = 0
     dx = (b - a) / N
     for i in range(N):
-    	s += f_cython(a + i * dx)
+        s += f_cython(a + i * dx)
     return s * dx
 
 def apply_integrate_f_cython(col_a, col_b, col_N):
