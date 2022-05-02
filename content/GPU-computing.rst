@@ -147,12 +147,13 @@ NumPy arrays are transferred between the CPU and the GPU automatically.
 It contains two fundamental characteristics:
 
    - kernels cannot explicitly return a value; all result data must be written to an array passed to the function 
-(if computing a scalar, you will probably pass a one-element array);
+     (if computing a scalar, you will probably pass a one-element array);
 
    - kernels explicitly declare their thread hierarchy when called: i.e. the number of thread blocks and the number of threads per block 
-(note that while a kernel is compiled once, it can be called multiple times with different block sizes or grid sizes).
+     (note that while a kernel is compiled once, it can be called multiple times with different block sizes or grid sizes).
 
-   - Newer GPU devices from NVIDIA support device-side kernel launching; this feature is called dynamic parallelism but Numba does not support it currently
+   - Newer GPU devices from NVIDIA support device-side kernel launching; this feature is called dynamic parallelism 
+     but Numba does not support it currently
 
 
 
