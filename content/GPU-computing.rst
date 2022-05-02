@@ -118,6 +118,10 @@ CUDA Python maps directly to the single-instruction multiple-thread execution (S
 Numba for GPUs
 --------------
 
+
+Terminology
+~~~~~~~~~~~
+
 Numba supports GPUs from both Nvidia and AMD, but we will use terminology from Nvidia 
 as examples in the rest of the course. 
 
@@ -139,16 +143,16 @@ NumPy arrays are transferred between the CPU and the GPU automatically.
 
 .. note:: Kernel declaration
 
-   A kernel function is a GPU function that is meant to be called from CPU code. It contains two fundamental characteristics:
+   A kernel function is a GPU function that is meant to be called from CPU code. 
+It contains two fundamental characteristics:
 
    - kernels cannot explicitly return a value; all result data must be written to an array passed to the function 
-   (if computing a scalar, you will probably pass a one-element array);
+(if computing a scalar, you will probably pass a one-element array);
 
    - kernels explicitly declare their thread hierarchy when called: i.e. the number of thread blocks and the number of threads per block 
-   (note that while a kernel is compiled once, it can be called multiple times with different block sizes or grid sizes).
+(note that while a kernel is compiled once, it can be called multiple times with different block sizes or grid sizes).
 
-   - Newer GPU devices from NVIDIA support device-side kernel launching; this feature is called dynamic parallelism but 
-   Numba does not support it currently
+   - Newer GPU devices from NVIDIA support device-side kernel launching; this feature is called dynamic parallelism but Numba does not support it currently
 
 
 
@@ -219,7 +223,14 @@ Generating a ufunc for GPU requires the explicit type signature and  target attr
                 # 78.4 ms ± 6.71 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
-numba.vectorize() is limited to scalar arguments in the core function, for multi-dimensional arrays arguments, GUVectorize is used.
+Numba ``@vectroize`` is limited to scalar arguments in the core function, for multi-dimensional arrays arguments, 
+``guvectorize`` is used. Consider the following example which does matrix multiplication. 
+
+
+.. warning::
+
+   You should never implemente such things like matrix multiplication, there are plenty of existing libraries available. 
+
 
 .. typealong::  
 
@@ -253,7 +264,7 @@ benchmark
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
-		%timeit np.matmul(A,B)
+		%timeit C=np.matmul(A,B)
 
       .. tab:: cpu
 
