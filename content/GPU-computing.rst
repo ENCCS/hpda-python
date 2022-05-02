@@ -664,19 +664,20 @@ Exercise
 .. exercise:: matrix multiplication with shared memory
 
 We will start from one implementation of a faster version of the square matrix multiplication using shared memory.
-This example is taken from Numba official document, however there are arguably at least two errors in it:
+This example is taken from Numba official document, however there is arguably at least one error in it:
+
+   .. literalinclude:: exercise/matmul_sm.py
 
    .. solution:: Hint
 
-     - data range check
-     - numba.cuda.syncthreads() in conditional code
-
-
-   .. literalinclude:: example/matmul_sm.py
+     - data range check: we require either x or y is out of range. The **and** should have been an **or**.
+     - ``numba.cuda.syncthreads()`` in conditional code: __syncthreads() is allowed in conditional code but only if 
+       the conditional evaluates identically across the entire thread block, otherwise the code execution is 
+       likely to hang or produce unintended side effects. 
 
    .. solution:: 
 
-      .. literalinclude:: example/matmul_sm_solution.py
+      .. literalinclude:: exercise/matmul_sm_solution.py
 
 
 .. exercise:: Discrete Laplace Operator
