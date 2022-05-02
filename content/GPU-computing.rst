@@ -413,11 +413,11 @@ the so called shared memory and can be explicitly synchronized. The blocks can n
 
 
 Threads can be identified using a one-dimensional, two-dimensional, 
-or three-dimensional thread index through the buit-in threadIdx variable,  
+or three-dimensional thread index through the buit-in :attr:`.threadIdx` variable,  
 and this provides a natural way to invoke computation across the elements 
 in a domain such as a vector, matrix, or volume.  Each block within the grid 
 can be identified by  a one-dimensional, two-dimensional, or three-dimensional 
-unique index accessible within the kernel through the built-in blockIdx variable. 
+unique index accessible within the kernel through the built-in :attr:`.blockIdx` variable. 
 The dimension of the thread block is accessible within the kernel 
 through the built-in blockDim variable.  The global index of a thread should be 
 computed from its in-block index, the index of execution block and the block size. 
@@ -430,6 +430,9 @@ For 1D, it is threadIdx.x + blockIdx.x*blockDim.x.
    using multi-dimensional blocks does not change anything to the efficiency 
    or behaviour of generated code, but can help you write your code in a more natural way.
 
+   :attr:`.threadIdx`, :attr:`.blockIdx`, :attr:`.blockDim` and :attr:`.gridDim` 
+   are special objects provided by the CUDA backend for the sole purpose of knowing the geometry 
+   of the thread hierarchy and the position of the current thread within that geometry.
 
 
 .. figure:: img/MappingBlocksToSMs.png
