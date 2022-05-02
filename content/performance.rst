@@ -644,7 +644,11 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
       # 696 µs ± 8.71 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
    
    Now it is over 400 times faster than the original Python implementation, and all we have done is to add 
-   type declarations!
+   type declarations! If we add the ``-a`` annotation flag we indeed see much less Python interaction in the 
+   code.
+
+   .. figure:: img/cython_annotate_2.png
+
 
 
 Numba
