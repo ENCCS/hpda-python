@@ -1,6 +1,6 @@
 import math
 import numba
 
-@numba.vectorize(['float64(float64, float64)'], target='cpu')
-def func_numba_cpu(a, b):
-    return math.pow(a*b, 1./2)/math.exp(a*b/1000)
+@numba.vectorize([numba.float64(numba.float64, numba.float64)], target='cpu')
+def f_numba_cpu(x,y):
+    return math.pow(x,3.0) + 4*math.sin(y)

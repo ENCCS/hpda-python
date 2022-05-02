@@ -1,2 +1,4 @@
-def func(a, b):
-    return math.pow(a*b, 1./2)/math.exp(a*b/1000)
+import math
+
+def f(x,y):
+    return math.pow(x,3.0) + 4*math.sin(y)

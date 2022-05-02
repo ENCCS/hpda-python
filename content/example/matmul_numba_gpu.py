@@ -1,4 +1,4 @@
-@numba.guvectorize(['(float32[:,:], float32[:,:], float32[:,:])'], '(m,l),(l,n)->(m,n)', target='cuda')
+@numba.guvectorize(['(float64[:,:], float64[:,:], float64[:,:])'], '(m,l),(l,n)->(m,n)', target='cuda')
 def matmul_numba_gpu(A,B,C):
     a = A.shape[0]
     b = B.shape[1]
