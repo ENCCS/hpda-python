@@ -488,11 +488,6 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
          .. literalinclude:: example/math_kernel.py
             :language: python
 
-#      .. tab:: CUDA kernel with device function
-
-#         .. literalinclude:: example/math_kernel_devicefunction.py
-#            :language: python
-
 
    benchmark
 
@@ -524,19 +519,6 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
 		blockspergrid = 256
 		%timeit math_kernel[threadsperblock, blockspergrid](d_a, d_b, d_c)
                 # 62.3 µs ± 81.2 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
-
-
-#      .. tab:: CUDA kernel with device function
-
-#	.. code-block:: python
-
-#		a = np.random.rand(10000000)
-#		b = np.random.rand(10000000)
-#		c = np.random.rand(10000000)
-#	        threadsperblock = 32
-#		blockspergrid = (100 + 31) // 32 # blockspergrid = (array.size + (threadsperblock - 1)) // threadsperblock
-#		%timeit math_kernel_devicefunction[threadsperblock, blockspergrid](a, b, result)
-
 
 
 .. demo:: CUDA kernel matrix multiplication
@@ -593,7 +575,7 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
 .. note:: 
    
    There are times when the gufunc kernel uses too many of a GPU's resources, which can cause the kernel launch to fail. 
-   The user can explicitly control the maximum size of the thread block by setting the max_blocksize attribute on the compiled gufunc object.
+   The user can explicitly control the maximum size of the thread block by setting the ``max_blocksize`` attribute on the compiled gufunc object.
    e.g. matmul_numba_gpu.max_blocksize = 32
 
 
@@ -665,8 +647,7 @@ and the resulting execution timeline looks similar to this:
     Adding extra dependency between two tasks.
 
 Let us look at one step further by adding extra dependency between two tasks. Assume that the ``func2(..)`` 
-now needs the result of the ``func1(..)`` to be evaluated. This is easy to do 
-in the synchronous version of the program.
+now needs the result of the ``func1(..)`` to be evaluated. This is easy to do in the program.
 
 .. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineAsyncDependency.png
    :align: center
@@ -677,6 +658,26 @@ in the synchronous version of the program.
 
 Exercise
 --------
+
+.. exercise:: matrix multiplication with shared memory
+
+We will start from one implementation of a faster version of the square matrix multiplication using shared memory.
+This example is taken from Numba official document, however there are arguably at least two errors in it:
+
+   .. hint:: 
+
+     - data range check
+     - cuda.syncthreads() in conditional code
+
+
+   .. literalinclude:: example/matmul_sm.py
+
+   .. solution:: 
+
+      .. literalinclude:: example/matmul_sm_solution.py
+
+
+.. exercise:: Discrete Laplace Operator
 
 In this exercise, we will work with the discrete Laplace operator.
 It has a wide applications including numerical analysis, physics problems, image processing and machine learning as well.
