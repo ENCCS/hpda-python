@@ -11,22 +11,15 @@ GPU computing
 
 .. objectives::
 
-   - Understand GPU architecture (resources available to programmer) 
-   - Understand execution model 
-   - Get an overview of different options for GPU computing in Python
+   - Understand GPU architecture
+   - Understand GPU programming model 
    - Understand what types of computation is suitable for GPUs
-   - Learn the basics of Numba for GPUs and PyCUDA
+   - Learn the basics of Numba for GPUs
 
 .. instructor-note::
 
    - 70 min teaching/type-along
    - 40 min exercises
-
-
-.. prereq::
-
-   1. Basic C or FORTRAN
-   2. Basic knowledge about processes and threads
 
 
 GPU Intro
