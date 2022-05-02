@@ -199,67 +199,6 @@ Xarray is particularly tailored to working with NetCDF files. It reads and write
 exercise below!
 
 
-.. exercise:: Use Xarray to work with NetCDF files
-
-   This exercise is derived from `this tutorial <https://xarray-contrib.github.io/xarray-tutorial/scipy-tutorial/01_datastructures_and_io.html#NetCDF>`__,
-   which is distributed under an Apache-2.0 License.
-
-   First create an Xarray dataset: 
-
-   .. code-block:: python
-
-      import numpy as np
-      import xarray as xr
-
-      ds1 = xr.Dataset(
-          data_vars={
-              "a": (("x", "y"), np.random.randn(4, 2)),
-              "b": (("z", "x"), np.random.randn(6, 4)),
-          },
-          coords={
-              "x": np.arange(4),
-              "y": np.arange(-2, 0),
-              "z": np.arange(-3, 3),
-          },
-      )
-      ds2 = xr.Dataset(
-          data_vars={
-              "a": (("x", "y"), np.random.randn(7, 3)),
-              "b": (("z", "x"), np.random.randn(2, 7)),
-          },
-          coords={
-              "x": np.arange(6, 13),
-              "y": np.arange(3),
-              "z": np.arange(3, 5),
-          },
-      )
-
-   Then write the datasets to disk using :meth:`to_netcdf` method:
-
-   .. code-block:: python
-
-      ds1.to_netcdf("ds1.nc")
-      ds2.to_netcdf("ds2.nc")
-
-   You can read an individual file from disk by:
-
-   .. code-block:: python
-
-      ds1 = xr.open_dataset("ds1.nc")
-
-   But you can also read both at once into an aggregated dataset object using the :meth:`open_mfdataset` method:
-
-   .. code-block:: python
-
-      ds = xr.open_mfdataset('ds*.nc')
-
-   Tasks:
-
-   - Explore the hierarchical structure of the ``ds1`` and ``ds2`` datasets in a Jupyter notebook by typing the 
-     variable names in a code cell and execute. Click the disk-looking objects on the right to expand the fields.
-   - Explore the ``ds`` dataset and compare its dimensions to the ``ds1`` and ``ds2`` datasets. Have the two 
-     datasets been merged?
-
    
 
 Sharing data
@@ -377,24 +316,95 @@ platform and filter by country, content type, discipline, etc.
 - `Bolin center climate / geodata <https://bolin.su.se/data/>`__
 - `NBIS for life science, sequence –omics data <https://nbis.se/infrastructure>`__
 
+Exercises
+---------
 
-.. exercise:: (Optional) Get a DOI by connecting your repository to Zenodo
+.. exercise:: Use Xarray to work with NetCDF files
+
+   This exercise is derived from `this tutorial <https://xarray-contrib.github.io/xarray-tutorial/scipy-tutorial/01_datastructures_and_io.html#NetCDF>`__,
+   which is distributed under an Apache-2.0 License.
+
+   First create an Xarray dataset: 
+
+   .. code-block:: python
+
+      import numpy as np
+      import xarray as xr
+
+      ds1 = xr.Dataset(
+          data_vars={
+              "a": (("x", "y"), np.random.randn(4, 2)),
+              "b": (("z", "x"), np.random.randn(6, 4)),
+          },
+          coords={
+              "x": np.arange(4),
+              "y": np.arange(-2, 0),
+              "z": np.arange(-3, 3),
+          },
+      )
+      ds2 = xr.Dataset(
+          data_vars={
+              "a": (("x", "y"), np.random.randn(7, 3)),
+              "b": (("z", "x"), np.random.randn(2, 7)),
+          },
+          coords={
+              "x": np.arange(6, 13),
+              "y": np.arange(3),
+              "z": np.arange(3, 5),
+          },
+      )
+
+   Then write the datasets to disk using :meth:`to_netcdf` method:
+
+   .. code-block:: python
+
+      ds1.to_netcdf("ds1.nc")
+      ds2.to_netcdf("ds2.nc")
+
+   You can read an individual file from disk by:
+
+   .. code-block:: python
+
+      ds1 = xr.open_dataset("ds1.nc")
+
+   But you can also read both at once into an aggregated dataset object using the :meth:`open_mfdataset` method:
+
+   .. code-block:: python
+
+      ds = xr.open_mfdataset('ds*.nc')
+
+   Tasks:
+
+   - Explore the hierarchical structure of the ``ds1`` and ``ds2`` datasets in a Jupyter notebook by typing the 
+     variable names in a code cell and execute. Click the disk-looking objects on the right to expand the fields.
+   - Explore the ``ds`` dataset and compare its dimensions to the ``ds1`` and ``ds2`` datasets. Have the two 
+     datasets been merged?
+
+
+
+.. exercise:: Get a DOI by connecting your repository to Zenodo
 
    Digital object identifiers (DOI) are the backbone of the academic
-   reference and metrics system. In this exercise we will see how to
+   reference and metrics system. In this exercise you will see how to
    make a GitHub repository citable by archiving it on the
    `Zenodo <http://about.zenodo.org/>`__ archiving service. Zenodo is a
    general-purpose open access repository created by OpenAIRE and CERN.
    
+   For this exercise you need to have a GitHub account and at least one public 
+   repository that you can use for testing. If you need a new repository, you 
+   can fork for example `this one <https://github.com/enccs/word-count-hpda>`__ (click the "fork" button 
+   in the top right corner and fork it to your username).
+
    1. Sign in to Zenodo using your GitHub account. For this exercise, use the
       sandbox service: https://sandbox.zenodo.org/login/. This is a test version of the real Zenodo platform.
-   2. Go to https://sandbox.zenodo.org/account/settings/github/.
+   2. Go to https://sandbox.zenodo.org/account/settings/github/ and log in with your GitHub account.
    3. Find the repository you wish to publish, and flip the switch to ON.
    4. Go to GitHub and create a **release**  by clicking the `Create a new release` on the 
       right-hand side (a release is based on a Git tag, but is a higher-level GitHub feature).
    5. Creating a new release will trigger Zenodo into archiving your repository,
       and a DOI badge will be displayed next to your repository after a minute
-      or two. You can include it in your GitHub README file: click the
+      or two. 
+   6. You can include the DOI badge in your repository's README file by clicking the
       DOI badge and copy the relevant format (Markdown, RST, HTML).
 
 
