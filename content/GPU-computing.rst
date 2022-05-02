@@ -165,9 +165,9 @@ Using ufuncs (and generalized ufuncs) is the easist way to run on a GPU with Num
 Numba ``@vectroize`` will produce a ufunc-like object. This object is a close analog but not fully compatible with a regular NumPy ufunc.
 Generating a ufunc for GPU requires the explicit type signature and  target attribute.
 
-.. demo:: ufunc 
+.. demo:: Numba ufunc 
    
-   Let's revisit our example during the episode of opeimization.
+   Let's revisit our example during the episode of optimization.
 
    .. tabs::
 
@@ -176,12 +176,12 @@ Generating a ufunc for GPU requires the explicit type signature and  target attr
          .. literalinclude:: example/math_cpu.py
             :language: python
 
-      .. tab:: Numba cpu
+      .. tab:: Numba ufunc cpu
 
          .. literalinclude:: example/math_numba_cpu.py
             :language: python
 
-      .. tab:: Numba gpu
+      .. tab:: Numba ufunc gpu
 
          .. literalinclude:: example/math_numba_gpu.py
             :language: python
@@ -218,6 +218,7 @@ Generating a ufunc for GPU requires the explicit type signature and  target attr
 	.. code-block:: ipython
 
                 import numpy as np
+                import numba
 		x = np.random.rand(10000000)
 		res = np.random.rand(10000000)
 		%timeit res=f_numba_gpu(x, x)
@@ -225,15 +226,15 @@ Generating a ufunc for GPU requires the explicit type signature and  target attr
 
 
 Numba ``@vectroize`` is limited to scalar arguments in the core function, for multi-dimensional arrays arguments, 
-``guvectorize`` is used. Consider the following example which does matrix multiplication. 
+``@guvectorize`` is used. Consider the following example which does matrix multiplication. 
 
 
 .. warning::
 
-   You should never implemente such things like matrix multiplication, there are plenty of existing libraries available. 
+   You should never implemente such things like matrix multiplication by yourself, there are plenty of existing libraries available. 
 
 
-.. typealong::  
+.. demo::  
 
    .. tabs::
 
@@ -242,47 +243,41 @@ Numba ``@vectroize`` is limited to scalar arguments in the core function, for mu
          .. literalinclude:: example/matmul_cpu.py
             :language: python
 
-      .. tab:: cpu
+      .. tab:: numba gufunc cpu
 
          .. literalinclude:: example/matmul_numba_cpu.py
             :language: python
 
-      .. tab:: gpu
+      .. tab:: numba gufunc gpu
 
          .. literalinclude:: example/matmul_numba_gpu.py
             :language: python
 
 
-benchmark
+   benchmark
 
    .. tabs::
 
-      .. tab:: numpy
+      .. tab:: Numba gufunc cpu
 
-	.. code-block:: python
+	.. code-block:: ipython
 
-		N = 500
-		A = np.random.rand(N,N)
-		B = np.random.rand(N,N)
-		C = np.random.rand(N,N)
-		%timeit C=np.matmul(A,B)
-
-      .. tab:: cpu
-
-	.. code-block:: python
-
-		N = 500
+                import numpy as np
+                import numba
+		N = 50
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
 		%timeit matmul_numba_cpu(A,B,C)
 		
 
-      .. tab:: gpu
+      .. tab:: Numba gufunc gpu
 
-	.. code-block:: python
+	.. code-block:: ipython
 
-		N = 500
+                import numpy as np
+                import numba
+		N = 50
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
