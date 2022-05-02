@@ -11,11 +11,10 @@ GPU computing
 
 .. objectives::
 
-   - Understand GPU architecture (resources available to programmer) 
-   - Understand execution model 
-   - Get an overview of different options for GPU computing in Python
+   - Understand GPU architecture
+   - Understand GPU programming model 
    - Understand what types of computation is suitable for GPUs
-   - Learn the basics of Numba for GPUs and PyCUDA
+   - Learn the basics of Numba for GPUs
 
 .. instructor-note::
 
@@ -23,34 +22,19 @@ GPU computing
    - 40 min exercises
 
 
-.. prereq::
-
-   1. Basic C or FORTRAN
-   2. Basic knowledge about processes and threads
-
-
 GPU Intro
 ---------
-
-Several important terms in the topic of GPU programming are listed here:
-
-- *host*: the CPU
-- *device*: the GPU
-- *host memory*: the system main memory of the CPU
-- *device memory*: GPU onboard memory
-- *kernels*: a GPU function launched by the host and executed on the device
-- *device function*: a GPU function executed on the device which can only be
-  called from the device (i.e. from a kernel or another device function)
 
 
 
 Moore's law
-~~~~~~~~~~~
+^^^^^^^^^^^
 
 The number of transistors in a dense integrated circuit doubles about every two years.
 More transistors means smaller size of a single element, so higher core frequency can be achieved.
-However, power consumption scales as frequency in third power, so the growth in the core frequency has slowed down significantly.
-Higher performance of a single node has to rely on its more complicated structure and still can be achieved with SIMD, branch prediction, etc.
+However, power consumption scales as frequency in third power, so the growth in the core frequency 
+has slowed down significantly. Higher performance of a single node has to rely on its more complicated structure.
+
 
 .. figure:: img/microprocessor-trend-data.png
    :align: center
@@ -69,16 +53,29 @@ Achieving performance has been based on two main strategies over the years:
 
 
 Why use GPUs?
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
 
-The Graphics processing units (GPU) have been the most common accelerators during the last few years. The term *GPU* sometimes is used interchangeably with the term *accelerator*. The Graphics Processing Unit (GPU) provides much higher instruction throughput and memory bandwidth than the CPU within a similar price and power envelope.
+The Graphics Processing Unit (GPU) have been the most common accelerators 
+during the last few years. The term *GPU* sometimes is used interchangeably 
+with the term *accelerator*. GPU provides much higher instruction throughput 
+and memory bandwidth than CPU within a similar price and power envelope.
 
 
 
 How do GPUs differ from CPUs?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-CPUs and GPUs were designed with different goals in mind. While the CPU is designed to excel at executing a sequence of operations, called a thread, as fast as possible and can execute a few tens of these threads in parallel, the GPU is designed to excel at executing many thousands of them in parallel. GPUs were initially developed for highly-parallel task of graphic processing and therefore designed such that more transistors are devoted to data processing rather than data caching and flow control. More transistors dedicated to data processing is beneficial for highly parallel computations; the GPU can hide memory access latencies with computation, instead of relying on large data caches and complex flow control to avoid long memory access latencies, both of which are expensive in terms of transistors.
+CPUs and GPUs were designed with different goals in mind. While the CPU 
+is designed to excel at executing a sequence of operations, called a thread, 
+as fast as possible and can execute a few tens of these threads in parallel, 
+the GPU is designed to excel at executing many thousands of them in parallel. 
+GPUs were initially developed for highly-parallel task of graphic processing 
+and therefore designed such that more transistors are devoted to data processing 
+rather than data caching and flow control. More transistors dedicated to 
+data processing is beneficial for highly parallel computations; the GPU can 
+hide memory access latencies with computation, instead of relying on large data caches 
+and complex flow control to avoid long memory access latencies, 
+both of which are expensive in terms of transistors.
 
 
 
@@ -109,59 +106,70 @@ CPUs and GPUs were designed with different goals in mind. While the CPU is desig
 
 
 Summary
-~~~~~~~
+^^^^^^^
 
 - GPUs are highly parallel devices that can execute certain parts of the program in many parallel threads.
-
 - CPU controls the works flow and makes all the allocations and data transfers.
-
 - In order to use the GPU efficiently, one has to split their the problem  in many parts that can run simultaneously.
-
-
-Supported Python features in CUDA Python
---------------------------------------------------------
-
-This page lists the Python features supported in the CUDA Python. This includes all kernel and device functions compiled with @cuda.jit and other higher level Numba decorators that targets the CUDA GPU.
-
-Execution Model
-
-CUDA Python maps directly to the single-instruction multiple-thread execution (SIMT) model of CUDA. Each instruction is implicitly executed by multiple threads in parallel. With this execution model, array expressions are less useful because we don't want multiple threads to perform the same task. Instead, we want threads to perform a task in a cooperative fashion.
 
 
 Numba for GPUs
 --------------
+
+Terminology
+^^^^^^^^^^^
+
+Numba supports GPUs from both Nvidia and AMD, but we will use terminology from Nvidia 
+as examples in the rest of the course. 
+
+Several important terms in the topic of GPU programming are listed here:
+
+- *host*: the CPU
+- *device*: the GPU
+- *host memory*: the system main memory of the CPU
+- *device memory*: GPU onboard memory
+- *kernels*: a GPU function launched by the host and executed on the device
+- *device function*: a GPU function executed on the device which can only be
+  called from the device (i.e. from a kernel or another device function)
 
 
 Numba supports GPU programming by directly compiling a restricted subset of Python code 
 into kernels and device functions following the execution model. 
 Kernels written in Numba appear to have direct access to NumPy arrays. 
 NumPy arrays are transferred between the CPU and the GPU automatically.
-Numba supports GPUs from both Nvidia and AMD, but we will use Nvidia GPU as examples in the rest of the course. 
 
-.. note:: newer GPU devices from NVIDIA support device-side kernel launching; this feature is called dynamic parallelism but Numba does not support it currently
+.. note:: Kernel declaration
 
+   A kernel function is a GPU function that is meant to be called from CPU code. 
+   It contains two fundamental characteristics:
 
+   - kernels cannot explicitly return a value; all result data must be 
+     written to an array passed to the function (if computing a scalar, 
+     you will probably pass a one-element array);
 
-Kernel declaration
+   - kernels explicitly declare their thread hierarchy when called: 
+     i.e. the number of thread blocks and the number of threads per block 
+     (note that while a kernel is compiled once, it can be called 
+     multiple times with different block sizes or grid sizes).
 
-A kernel function is a GPU function that is meant to be called from CPU code (*). It gives it two fundamental characteristics:
-
-    kernels cannot explicitly return a value; all result data must be written to an array passed to the function (if computing a scalar, you will probably pass a one-element array);
-
-    kernels explicitly declare their thread hierarchy when called: i.e. the number of thread blocks and the number of threads per block (note that while a kernel is compiled once, it can be called multiple times with different block sizes or grid sizes).
-
+   - Newer GPU devices from NVIDIA support device-side kernel launching; 
+     this feature is called dynamic parallelism but Numba does not support it currently
 
 
 
 
 ufunc (gufunc) decorator
-~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using ufuncs (and generalized ufuncs) is the easist way to run on a GPU with Numba, and it requires minimal understanding of GPU programming.
-Numba @vectroize will produce a ufunc-like object. This object is a close analog but not fully compatible with a regular NumPy ufunc.
-Generating a ufunc for GPU requires the explicit type signature and  target attribute.
+Using ufuncs (and generalized ufuncs) is the easist way to run on a GPU with Numba, 
+and it requires minimal understanding of GPU programming. Numba ``@vectroize`` 
+will produce a ufunc-like object. This object is a close analog but not fully compatible 
+with a regular NumPy ufunc. Generating a ufunc for GPU requires the explicit 
+type signature and  target attribute.
 
-.. typealong:: ufunc 
+.. demo:: Demo: Numba ufunc 
+   
+   Let's revisit our example during the episode of optimization.
 
    .. tabs::
 
@@ -170,46 +178,66 @@ Generating a ufunc for GPU requires the explicit type signature and  target attr
          .. literalinclude:: example/math_cpu.py
             :language: python
 
-      .. tab:: cpu
+      .. tab:: Numba ufunc cpu
 
          .. literalinclude:: example/math_numba_cpu.py
             :language: python
 
-      .. tab:: gpu
+      .. tab:: Numba ufunc gpu
 
          .. literalinclude:: example/math_numba_gpu.py
             :language: python
 
 
-benchmark
+   Let's benchmark
 
    .. tabs::
 
-      .. tab:: cpu
+      .. tab:: python
 
-	.. code-block:: python
+	 .. code-block:: ipython
 
-		a = np.random.rand(10000000)
-		b = np.random.rand(10000000)
-		c = np.random.rand(10000000)
+            import numpy as np
+	    x = np.random.rand(10000000)
+	    res = np.random.rand(10000000)
+	    %%timeit -r 1
+            for i in range(10000000):
+                res[i]=f(x[i], x[i])
+            # 6.75 s ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)
 
-		%timeit c=func_numba_cpu(a, b)
+      .. tab:: Numba cpu
 
-      .. tab:: gpu
+	 .. code-block:: ipython
 
-	.. code-block:: python
+            import numpy as np
+	    x = np.random.rand(10000000)
+	    res = np.random.rand(10000000)
+	    %timeit res=f_numba_cpu(x, x)
+            # 734 ms ± 435 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-		a = np.random.rand(10000000)
-		b = np.random.rand(10000000)
-		c = np.random.rand(10000000)
+      .. tab:: Numba gpu
 
-		%timeit c=func_numba_gpu(a, b)
+	 .. code-block:: ipython
+
+            import numpy as np
+            import numba
+            x = np.random.rand(10000000)
+	    res = np.random.rand(10000000)
+	    %timeit res=f_numba_gpu(x, x)
+            # 78.4 ms ± 6.71 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
+Numba ``@vectroize`` is limited to scalar arguments in the core function, for multi-dimensional arrays arguments, 
+``@guvectorize`` is used. Consider the following example which does matrix multiplication. 
 
-numba.vectorize() is limited to scalar arguments in the core function, for multi-dimensional arrays arguments, GUVectorize is used.
 
-.. typealong::  
+.. warning::
+
+   You should never implemente such things like matrix multiplication by yourself, 
+   there are plenty of existing libraries available. 
+
+
+.. demo:: Demo:  Numba gufunc  
 
    .. tabs::
 
@@ -218,47 +246,41 @@ numba.vectorize() is limited to scalar arguments in the core function, for multi
          .. literalinclude:: example/matmul_cpu.py
             :language: python
 
-      .. tab:: cpu
+      .. tab:: numba gufunc cpu
 
          .. literalinclude:: example/matmul_numba_cpu.py
             :language: python
 
-      .. tab:: gpu
+      .. tab:: numba gufunc gpu
 
          .. literalinclude:: example/matmul_numba_gpu.py
             :language: python
 
 
-benchmark
+   benchmark
 
    .. tabs::
 
-      .. tab:: numpy
+      .. tab:: Numba gufunc cpu
 
-	.. code-block:: python
+	 .. code-block:: ipython
 
-		N = 500
-		A = np.random.rand(N,N)
-		B = np.random.rand(N,N)
-		C = np.random.rand(N,N)
-		%timeit np.matmul(A,B)
-
-      .. tab:: cpu
-
-	.. code-block:: python
-
-		N = 500
+                import numpy as np
+                import numba
+		N = 50
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
 		%timeit matmul_numba_cpu(A,B,C)
 		
 
-      .. tab:: gpu
+      .. tab:: Numba gufunc gpu
 
-	.. code-block:: python
+	 .. code-block:: ipython
 
-		N = 500
+                import numpy as np
+                import numba
+		N = 50
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
@@ -266,31 +288,36 @@ benchmark
 
 
 
-.. note:: Numba automatically did a lot of things for us:
+.. note:: 
 
-  - Memory was allocated on GPU
-  - Data was copied from CPU and GPU
-  - The kernel was configured and launched
-  - Data was copied back from GPU to CPU
+   Numba automatically did a lot of things for us:
 
+   - Memory was allocated on GPU
+   - Data was copied from CPU and GPU
+   - The kernel was configured and launched
+   - Data was copied back from GPU to CPU
 
-
-CUDA kernel: CUDA JIT decorator 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Alough it is simple to use ufuncs(gfuncs) to run on GPU, the performance is the price we have to pay. 
 In addition, not all functions can be written as ufuncs in practice. To have much more flexibility, 
 one needs to write a kernel on GPU or device function, which requires more understanding of the GPU programming. 
 
-
-
 GPU Programming Model
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
-Accelerators are a separate main circuit board with the processor, memory, power management, etc., but they can not operate by themselves. They are always part of a system (host) in which the CPUs run the operating systems and control the programs execution. This is reflected in the programming model. CPU (host) and GPU (device) codes are mixed. CPU acts as a main processor, controlling the execution workflow.  The host makes all calls, allocates the memory,  and  handles the memory transfers between CPU and GPU. GPUs run tens of thousands of threads simultaneously on thousands of cores and does not do much of the data management. The device code is executed by doing calls to functions (kernels) written specifically to take advantage of the GPU. The kernel calls are asynchronous, the control is returned to the host after a kernel calls. All kernels are executed sequentially. 
+Accelerators are a separate main circuit board with the processor, memory, power management, etc., 
+but they can not operate by themselves. They are always part of a system (host) in which 
+the CPUs run the operating systems and control the programs execution. This is reflected 
+in the programming model. CPU (host) and GPU (device) codes are mixed. CPU acts as a main processor, 
+controlling the execution workflow.  The host makes all calls, allocates the memory,  
+and  handles the memory transfers between CPU and GPU. GPUs run tens of thousands of threads 
+simultaneously on thousands of cores and does not do much of the data management. 
+The device code is executed by doing calls to functions (kernels) written specifically 
+to take advantage of the GPU. The kernel calls are asynchronous, the control is returned 
+to the host after a kernel calls. All kernels are executed sequentially. 
 
 GPU Autopsy. Volta GPU
-^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: img/volta-architecture.png
     :align: center
@@ -324,105 +351,149 @@ NVIDIA Volta streaming multiprocessor (SM):
     A scheme of NVIDIA Volta streaming multiprocessor.
 
 
-thread hierarchy
-^^^^^^^^^^^^^^^^
+Thread hierarchy
+~~~~~~~~~~~~~~~~
 
 In order to take advantage of the accelerators it is needed to use parallelism.  
 When a kernel is launched,  tens of thousands of threads are created. 
 All threads execute the given kernel with each thread executing the same 
 instructions but on different data (Single Iinstruction Multiple Data 
 parallel programming model). It is therefore crucial  to know which thread 
-operates on which array element(s). 
+operates on which array element(s).
 
-.. note:: All loops in which the individual iterations are independent of each other can be parallelized.
-
-
-
-
-We just mentioned a little bit of the hardware.  To reflect this hierarchy on a software level, when CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs with available execution capacity. Thread blocks are required to execute independently, i.e. it must be possible to execute them in any order: in parallel or in series. Moreover, each thread block can be scheduled on any of the available SM within a GPU, in any order, concurrently or sequentially, so that they can be executed on any number of SMs.   However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs. Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via the so called shared memory and can be explicitly synchronized.  The blocks can not interact with other blocks.
+In order to know the thread positioning, we need some information about the hierarchy on a software level. 
+When CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped 
+into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs 
+with available execution capacity. Thread blocks are required to execute independently, 
+i.e. it must be possible to execute them in any order: in parallel or in series. In other words, 
+each thread block can be scheduled on any of the available SM within a GPU, in any order, 
+concurrently or sequentially, so that they can be executed on any number of SMs. Because of the design, 
+a GPU with more SMs will automatically execute the program in less time than a GPU with fewer SMs. 
+However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active 
+at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs. 
+Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via 
+the so called shared memory and can be explicitly synchronized. The blocks can not interact with other blocks.
 
 .. figure:: img/thread-hierarchy.png
    :align: center
 
 
-Threads can be identified using a one-dimensional, two-dimensional, 
-or three-dimensional thread index through the buit-in threadIdx variable,  
+Threads can be identified using a one-dimensional, two-dimensional, or three-dimensional 
+thread index through the buit-in :attr:`numba.cuda.threadIdx` variable,  
 and this provides a natural way to invoke computation across the elements 
 in a domain such as a vector, matrix, or volume.  Each block within the grid 
-can be identified by  a one-dimensional, two-dimensional, or three-dimensional 
-unique index accessible within the kernel through the built-in blockIdx variable. 
-The dimension of the thread block is accessible within the kernel 
-through the built-in blockDim variable.  The global index of a thread should be 
+can be identified by a one-dimensional, two-dimensional, or three-dimensional 
+unique index accessible within the kernel through the built-in :attr:`numba.cuda.blockIdx` variable. 
+The dimension of the thread block is accessible within the kernel through the built-in 
+:attr:`numba.cuda.blockDim` variable.  The global index of a thread should be 
 computed from its in-block index, the index of execution block and the block size. 
-For 1D, it is threadIdx.x + blockIdx.x*blockDim.x.
+For 1D, it is numba.cuda.threadIdx.x + numba.cuda.blockIdx.x * numba.cuda.blockDim.x. 
 
-.. note: Compared to an one-dimensional declarations of equivalent sizes, using multi-dimensional blocks does not change anything to the efficiency or behaviour of generated code, but can help you write your code in a more natural way.
+.. note:: 
 
+   Compared to an one-dimensional declarations of equivalent sizes, 
+   using multi-dimensional blocks does not change anything to the efficiency 
+   or behaviour of generated code, but can help you write your code in a more natural way.
+
+   :attr:`numba.cuda.threadIdx`, :attr:`numba.cuda.blockIdx` and :attr:`numba.cuda.blockDim`
+   are special objects provided by the CUDA backend for the sole purpose of knowing the geometry 
+   of the thread hierarchy and the position of the current thread within that geometry.
+   These objects can be 1D, 2D or 3D, depending on how the kernel was invoked. To access 
+   the value at each dimension, use the ``x``, ``y`` and ``z`` attributes of these objects, respectively.
+
+   Numba provides simple solution to calculate thread position by calling :attr:`numba.cuda.grid(ndim)` 
+   where *ndim* is the number of dimensions declared when invoking the kernel.
 
 
 .. figure:: img/MappingBlocksToSMs.png
    :align: center
 
-A simple example of the division of threads (green squares) in blocks (cyan rectangles). The equally-sized blocks contain four threads each. The thread index starts from zero in each block. Hence the “global” thread index should be computed from the thread index, block index and block size. This is explained for the thread #3 in block #2 (blue numbers). The thread blocks are mapped to SMs for execution, with all threads within a block executing on the same device. The number of threads within one block does not have to be equal to the number of execution units within multiprocessor. In fact, GPUs can switch between software threads very efficiently, putting threads that currently wait for the data on hold and releasing the resources for threads that are ready for computations. For efficient GPU utilization, the number of threads per block has to be couple of factors higher than the number of computing units on the multiprocessor. Same is true for the number of thread blocks, which can and should be higher than the number of available multiprocessor in order to use the GPU computational resources efficiently.  XXX less text
+   A simple example of the division of threads (green squares) in blocks (cyan rectangles). 
+   The equally-sized blocks contain four threads each. The thread index starts from zero in each block. 
+   Hence the "global" thread index should be computed from the thread index, block index and block size. 
+   This is explained for the thread #3 in block #2 (blue numbers). The thread blocks are mapped to SMs 
+   for execution, with all threads within a block executing on the same device. The number of threads 
+   within one block does not have to be equal to the number of execution units within multiprocessor. 
+   In fact, GPUs can switch between software threads very efficiently, putting threads that 
+   currently wait for the data on hold and releasing the resources for threads that are ready for computations. 
+   For efficient GPU utilization, the number of threads per block has to be couple of factors higher than 
+   the number of computing units on the multiprocessor. Same is true for the number of thread blocks, 
+   which can and should be higher than the number of available multiprocessor in order to 
+   use the GPU computational resources efficiently.
 
 
 
+It is important to notice that the total number of threads in a grid is a multiple of the block size. 
+This is not necessary the case for the problem that we are solving: the length of the vectors 
+can be non-divisible by selected block size. So we either need to make sure that the threads 
+with index large than the size of the vector don't do anything, or add padding to the vectors. 
+The former is a simple solution, i.e. by adding a condition after the global thread index is computed.
 
-To obtain the best choice of the thread grid is not a simple task, since it depends on the specific implemented algorithm and GPU computing capability. 
-The total number of threads is equal to the number of threads per block times the number of blocks per grid.
-The number of thread blocks per grid is usually dictated by the size of the data being processed, and it should be large enough to fully utilize the GPU.
+
+.. figure:: img/BlocksAndThreads2.png
+   :align: center
+
+   The total number of threads that are needed for the execution (N) can often not be 
+   a multiple of the block size and some of the threads will be idling or producing unused data (red blocks).
+
+
+.. note::
+  
+   Unless you are really sure that the block size and grid size are a divisor of your array size, 
+   you **must** check boundaries.
+
+
+To obtain the best choice of the thread grid is not a simple task, since it depends on 
+the specific implemented algorithm and GPU computing capability. The total number of threads 
+is equal to the number of threads per block times the number of blocks per grid. 
+The number of thread blocks per grid is usually dictated by the size of the data being processed, 
+and it should be large enough to fully utilize the GPU.
 
   - start with 20-100 blocks, the number of blocks is usually chosen to be 2x-4x the number of SMs
+
+  - the CUDA kernel launch overhead does depend on the number of blocks, so we find it best not to launch with very large number of blocks
  
-The size of the number of threads per block should be a multiple of 32, values like 128, 256 or 512 are frequently used
+The size of the number of threads per block should be a multiple of 32, 
+values like 128, 256 or 512 are frequently used
   
   - it should be lower than 1024 since it determines how many threads share a limited size of the shared memory 
 
   - it must be large than the number of available (single precision, double precision or integer operation) cores in a SM to fully occupy the SM
 
-The CUDA kernel launch overhead does depend on the number of blocks, so we find it best not to launch a grid where the number of threads equals the number of input elements when the input size is very big. We'll show a pattern for dealing with large inputs below.   XXX reformulate it
 
 
-Because of the design, a GPU with more SMs will automatically execute the program in less time than a GPU with fewer SMs. 
-
-
-
- 
-
-
-
-Memory management
-~~~~~~~~~~~~~~~~~
+Data and Memory management
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 With many cores trying to access the memory simultaneously and with little cache available, 
-the accelerator can run out of memory very quickly. This makes the memory management an essential task on the GPU.
+the accelerator can run out of memory very quickly. This makes the data and memory management an essential task on the GPU.
 
 Data transfer
-^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 
 Although Numba could transfer data automatically from/to the device, these data transfers are slow, 
 sometimes even more than the actual on-device computation. 
 Therefore explicitly transfering the data is necessary and should be minimised in real applications.
 
 Using numba.cuda functions, one can transfer data from/to device. To transfer data from cpu to gpu, 
-one could use to_device() method: 
+one could use ``to_device()`` method: 
 
-.. code-block:: py
+.. code-block:: python
 
 	d_x = numba.cuda.to_device(x)
 	d_y = numba.cuda.to_device(y)
 
-the resulting d_x is a DeviceNDArray. 
-To transfer data on the device back to the host, one can use the copy_to_host() method:
+the resulting d_x is a ``DeviceNDArray``. 
+To transfer data on the device back to the host, one can use the ``copy_to_host()`` method:
 
-.. code-block:: py
+.. code-block:: python
 
-	h_x = numba.cuda.copy_to_host(d_x)
-	h_y = numba.cuda.copy_to_host(d_y)
+	d_x.copy_to_host(h_x)
+	h_y = d_y.copy_to_host()
 
 
 Memory hierarchy
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~
 
 .. figure:: img/memory-hierarchy.png
    :align: center
@@ -440,19 +511,19 @@ However, only a limited amount of shared memory can be allocated on the device f
 
 
 CUDA JIT decorator 
-~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^
 
-Kernel and device functions are created with the numba.cuda.jit decorator on Nvidia GPUs.
-Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thread positions.
+CUDA Kernel and device functions are created with the ``numba.cuda.jit`` decorator on Nvidia GPUs.
+We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thread positions.
 
 
 
-.. typealong:: CUDA kernel
+.. demo:: Demo: CUDA kernel
 
    .. tabs::
 
 
-      .. tab:: numba gpu
+      .. tab:: ufunc gpu
 
          .. literalinclude:: example/math_numba_gpu.py
             :language: python
@@ -462,45 +533,50 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
          .. literalinclude:: example/math_kernel.py
             :language: python
 
-      .. tab:: CUDA kernel with device function
 
-         .. literalinclude:: example/math_kernel_devicefunction.py
-            :language: python
-
-
-.. typealong:: benchmark
+   benchmark
 
    .. tabs::
 
       .. tab:: CUDA kernel
 
-	.. code-block:: python
+	.. code-block:: ipython
 
+                import numpy as np
+                import math
+                import numba
 		a = np.random.rand(10000000)
 		b = np.random.rand(10000000)
 		c = np.random.rand(10000000)
 	        threadsperblock = 32
-		blockspergrid = (100 + 31) // 32 # blockspergrid = (array.size + (threadsperblock - 1)) // threadsperblock
-		%timeit math_kernel[threadsperblock, blockspergrid](a, b, result)
+		blockspergrid = 256
+		%timeit math_kernel[threadsperblock, blockspergrid](a, b, c)
+                # 103 ms ± 616 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
-      .. tab:: CUDA kernel with device function
+      .. tab:: CUDA kernel without data transfer
 
-	.. code-block:: python
+	.. code-block:: ipython
 
+                import numpy as np
+                import math
+                import numba
 		a = np.random.rand(10000000)
 		b = np.random.rand(10000000)
 		c = np.random.rand(10000000)
+                d_a = numba.cuda.to_device(a)
+                d_b = numba.cuda.to_device(b)
+                d_c = numba.cuda.to_device(c)
 	        threadsperblock = 32
-		blockspergrid = (100 + 31) // 32 # blockspergrid = (array.size + (threadsperblock - 1)) // threadsperblock
-		%timeit math_kernel_devicefunction[threadsperblock, blockspergrid](a, b, result)
+		blockspergrid = 256
+		%timeit math_kernel[threadsperblock, blockspergrid](d_a, d_b, d_c)
+                # 62.3 µs ± 81.2 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 
-
-.. typealong:: gufunc to kernel
+.. demo:: Demo: CUDA kernel matrix multiplication
 
    .. tabs::
 
-      .. tab:: numba gpu
+      .. tab:: gufunc gpu
 
          .. literalinclude:: example/matmul_numba_gpu.py
             :language: python
@@ -510,26 +586,25 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
          .. literalinclude:: example/matmul_kernel.py
             :language: python
 
-	test benchmark
 
-
-benchmark
+   benchmark
 
    .. tabs::
 
       .. tab:: numpy
 
-
 	.. code-block:: ipython
 
-		N = 500
+                import numpy as np
+		N = 50
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
-		%timeit np.matmul(A,B)
+		%timeit C=np.matmul(A,B)
+                # 4.65 µs ± 45.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
 
-      .. tab:: gufunc
+      .. tab:: gufunc gpu
 
          .. literalinclude:: example/matmul_gu_benchmark.py
             :language: ipython
@@ -539,29 +614,23 @@ benchmark
          .. literalinclude:: example/matmul_kernel_benchmark.py
             :language: ipython
 
+      .. tab:: CUDA kernel without data transfer
+
+         .. literalinclude:: example/matmul_kernel_benchmark2.py
+            :language: ipython
 
 
-new benchmark
-
-.. code-block:: python
-
-	N = 500
-	A = np.random.rand(N,N)
-	B = np.random.rand(N,N)
-
-	TPB = 16
-	threadsperblock = (TPB, TPB)
-	blockspergrid_x = int(math.ceil(C.shape[0] / threadsperblock[0]))
-	blockspergrid_y = int(math.ceil(C.shape[1] / threadsperblock[1]))
-	blockspergrid = (blockspergrid_x, blockspergrid_y)
 
 
-	%timeit C = np.dot(A, B)
-	%timeit matmul_gu(A, B, C)
-	%timeit matmul_kernel[blockspergrid, threadsperblock](A, B, C)
 
+.. note:: 
+   
+   ``numba.cuda.synchronize()`` is used after the kernel launch to make sure the profiling is correct.
 
-There are times when the gufunc kernel uses too many of a GPU’s resources, which can cause the kernel launch to fail. The user can explicitly control the maximum size of the thread block by setting the max_blocksize attribute on the compiled gufunc object.
+   There are times when the gufunc kernel uses too many of a GPU's resources, which can cause the kernel launch to fail. 
+   The user can explicitly control the maximum size of the thread block by setting the ``max_blocksize`` attribute on the compiled gufunc object.
+   e.g. matmul_numba_gpu.max_blocksize = 32
+
 
 
 
@@ -580,6 +649,86 @@ GPU can be easily misused and which leads to a low performance. One should condi
 	- Asynchronous execution
 	- data types: 64bit data types (integer and floating point) have a significant cost when running on GPU compared to 32bit.
 
+
+Asynchronous execution
+^^^^^^^^^^^^^^^^^^^^^^
+
+Although the evaluation of computation heavy kernels is noticeable quicker on a GPU, 
+we still have some room for improvement. A typical GPU program that does not explore 
+the task-based parallelism executed sequentially is shown on the figure below: 
+
+.. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUSequential.png
+   :align: center
+   :scale: 30 %
+   
+   All the data transfers and two functions are executed sequentially.
+
+As a result, the execution timeline looks similar to this:
+
+.. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUSync.png
+   :align: center
+   :scale: 30 %
+
+On a GPU, the host to device copy, kernel evaluation and device to host copy require different resources. 
+Hence, while the data is being copied, GPU can execute the computational kernel without interfering 
+with the data copying. To explore the task-based parallelism, we would like to execute the program as below:
+
+.. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUParallel.png
+   :align: center
+   :scale: 30 %
+
+
+and the resulting execution timeline looks similar to this:
+
+.. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUAsync.png
+   :align: center
+   :scale: 30 %
+
+   The execution timeline of the asynchronous GPU program. The different tasks will overlap to each other 
+   to a certain extent that they do not interfere with each other.
+   Note that there are still dependencies between tasks: we can not run the ``func1(..)`` 
+   before the ``data1`` is on the GPU and we can not copy the ``result1`` to the CPU 
+   before the kernel is finished. In order to express such sequential dependencies,
+   asynchronous executions are used. Tasks that are independent can run simultaneously.
+
+
+.. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism2_SchemeGPUDependency.png
+    :align: center
+    :scale: 35 %
+
+    Adding extra dependency between two tasks.
+
+Let us look at one step further by adding extra dependency between two tasks. Assume that the ``func2(..)`` 
+now needs the result of the ``func1(..)`` to be evaluated. This is easy to do in the program.
+
+.. figure:: img/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineAsyncDependency.png
+   :align: center
+   :scale: 35 %
+
+   Adding extra dependency between two tasks.
+
+
+Exercise
+--------
+
+.. exercise:: matrix multiplication with shared memory
+
+We will start from one implementation of the square matrix multiplication using shared memory.
+This implementation is taken from Numba official document, however there is arguably at least one error in it.
+Try to find where the error is and fix it:
+
+   .. literalinclude:: exercise/matmul_sm.py
+
+   .. solution:: Hint
+
+     - data range check: we require neither x nor y is out of range. The **and** should have been an **or**.
+     - ``numba.cuda.syncthreads()`` in conditional code: __syncthreads() is allowed in conditional code but only if 
+       the conditional evaluates identically across the entire thread block, otherwise the code execution is 
+       likely to hang or produce unintended side effects. 
+
+   .. solution:: 
+
+      .. literalinclude:: exercise/matmul_sm_solution.py
 
 
 .. exercise:: Discrete Laplace Operator
@@ -606,13 +755,14 @@ optimize it to run on both CPU and GPU using what we learned so far.
 
       .. tab:: python
 
-	.. literalinclude:: exercise/lap2d.py
+         .. literalinclude:: exercise/lap2d.py
             :language: python
 
-      .. tab:: benchmark
 
-	.. literalinclude:: exercise/lap2d_benchmark.py
-            :language: python
+         benchmark 
+
+	 .. literalinclude:: exercise/lap2d_benchmark.py
+            :language: ipython
 
 
 .. solution::  
@@ -651,47 +801,9 @@ optimize it to run on both CPU and GPU using what we learned so far.
          .. literalinclude:: exercise/lap2d_cuda.py
             :language: python
 
-cuPy
-------
-
-
-
-
-
-move data from the CPU to the GPU using the cp.asarray() function:
-
-ary_cpu = np.arange(10)
-ary_gpu = cp.asarray(ary_cpu)
-print('cpu:', ary_cpu)
-print('gpu:', ary_gpu)
-print(ary_gpu.device)
-
-
-
-Most of the NumPy methods are supported in CuPy with identical function names and arguments:
-
-
 
 .. keypoints::
 
    - 1
    - 2
    - 3
-
-
-
-
-
-The index of a thread and its "global" thread ID relate to each other in a straightforward way: For a one-dimensional block, they are the same; for a two-dimensional block of size (Dx, Dy),the thread ID of a thread of index (x, y) is (x + y Dx); for a three-dimensional block of size (Dx, Dy, Dz), the thread ID of a thread of index (x, y, z) is (x + y Dx + z Dx Dy). 
-
-
-There is a limit to the number of threads per block, since all threads of a block 
-are expected to reside on the same processor core and must share the limited memory resources of that core. 
-On current GPUs, a thread block may contain up to 1024 threads.
-
-GPUs like to be overloaded with threads, because they can switch among threads very quickly. 
-This allows to hide the memory operations: while some threads wait, others can compute. 
-
-
-
-Unless you are sure the block size and grid size is a divisor of your array size, you must check boundaries as shown above.

@@ -1,3 +1,6 @@
+import math
+import numba
+
 @numba.cuda.jit(device=True)
 def math_device(a, b):
     a = math.exp(a*b)
