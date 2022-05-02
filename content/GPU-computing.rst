@@ -355,14 +355,14 @@ When a kernel is launched,  tens of thousands of threads are created.
 All threads execute the given kernel with each thread executing the same 
 instructions but on different data (Single Iinstruction Multiple Data 
 parallel programming model). It is therefore crucial  to know which thread 
-operates on which array element(s). 
+operates on which array element(s).
 
 .. note:: All loops in which the individual iterations are independent of each other can be parallelized.
 
 
 
 
-We just mentioned a little bit of the hardware.  To reflect this hierarchy on a software level, when CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs with available execution capacity. Thread blocks are required to execute independently, i.e. it must be possible to execute them in any order: in parallel or in series. Moreover, each thread block can be scheduled on any of the available SM within a GPU, in any order, concurrently or sequentially, so that they can be executed on any number of SMs.   However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs. Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via the so called shared memory and can be explicitly synchronized.  The blocks can not interact with other blocks.
+In order to know the thread positioning, we need some information about the hierarchy on a software level. When CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs with available execution capacity. Thread blocks are required to execute independently, i.e. it must be possible to execute them in any order: in parallel or in series. In other words, each thread block can be scheduled on any of the available SM within a GPU, in any order, concurrently or sequentially, so that they can be executed on any number of SMs.   However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs. Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via the so called shared memory and can be explicitly synchronized.  The blocks can not interact with other blocks.
 
 .. figure:: img/thread-hierarchy.png
    :align: center
@@ -386,22 +386,17 @@ For 1D, it is threadIdx.x + blockIdx.x*blockDim.x.
 .. figure:: img/MappingBlocksToSMs.png
    :align: center
 
-   A simple example of the division of threads (green squares) in blocks (cyan rectangles). The equally-sized blocks contain four threads each. The thread index starts from zero in each block. Hence the "global" thread index should be computed from the thread index, block index and block size. This is explained for the thread #3 in block #2 (blue numbers). The thread blocks are mapped to SMs for execution, with all threads within a block executing on the same device. The number of threads within one block does not have to be equal to the number of execution units within multiprocessor. In fact, GPUs can switch between software threads very efficiently, putting threads that currently wait for the data on hold and releasing the resources for threads that are ready for computations. For efficient GPU utilization, the number of threads per block has to be couple of factors higher than the number of computing units on the multiprocessor. Same is true for the number of thread blocks, which can and should be higher than the number of available multiprocessor in order to use the GPU computational resources efficiently.  XXX less text
+   A simple example of the division of threads (green squares) in blocks (cyan rectangles). The equally-sized blocks contain four threads each. The thread index starts from zero in each block. Hence the "global" thread index should be computed from the thread index, block index and block size. This is explained for the thread #3 in block #2 (blue numbers). The thread blocks are mapped to SMs for execution, with all threads within a block executing on the same device. The number of threads within one block does not have to be equal to the number of execution units within multiprocessor. In fact, GPUs can switch between software threads very efficiently, putting threads that currently wait for the data on hold and releasing the resources for threads that are ready for computations. For efficient GPU utilization, the number of threads per block has to be couple of factors higher than the number of computing units on the multiprocessor. Same is true for the number of thread blocks, which can and should be higher than the number of available multiprocessor in order to use the GPU computational resources efficiently.
 
 
 
-It is important to notice that the total number of threads in a grid is a multiple of the block size. This is not necessary the case for the problem that we are solving: the length of the vectors we are summing can be non-divisible by selected block size. So we either need to make sure that the threads with index large than the size of the vector don't do anything, or add padding to the vectors. The former is a simple solution, i.e. by adding a conditional after the global thread index is computed.
+It is important to notice that the total number of threads in a grid is a multiple of the block size. This is not necessary the case for the problem that we are solving: the length of the vectors can be non-divisible by selected block size. So we either need to make sure that the threads with index large than the size of the vector don't do anything, or add padding to the vectors. The former is a simple solution, i.e. by adding a condition after the global thread index is computed.
 
 
 .. figure:: img/BlocksAndThreads2.png
    :align: center
 
-   A simple example of the division of threads (green squares) in blocks (cyan rectangles).
-   The equally-sized blocks contain four threads each.
-   The thread index starts from zero in each block.
-   Hence the "global" thread index should be computed from the thread index, block index and block size.
-   This is explained for the thread #3 in block #2 (blue numbers).
-   The total number of threads that are needed for the execution (N) can ofter not be 
+   The total number of threads that are needed for the execution (N) can often not be 
    a multiple of the block size and some of the threads will be idling or producing unused data (red blocks).
 
 
