@@ -401,7 +401,7 @@ For 1D, it is numba.cuda.threadIdx.x + numba.cuda.blockIdx.x * numba.cuda.blockD
    These objects can be 1D, 2D or 3D, depending on how the kernel was invoked. To access 
    the value at each dimension, use the ``x``, ``y`` and ``z`` attributes of these objects, respectively.
 
-   Numba provides method to automate such calculations by using :attr:`numba.cuda.grid(ndim)` 
+   Numba provides simple solution to calculate thread position by calling :attr:`numba.cuda.grid(ndim)` 
    where *ndim* is the number of dimensions declared when invoking the kernel.
 
 
@@ -625,6 +625,8 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
 
 .. note:: 
    
+   ``numba.cuda.synchronize()`` is used after the kernel launch to make sure the profiling is correct.
+
    There are times when the gufunc kernel uses too many of a GPU's resources, which can cause the kernel launch to fail. 
    The user can explicitly control the maximum size of the thread block by setting the ``max_blocksize`` attribute on the compiled gufunc object.
    e.g. matmul_numba_gpu.max_blocksize = 32
