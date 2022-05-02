@@ -64,7 +64,7 @@ To instead book a GPU node, type:
 
 .. code-block:: console
 
-   $ salloc -n 1 -A vega-training-users --partition=cpu --gres=gpu:1 --reservation=FIXME --cpus-per-task 1 -t 01:00:00
+   $ salloc -n 1 -A vega-training-users --partition=gpu --gres=gpu:1 --reservation=FIXME --cpus-per-task 1 -t 01:00:00
 
 
 Running Jupyter
@@ -94,7 +94,7 @@ Now create an SSH tunnel **from a new terminal on your local machine** to the co
 
 .. code-block:: console
 
-   $ ssh -TN -f YourUsername@login6.vega.izum.si -L localhost:8123:cn0709:8123
+   $ ssh -TN -f YourUsername@login.vega.izum.si -L localhost:8123:cn0709:8123
 
 Go back to the terminal running Jupyter-Lab on the compute node, and copy-paste the URL starting with 
 ``127.0.0.1`` which contains a long token into your local browser. If that does not work, try replacing 

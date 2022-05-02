@@ -90,7 +90,7 @@ use the inherent ("embarrassing") parallelism of the problem and perform these s
 
 Let us have a look at a toy example which many of us can hopefully relate to. 
 
-.. demo:: The word-count project
+.. demo:: Demo: The word-count project
 
    Head over to https://github.com/enccs/word-count-hpda and clone the repository:
 
@@ -213,7 +213,7 @@ of threads manually:
 After setting this environment variable we continue as usual 
 and multithreading will be turned on.
 
-.. demo:: Multithreading NumPy 
+.. demo:: Demo: Multithreading NumPy 
 
    Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
    To run it, we can save it in a file named `omp_test.py`.
@@ -257,7 +257,7 @@ here to using the ``ThreadPoolExecutor`` class to multithread reading and writin
 to files. For further details on ``threading`` refer to the **See also** section below.
 
 
-.. demo:: Multithreading file I/O
+.. demo:: Demo: Multithreading file I/O
 
    We continue with the word-count project and explore how we can use multithreading 
    for I/O. After running ``snakemake -j 1`` we should have 64 ``.dat`` files in the 
@@ -571,8 +571,8 @@ Examples
 ipyparallel
 -----------
 
-`ipyparallel <https://ipyparallel.readthedocs.io/en/latest/>`, also known as IPython Parallel, 
-is yet another tool for parallel computing in Python. However, it's more than parallel Python, 
+`ipyparallel <https://ipyparallel.readthedocs.io/en/latest/>`__, also known as IPython Parallel, 
+is yet another tool for parallel computing in Python. However, it's more than just parallel Python, 
 it's parallel *IPython*, and this adds interactivity to parallel computing.
 
 The architecture of ipyparallel for parallel and distributed computing abstracts out parallelism in a 

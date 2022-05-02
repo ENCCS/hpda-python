@@ -118,7 +118,7 @@ The cProfile tool tells us which function takes most of the time but it does not
 line-by-line breakdown of where time is being spent. For this information, we can use the 
 `line_profiler <https://github.com/pyutils/line_profiler/>`__ tool. 
 
-.. demo:: Line profiling
+.. demo:: Demo: line profiling
 
    For line-profiling source files from the command line, we can add a decorator ``@profile`` 
    to the functions of interests. If we do this for the :meth:`step` and :meth:`walk` function 
@@ -216,23 +216,27 @@ but only the first few rows of its first returned argument. If
 we use the ``svd`` implementation from scipy, we can ask for an incomplete
 version of the SVD. Note that implementations of linear algebra in
 scipy are richer then those in numpy and should be preferred.
+The following example demonstrates the performance benefit for a "slim" array
+(i.e. much larger along one axis):
 
 .. sourcecode:: ipython
 
-    %timeit np.linalg.svd(data)
-    # 1 loops, best of 3: 14.5 s per loop
+   import numpy as np
+   data = np.random.random((4000,100))
 
-    from scipy import linalg
+   %timeit np.linalg.svd(data)
+   # 1.09 s ± 19.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-    %timeit linalg.svd(data)
-    # 1 loops, best of 3: 14.2 s per loop
+   from scipy import linalg
 
-    %timeit linalg.svd(data, full_matrices=False)
-    # 1 loops, best of 3: 295 ms per loop
+   %timeit linalg.svd(data)
+   # 1.03 s ± 24.9 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-    %timeit np.linalg.svd(data, full_matrices=False)
-    # 1 loops, best of 3: 293 ms per loop
+   %timeit linalg.svd(data, full_matrices=False)
+   # 21.2 ms ± 716 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
+   %timeit np.linalg.svd(data, full_matrices=False)
+   # 23.8 ms ± 3.06 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 CPU usage optimization
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -364,44 +368,44 @@ NumPy expands the arrays such that the operation becomes viable.
   - Broadcasted arrays are never physically constructed, which saves memory.
 
 
-.. challenge:: broadcasting
+.. challenge:: Broadcasting
 
    .. tabs:: 
 
       .. tab:: 1D
 
-             .. code-block:: py
+         .. code-block:: py
 
-			import numpy as np
-                        a = np.array([1, 2, 3])
-                        b = 4 
-                        a + b
+            import numpy as np
+            a = np.array([1, 2, 3])
+            b = 4 
+            a + b
 
-             .. figure:: img/bc_1d.svg 
+            .. figure:: img/bc_1d.svg 
 
 
       .. tab:: 2D
 
-             .. code-block:: python
+         .. code-block:: python
 
-			     import numpy as np
-			     a = np.array([[0, 0, 0],[10, 10, 10],[20, 20, 20],[30, 30, 30]])
-			     b = np.array([1, 2, 3])
-			     a + b                      
+            import numpy as np
+            a = np.array([[0, 0, 0],[10, 10, 10],[20, 20, 20],[30, 30, 30]])
+            b = np.array([1, 2, 3])
+            a + b                      
 
-             .. figure:: img/bc_2d_1.svg 
+            .. figure:: img/bc_2d_1.svg 
 
 
-             .. code-block:: python
+         .. code-block:: python
 
-			     import numpy as np
-			     a = np.array([0, 10, 20,30])
-			     b = np.array([1, 2, 3]) 
-			     a + b                       # array([[11, 12, 13],
-                                			 #        [14, 15, 16]]) 
-				XXXXX fixing 
+            import numpy as np
+            a = np.array([0, 10, 20,30])
+            b = np.array([1, 2, 3]) 
+            a + b                       # array([[11, 12, 13],
+                              			 #        [14, 15, 16]]) 
+				# XXXXX fixing 
 
-             .. figure:: img/bc_2d_2.svg 
+         .. figure:: img/bc_2d_2.svg 
 
 
 
@@ -413,45 +417,44 @@ Memory access is cheaper when it is grouped: accessing a big array in a
 continuous way is much faster than random access. This implies amongst 
 other things that **smaller strides are faster**:
 
-  .. sourcecode:: ipython
+.. code-block:: python
 
-    c = np.zeros((1e4, 1e4), order='C')
+   c = np.zeros((1e4, 1e4), order='C')
 
-    %timeit c.sum(axis=0)
-    # 1 loops, best of 3: 3.89 s per loop
+   %timeit c.sum(axis=0)
+   # 1 loops, best of 3: 3.89 s per loop
 
-    %timeit c.sum(axis=1)
-    # 1 loops, best of 3: 188 ms per loop
+   %timeit c.sum(axis=1)
+   # 1 loops, best of 3: 188 ms per loop
 
-    c.strides
-    # Out[4]: (80000, 8)
+   c.strides
+   # (80000, 8)
 
-  This is the reason why Fortran ordering or C ordering may make a big
-  difference on operations:
+This is the reason why Fortran ordering or C ordering may make a big
+difference on operations:
 
-  .. sourcecode:: ipython
+.. code-block:: python
 
-    a = np.random.rand(20, 2**18)
+   a = np.random.rand(20, 2**18)
+   b = np.random.rand(20, 2**18)
 
-    b = np.random.rand(20, 2**18)
+   %timeit np.dot(b, a.T)
+   # 1 loops, best of 3: 194 ms per loop
 
-    %timeit np.dot(b, a.T)
-    # 1 loops, best of 3: 194 ms per loop
+   c = np.ascontiguousarray(a.T)
 
-    c = np.ascontiguousarray(a.T)
+   %timeit np.dot(b, c)
+   # 10 loops, best of 3: 84.2 ms per loop
 
-    %timeit np.dot(b, c)
-    # 10 loops, best of 3: 84.2 ms per loop
+Note that copying the data to work around this effect may not be worth it:
 
-  Note that copying the data to work around this effect may not be worth it:
+.. code-block:: python
 
-  .. sourcecode:: ipython
+   %timeit c = np.ascontiguousarray(a.T)
+   # 10 loops, best of 3: 106 ms per loop
 
-    %timeit c = np.ascontiguousarray(a.T)
-    # 10 loops, best of 3: 106 ms per loop
-
-  Using `numexpr <http://code.google.com/p/numexpr/>`_ can be useful to
-  automatically optimize code for such effects.
+Using `numexpr <http://code.google.com/p/numexpr/>`_ can be useful to
+automatically optimize code for such effects.
 
 
 Temporary arrays
@@ -480,9 +483,10 @@ Temporary arrays
    c = c + numpy.cos(b)
 
 - Broadcasting approaches can lead also to hidden temporary arrays  
-   - Input data M x 3 array
-   - Output data M x M array 
-   - There is a temporary M x M x 3 array
+
+  - Input data M x 3 array
+  - Output data M x M array 
+  - There is a temporary M x M x 3 array
 
 .. code-block:: python
 
@@ -510,7 +514,7 @@ Numexpr
 
 - By default, numexpr tries to use multiple threads
 - Number of threads can be queried and set with
-  `ne.set_num_threads(nthreads)`
+  ``ne.set_num_threads(nthreads)``
 - Supported operators and functions:
   +,-,\*,/,\*\*, sin, cos, tan, exp, log, sqrt
 - Speedups in comparison to NumPy are typically between 0.95 and 4
@@ -543,7 +547,7 @@ command. We will restrict the discussion here to the Jupyter-way - for a full ov
 of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
 
 
-.. demo:: Cython
+.. demo:: Demo: Cython
 
    Consider the following pure Python code which integrates a function:
 
@@ -658,7 +662,7 @@ Numba supports compilation of Python to run on either CPU or GPU hardware and is
 the Python scientific software stack. The optimized machine code is generated by the LLVM compiler infrastructure.
 
 
-.. demo:: Numba
+.. demo:: Demo: Numba
 
    Consider the integration example again using Numba this time:
 
