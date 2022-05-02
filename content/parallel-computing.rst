@@ -37,7 +37,7 @@ There are three main models of parallel computing:
  
   - Parallel threads do separate work and communicate via the same memory and write to shared variables.
   - Multiple threads in a single Python program cannot execute at the same time (see GIL below)
-  - Running multiple threads in Python is *only effective for I/O-bound tasks*
+  - Running multiple threads in Python is *only effective for certain I/O-bound tasks*
   - External libraries in other languages (e.g. C) which are called from Python can still use multithreading
 
 - **Distributed memory parallelism (multiprocessing):** Different processes manage their own memory segments and 
@@ -109,7 +109,7 @@ Let us have a look at a toy example which many of us can hopefully relate to.
       $ python source/wordcount.py data/pg65.txt processed_data/pg65.dat
       
       $ # print frequency of 10 most frequent words in both books to file
-      $ python source/zipf_test.py 10 processed_data/pg10.dat processed_data/pg65.dat > results.txt
+      $ python source/zipf_test.py 10 processed_data/pg10.dat processed_data/pg65.dat > results/results.txt
       
    This workflow is encoded in the ``Snakefile`` which can be used to run
    through all data files:
@@ -140,9 +140,7 @@ Let us have a look at a toy example which many of us can hopefully relate to.
       $ # run in parallel on 4 processes
       $ snakemake -j 4
 
-   **Task:**
-
-   - Compare the execution time when using 1, 2 and 4 processes
+    For embarrassingly parallel work one can achieve significant speedup with parallel Snakemake execution.
 
 The Snakefile describes the workflow in declarative style, i.e. we describe 
 the dependencies but let Snakemake figure out the series of steps to produce 
@@ -252,83 +250,20 @@ This is how an I/O-bound application might look:
    From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
 
 The `threading library <https://docs.python.org/dev/library/threading.html#>`__ 
-provides an API for creating and working with threads. We restrict our discussion 
-here to using the ``ThreadPoolExecutor`` class to multithread reading and writing 
-to files. For further details on ``threading`` refer to the **See also** section below.
+provides an API for creating and working with threads. The simplest approach to 
+create and manage threads is to use the ``ThreadPoolExecutor`` class.
+An example use case could be to download data from multiple websites using 
+multiple threads:
 
+.. code-block:: python
 
-.. demo:: Demo: Multithreading file I/O
+   import concurrent.futures
 
-   We continue with the word-count project and explore how we can use multithreading 
-   for I/O. After running ``snakemake -j 1`` we should have 64 ``.dat`` files in the 
-   ``processed_data`` directory. Let's say we want to convert them all to csv format.
-
-   The easiest way to use multithreading is to use the ``ThreadPoolExecutor``
-   from ``concurrent.futures``. Here is a comparison of serial and multithreaded 
-   code to accomplish this:
-
-   .. tabs:: 
-
-      .. tab:: Serial
-
-         .. code-block:: python
-      
-            import glob
-            import time
-            
-            def csvify_file(file):
-                with open(file, 'r') as f:
-                    lines = f.readlines()
-                with open(file.replace('.dat', '.csv'), 'w') as f:
-                    for line in lines:
-                        f.write(line.replace(' ', ','))
-            
-            def csvify_all_files(files):
-                for file in files:
-                    csvify_file(file)
-                    #break
-                    
-            if __name__ == '__main__':
-                files = glob.glob("processed_data/*.dat")
-                start_time = time.time()
-                csvify_all_files(files)
-                duration = time.time() - start_time
-                print(f"Read {len(files)} in {duration} seconds")   
-
-      .. tab:: Multithreaded
-
-         .. code-block:: python
-            :emphasize-lines: 2, 13-14
-
-            import glob
-            import concurrent.futures
-            import time
-
-            def csvify_file(file):
-                with open(file, 'r') as f:
-                    lines = f.readlines()
-                with open(file.replace('.dat', '.csv'), 'w') as f:
-                    for line in lines:
-                        f.write(line.replace(' ', ','))        
-
-            def csvify_all_files(files):
-                with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-                    executor.map(read_file, files)
-
-            if __name__ == '__main__':
-                files = glob.glob("processed_data/*.dat")
-                start_time = time.time()
-                csvify_all_files(files)
-                duration = time.time() - start_time
-                print(f"Read {len(files)} in {duration} seconds")      
-
-   Tasks:
-
-   1. Run these codes and observe the timing information.
-   2. You will likely not see a speedup. Try increasing the I/O by multiplying the data before writing 
-      it to file, i.e. insert ``line *= 100`` just before ``f.write(...)``. Does multithreading now pay off?
+   def download_all_sites(sites):
+       with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+           executor.map(my_download_function, sites)
   
-The speedup gained from multithreading our problem can be understood from the following image.
+The speedup gained from multithreading I/O bound problems can be understood from the following image.
 
 .. figure:: img/Threading.png
   :align: center
@@ -336,7 +271,7 @@ The speedup gained from multithreading our problem can be understood from the fo
 
   From https://realpython.com/, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence
 
-
+Further details on threading in Python can be found in the **See also** section below.
 
 
 Multiprocessing
@@ -594,6 +529,26 @@ interactive itself and that's what ipyparallel can contribute (many other use ca
 
 Exercises
 ---------
+
+.. exercise:: Measure Snakemake parallelisation efficiency
+
+   Explore the parallel efficiency of Snakemake for the word-count project.
+
+   First clone the repo:
+
+   .. code-block:: console
+
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
+
+   Run the workflow on one core and time it:
+
+   .. code-block:: console
+
+      time snakemake -j 1
+
+   Now compare the execution time when using more processes! How much improvement can be obtained?
+   Of course, the more time-consuming each job in the workflow is, the larger will the parallel efficiency be.
+
 
 .. exercise:: Word-autocorrelation: parallelizing word-count with multiprocessing
 
