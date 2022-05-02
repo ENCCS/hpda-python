@@ -362,7 +362,7 @@ operates on which array element(s).
 
 
 
-In order to know the thread positioning, we need some information about the hierarchy on a software level. When CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs with available execution capacity. Thread blocks are required to execute independently, i.e. it must be possible to execute them in any order: in parallel or in series. In other words, each thread block can be scheduled on any of the available SM within a GPU, in any order, concurrently or sequentially, so that they can be executed on any number of SMs.   However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs. Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via the so called shared memory and can be explicitly synchronized.  The blocks can not interact with other blocks.
+In order to know the thread positioning, we need some information about the hierarchy on a software level. When CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs with available execution capacity. Thread blocks are required to execute independently, i.e. it must be possible to execute them in any order: in parallel or in series. In other words, each thread block can be scheduled on any of the available SM within a GPU, in any order, concurrently or sequentially, so that they can be executed on any number of SMs. Because of the design, a GPU with more SMs will automatically execute the program in less time than a GPU with fewer SMs. However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs. Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via the so called shared memory and can be explicitly synchronized.  The blocks can not interact with other blocks.
 
 .. figure:: img/thread-hierarchy.png
    :align: center
@@ -406,6 +406,8 @@ The total number of threads is equal to the number of threads per block times th
 The number of thread blocks per grid is usually dictated by the size of the data being processed, and it should be large enough to fully utilize the GPU.
 
   - start with 20-100 blocks, the number of blocks is usually chosen to be 2x-4x the number of SMs
+
+  - the CUDA kernel launch overhead does depend on the number of blocks, so we find it best not to launch with very large number of blocks
  
 The size of the number of threads per block should be a multiple of 32, values like 128, 256 or 512 are frequently used
   
@@ -413,22 +415,13 @@ The size of the number of threads per block should be a multiple of 32, values l
 
   - it must be large than the number of available (single precision, double precision or integer operation) cores in a SM to fully occupy the SM
 
-The CUDA kernel launch overhead does depend on the number of blocks, so we find it best not to launch a grid where the number of threads equals the number of input elements when the input size is very big. We'll show a pattern for dealing with large inputs below.   XXX reformulate it
 
 
-Because of the design, a GPU with more SMs will automatically execute the program in less time than a GPU with fewer SMs. 
-
-
-
- 
-
-
-
-Memory management
-~~~~~~~~~~~~~~~~~
+Data and Memory management
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 With many cores trying to access the memory simultaneously and with little cache available, 
-the accelerator can run out of memory very quickly. This makes the memory management an essential task on the GPU.
+the accelerator can run out of memory very quickly. This makes the data and memory management an essential task on the GPU.
 
 Data transfer
 ^^^^^^^^^^^^^
@@ -475,12 +468,12 @@ However, only a limited amount of shared memory can be allocated on the device f
 CUDA JIT decorator 
 ~~~~~~~~~~~~~~~~~~
 
-Kernel and device functions are created with the numba.cuda.jit decorator on Nvidia GPUs.
+Kernel and device functions are created with the ``numba.cuda.jit`` decorator on Nvidia GPUs.
 Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thread positions.
 
 
 
-.. typealong:: CUDA kernel
+.. demo:: CUDA kernel
 
    .. tabs::
 
@@ -495,13 +488,13 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
          .. literalinclude:: example/math_kernel.py
             :language: python
 
-      .. tab:: CUDA kernel with device function
+#      .. tab:: CUDA kernel with device function
 
-         .. literalinclude:: example/math_kernel_devicefunction.py
-            :language: python
+#         .. literalinclude:: example/math_kernel_devicefunction.py
+#            :language: python
 
 
-.. typealong:: benchmark
+   benchmark
 
    .. tabs::
 
@@ -513,27 +506,44 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
 		b = np.random.rand(10000000)
 		c = np.random.rand(10000000)
 	        threadsperblock = 32
-		blockspergrid = (100 + 31) // 32 # blockspergrid = (array.size + (threadsperblock - 1)) // threadsperblock
-		%timeit math_kernel[threadsperblock, blockspergrid](a, b, result)
+		blockspergrid = 256
+		%timeit math_kernel[threadsperblock, blockspergrid](a, b, c)
+                # 103 ms ± 616 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
-      .. tab:: CUDA kernel with device function
+      .. tab:: CUDA kernel without data transfer
 
 	.. code-block:: python
 
 		a = np.random.rand(10000000)
 		b = np.random.rand(10000000)
 		c = np.random.rand(10000000)
+                d_a = numba.cuda.to_device(a)
+                d_b = numba.cuda.to_device(b)
+                d_c = numba.cuda.to_device(c)
 	        threadsperblock = 32
-		blockspergrid = (100 + 31) // 32 # blockspergrid = (array.size + (threadsperblock - 1)) // threadsperblock
-		%timeit math_kernel_devicefunction[threadsperblock, blockspergrid](a, b, result)
+		blockspergrid = 256
+		%timeit math_kernel[threadsperblock, blockspergrid](d_a, d_b, d_c)
+                # 62.3 µs ± 81.2 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+
+#      .. tab:: CUDA kernel with device function
+
+#	.. code-block:: python
+
+#		a = np.random.rand(10000000)
+#		b = np.random.rand(10000000)
+#		c = np.random.rand(10000000)
+#	        threadsperblock = 32
+#		blockspergrid = (100 + 31) // 32 # blockspergrid = (array.size + (threadsperblock - 1)) // threadsperblock
+#		%timeit math_kernel_devicefunction[threadsperblock, blockspergrid](a, b, result)
 
 
 
-.. typealong:: gufunc to kernel
+.. demo:: CUDA kernel matrix multiplication
 
    .. tabs::
 
-      .. tab:: numba gpu
+      .. tab:: gufunc gpu
 
          .. literalinclude:: example/matmul_numba_gpu.py
             :language: python
@@ -543,26 +553,25 @@ Numba provides function i.e. numba.cuda.grid(ndim),  to calculate the global thr
          .. literalinclude:: example/matmul_kernel.py
             :language: python
 
-	test benchmark
 
-
-benchmark
+   benchmark
 
    .. tabs::
 
       .. tab:: numpy
 
-
 	.. code-block:: ipython
 
-		N = 500
+                import numpy as np
+		N = 50
 		A = np.random.rand(N,N)
 		B = np.random.rand(N,N)
 		C = np.random.rand(N,N)
-		%timeit np.matmul(A,B)
+		%timeit C=np.matmul(A,B)
+                # 4.65 µs ± 45.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
 
-      .. tab:: gufunc
+      .. tab:: gufunc gpu
 
          .. literalinclude:: example/matmul_gu_benchmark.py
             :language: ipython
@@ -572,29 +581,21 @@ benchmark
          .. literalinclude:: example/matmul_kernel_benchmark.py
             :language: ipython
 
+      .. tab:: CUDA kernel without data transfer
+
+         .. literalinclude:: example/matmul_kernel_benchmark2.py
+            :language: ipython
 
 
-new benchmark
-
-.. code-block:: python
-
-	N = 500
-	A = np.random.rand(N,N)
-	B = np.random.rand(N,N)
-
-	TPB = 16
-	threadsperblock = (TPB, TPB)
-	blockspergrid_x = int(math.ceil(C.shape[0] / threadsperblock[0]))
-	blockspergrid_y = int(math.ceil(C.shape[1] / threadsperblock[1]))
-	blockspergrid = (blockspergrid_x, blockspergrid_y)
 
 
-	%timeit C = np.dot(A, B)
-	%timeit matmul_gu(A, B, C)
-	%timeit matmul_kernel[blockspergrid, threadsperblock](A, B, C)
 
+.. note:: 
+   
+   There are times when the gufunc kernel uses too many of a GPU's resources, which can cause the kernel launch to fail. 
+   The user can explicitly control the maximum size of the thread block by setting the max_blocksize attribute on the compiled gufunc object.
+   e.g. matmul_numba_gpu.max_blocksize = 32
 
-There are times when the gufunc kernel uses too many of a GPU’s resources, which can cause the kernel launch to fail. The user can explicitly control the maximum size of the thread block by setting the max_blocksize attribute on the compiled gufunc object.
 
 
 
