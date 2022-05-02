@@ -21,11 +21,13 @@ def matmul_sm(A, B, C):
     for i in range(bpg):
         sA[tx, ty] = A[x, ty + i * TPB]
         sB[tx, ty] = B[tx + i * TPB, y]
+        # Wait until all threads finish preloading
         numba.cuda.syncthreads()
 
         for j in range(TPB):
             tmp += sA[tx, j] * sB[j, ty]
 
+        # Wait until all threads finish computing
         numba.cuda.syncthreads()
 
     C[x, y] = tmp

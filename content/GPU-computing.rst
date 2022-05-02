@@ -713,8 +713,9 @@ Exercise
 
 .. exercise:: matrix multiplication with shared memory
 
-We will start from one implementation of a faster version of the square matrix multiplication using shared memory.
-This example is taken from Numba official document, however there is arguably at least one error in it:
+We will start from one implementation of the square matrix multiplication using shared memory.
+This implementation is taken from Numba official document, however there is arguably at least one error in it.
+Try to find where the error is and fix it:
 
    .. literalinclude:: exercise/matmul_sm.py
 
