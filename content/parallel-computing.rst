@@ -445,12 +445,11 @@ Examples
    .. tab:: send/recv
 
       .. code-block:: python
-         :emphasize-lines: 11, 16
+         :emphasize-lines: 10, 14
 
          from mpi4py import MPI
    
          comm = MPI.COMM_WORLD
-         # Get my rank and the number of ranks
          rank = comm.Get_rank()
          n_ranks = comm.Get_size()
    
@@ -458,22 +457,42 @@ Examples
              # All ranks other than 0 should send a message
              message = "Hello World, I'm rank {:d}".format(rank)
              comm.send(message, dest=0, tag=0)
-   
          else:
              # Rank 0 will receive each message and print them
              for sender in range(1, n_ranks):
                  message = comm.recv(source=sender, tag=0)
                  print(message)      
 
+   .. tab:: isend/irecv
+
+      .. code-block:: python
+         :emphasize-lines: 10,15
+
+         from mpi4py import MPI
+
+         comm = MPI.COMM_WORLD
+         rank = comm.Get_rank()
+         n_ranks = comm.Get_size()
+
+         if rank != 0:
+             # All ranks other than 0 should send a message
+             message = "Hello World, I'm rank {:d}".format(rank)
+             req = comm.isend(message, dest=0, tag=0)
+             req.wait()
+         else:
+             # Rank 0 will receive each message and print them
+             for sender in range(1, n_ranks):
+                 req = comm.irecv(source=sender, tag=0)
+                 message = req.wait()
+                 print(message)          
    .. tab:: broadcast
 
       .. code-block:: python
-         :emphasize-lines: 14
+         :emphasize-lines: 13
             
          from mpi4py import MPI
    
          comm = MPI.COMM_WORLD
-         # Get my rank and the number of ranks
          rank = comm.Get_rank()
          n_ranks = comm.Get_size()
    
@@ -491,12 +510,11 @@ Examples
    .. tab:: gather
       
       .. code-block:: python
-         :emphasize-lines: 10
+         :emphasize-lines: 9
          
          from mpi4py import MPI
    
          comm = MPI.COMM_WORLD
-         # Get my rank and the number of ranks
          rank = comm.Get_rank()
          n_ranks = comm.Get_size()
    
@@ -508,10 +526,36 @@ Examples
              for i in range(n_ranks):
                  print(receive_message[i])     
    
+   .. tab:: scatter
+
+      .. code-block:: python
+         :emphasize-lines: 14
+
+         from mpi4py import MPI
+         
+         comm = MPI.COMM_WORLD
+         size = comm.Get_size()
+         rank = comm.Get_rank()
+         
+         if rank == 0:
+             sendbuf = []
+             for i in range(size):
+                 sendbuf.append(f"Hello World from rank 0 to rank {i}")
+         else:
+             sendbuf = None
+         
+         recvbuf = comm.scatter(sendbuf, root=0)
+         print(f"rank {rank} received message: {recvbuf}")
+
    MPI excels for problems which can be divided up into some sort of subdomains and 
    communication is required between the subdomains between e.g. timesteps or iterations.
    The word-count problem is simpler than that and MPI is somewhat overkill, but in an exercise 
    below you will learn to use point-to-point communication to parallelize it.
+
+In addition to the lower-case methods :meth:`send`, :meth:`recv`, :meth:`broadcast` etc., there 
+are also *upper-case* methods :meth:`Send`, :meth:`Recv`, :meth:`Broadcast`. These work with 
+*buffer-like* objects (including strings and numpy arrays) which have known memory location and size. 
+Upper-case methods are faster and are strongly recommended for large numeric data.
 
 ipyparallel
 -----------
