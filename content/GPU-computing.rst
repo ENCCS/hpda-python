@@ -162,7 +162,7 @@ ufunc (gufunc) decorator
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Using ufuncs (and generalized ufuncs) is the easist way to run on a GPU with Numba, 
-and it requires minimal understanding of GPU programming. Numba ``@vectroize`` 
+and it requires minimal understanding of GPU programming. Numba ``@vectorize`` 
 will produce a ufunc-like object. This object is a close analog but not fully compatible 
 with a regular NumPy ufunc. Generating a ufunc for GPU requires the explicit 
 type signature and  target attribute.
@@ -233,7 +233,7 @@ Numba ``@vectroize`` is limited to scalar arguments in the core function, for mu
 
 .. warning::
 
-   You should never implemente such things like matrix multiplication by yourself, 
+   You should never implement such things like matrix multiplication by yourself, 
    there are plenty of existing libraries available. 
 
 
@@ -587,21 +587,21 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
             :language: python
 
 
-   benchmark
+   Benchmark:
 
    .. tabs::
 
       .. tab:: numpy
 
-	.. code-block:: ipython
-
-                import numpy as np
-		N = 50
-		A = np.random.rand(N,N)
-		B = np.random.rand(N,N)
-		C = np.random.rand(N,N)
-		%timeit C=np.matmul(A,B)
-                # 4.65 µs ± 45.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+      	.. code-block:: ipython
+         
+            import numpy as np
+      		N = 50
+      		A = np.random.rand(N,N)
+      		B = np.random.rand(N,N)
+      		C = np.random.rand(N,N)
+      		%timeit C=np.matmul(A,B)
+            # 4.65 µs ± 45.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
 
       .. tab:: gufunc gpu
@@ -708,98 +708,95 @@ now needs the result of the ``func1(..)`` to be evaluated. This is easy to do in
    Adding extra dependency between two tasks.
 
 
-Exercise
---------
+Exercises
+---------
 
-.. exercise:: matrix multiplication with shared memory
+.. exercise:: Perform matrix multiplication with shared memory
 
-We will start from one implementation of the square matrix multiplication using shared memory.
-This implementation is taken from Numba official document, however there is arguably at least one error in it.
-Try to find where the error is and fix it:
-
-   .. literalinclude:: exercise/matmul_sm.py
-
-   .. solution:: Hint
-
-     - data range check: we require neither x nor y is out of range. The **and** should have been an **or**.
-     - ``numba.cuda.syncthreads()`` in conditional code: __syncthreads() is allowed in conditional code but only if 
-       the conditional evaluates identically across the entire thread block, otherwise the code execution is 
-       likely to hang or produce unintended side effects. 
-
-   .. solution:: 
-
-      .. literalinclude:: exercise/matmul_sm_solution.py
+   We will start from one implementation of the square matrix multiplication using shared memory.
+   This implementation is taken from Numba official document, however there is arguably at least one error in it.
+   Try to find where the error is and fix it:
+   
+      .. literalinclude:: exercise/matmul_sm.py
+   
+      .. solution:: Hint
+   
+        - data range check: we require neither x nor y is out of range. The **and** should have been an **or**.
+        - ``numba.cuda.syncthreads()`` in conditional code: __syncthreads() is allowed in conditional code but only if 
+          the conditional evaluates identically across the entire thread block, otherwise the code execution is 
+          likely to hang or produce unintended side effects. 
+   
+      .. solution:: 
+   
+         .. literalinclude:: exercise/matmul_sm_solution.py
 
 
 .. exercise:: Discrete Laplace Operator
 
-In this exercise, we will work with the discrete Laplace operator.
-It has a wide applications including numerical analysis, physics problems, image processing and machine learning as well.
-Here we consider a simple two-dimensional implementation with finite-difference formula i.e. the five-point stencil, which reads:
-
-.. math::
-   u_{out}(i,j) = 0.25*[ u(i-1,j) + u(i+1,j) + u(i,j-1) + u(i,j+1) ]
-               
-
-where :math:`u(i,j)` refers to the input at location with
-integer index :math:`i` and :math:`j` within the domain.
-
-
-You will start with a naive implenmentation in python and we would like you to 
-optimize it to run on both CPU and GPU using what we learned so far.
-
-
-.. challenge:: lap2d
-
+   In this exercise, we will work with the discrete Laplace operator.
+   It has a wide applications including numerical analysis, physics problems, image processing and machine learning as well.
+   Here we consider a simple two-dimensional implementation with finite-difference formula i.e. the five-point stencil, which reads:
+   
+   .. math::
+      u_{out}(i,j) = 0.25*[ u(i-1,j) + u(i+1,j) + u(i,j-1) + u(i,j+1) ]
+                  
+   
+   where :math:`u(i,j)` refers to the input at location with
+   integer index :math:`i` and :math:`j` within the domain.
+   
+   
+   You will start with a naive implementation in Python and you should 
+   optimize it to run on both CPU and GPU using what we learned so far.
+      
    .. tabs::
 
-      .. tab:: python
+      .. tab:: The Laplace code
 
          .. literalinclude:: exercise/lap2d.py
             :language: python
 
 
-         benchmark 
+      .. tab:: Benchmark
 
-	 .. literalinclude:: exercise/lap2d_benchmark.py
+         .. literalinclude:: exercise/lap2d_benchmark.py
             :language: ipython
 
-
-.. solution::  
-
-   Optimization on CPU 
-
-   .. tabs::
-
-      .. tab:: numpy
-
-	.. literalinclude:: exercise/lap2d_numpy.py
-            :language: python
-
-      .. tab:: numba gufunc
-
-         .. literalinclude:: exercise/lap2d_numba_gu_cpu.py
-            :language: python
-
-      .. tab:: numba JIT
-
-         .. literalinclude:: exercise/lap2d_numba_jit_cpu.py
-            :language: python
-
-
-   Optimization on GPU 
-
-   .. tabs:: 
    
-      .. tab:: numba gufunc
-
-         .. literalinclude:: exercise/lap2d_numba_gu_gpu.py
-            :language: python
-
-      .. tab:: numba CUDA kernel
-
-         .. literalinclude:: exercise/lap2d_cuda.py
-            :language: python
+   .. solution::  
+   
+      Optimization on CPU 
+   
+      .. tabs::
+   
+         .. tab:: numpy
+   
+            .. literalinclude:: exercise/lap2d_numpy.py
+               :language: python
+   
+         .. tab:: numba gufunc
+   
+            .. literalinclude:: exercise/lap2d_numba_gu_cpu.py
+               :language: python
+   
+         .. tab:: numba JIT
+   
+            .. literalinclude:: exercise/lap2d_numba_jit_cpu.py
+               :language: python
+   
+   
+      Optimization on GPU 
+   
+      .. tabs:: 
+      
+         .. tab:: numba gufunc
+   
+            .. literalinclude:: exercise/lap2d_numba_gu_gpu.py
+               :language: python
+   
+         .. tab:: numba CUDA kernel
+   
+            .. literalinclude:: exercise/lap2d_cuda.py
+               :language: python
 
 
 .. keypoints::
