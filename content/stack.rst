@@ -87,8 +87,8 @@ can be applied to a sequence of data instead of using traditional ``for`` loops.
 Arrays
 ^^^^^^
 
-The core of numpy is the numpy ``ndarray`` (n-dimensional array).
-Compared to a python list, the numpy array is similar in terms of serving as a data container.
+The core of NumPy is the NumPy ``ndarray`` (n-dimensional array).
+Compared to a Python list, the NumPy array is similar in terms of serving as a data container.
 Some differences between the two are: 
 
 - ndarrays can have multi dimensions, e.g. a 1-D array is a vector, a 2-D array is a matrix 
@@ -121,11 +121,11 @@ unsigned integers (``uint``) floating point (``float``) and complex (``complex``
    # convert array to floats
    z.astype(float)
 
-Creating numpy arrays
+Creating NumPy arrays
 ^^^^^^^^^^^^^^^^^^^^^
 
-One way to create a numpy array is to convert from a python list, but make sure that the list is homogeneous 
-(same data type) otherwise you will downgrade the performace of numpy array. 
+One way to create a NumPy array is to convert from a python list, but make sure that the list is homogeneous 
+(same data type) otherwise you will downgrade the performace of NumPy array. 
 Since appending elements to an existing array is slow, it is a common practice to preallocate the necessary space 
 with ``np.zeros`` or ``np.empty`` when converting from a python list is not possible.
 
@@ -261,7 +261,7 @@ All the familiar arithmetic operators in NumPy are applied in vectorised form:
       .. code-block:: python
 
          import numpy as np
-	      a = np.array([[1, 2, 3], [4, 5, 6]])
+	 a = np.array([[1, 2, 3], [4, 5, 6]])
          b = np.array([10, 10, 10], [10, 10, 10]])
 
          a + b                       # array([[11, 12, 13],
@@ -386,7 +386,7 @@ Views and copies of arrays
    c = a[1:4].copy()  # true copy of subarray
 
 
-I/O with numpy
+I/O with NumPy
 ^^^^^^^^^^^^^^
 
 - Numpy provides functions for reading data from file and for writing data
@@ -444,7 +444,7 @@ Polynomials
 Linear algebra
 ^^^^^^^^^^^^^^
 
-- Numpy can calculate matrix and vector products efficiently: :meth:`dot`,
+- NumPy can calculate matrix and vector products efficiently: :meth:`dot`,
   :meth:`vdot`, ...
 - Eigenproblems: :meth:`linalg.eig`, :meth:`linalg.eigvals`, ...
 - Linear systems and matrix inversion: :meth:`linalg.solve`, :meth:`linalg.inv`
@@ -474,14 +474,14 @@ Pandas
 ------
 
 Pandas is a Python package that provides high-performance and easy to use 
-data structures and data analysis tools. Built on NumPy arrays, pandas is 
+data structures and data analysis tools. Built on NumPy arrays, Pandas is 
 particularly well suited to analyze tabular and time series data. 
 Although NumPy could in principle deal with structured arrays 
 (arrays with mixed data types), it is not efficient. 
 
-The core data structures of pandas are Series and Dataframes.
+The core data structures of Pandas are Series and Dataframes.
 
-- A pandas **series** is a one-dimensional numpy array with an index 
+- A Pandas **series** is a one-dimensional NumPy array with an index 
   which we could use to access the data 
 - A **dataframe** consist of a table of values with labels for each row and column.  
   A dataframe can combine multiple data types, such as numbers and text, 
@@ -554,7 +554,7 @@ Most tabular data is either in a tidy format or a untidy format
 - In tidy (long) format , i.e. column-oriented format, each row represents 
   only one variable of the observation, and can be considered "computer readable".
 
-When it comes to data analysis using pandas, the tidy format is recommended: 
+When it comes to data analysis using Pandas, the tidy format is recommended: 
 
 - Each column can be stored as a vector and this not only saves memory 
   but also allows for vectorized calculations which are much faster.
@@ -581,7 +581,7 @@ Pandas is a powerful tool for many steps of a data analysis pipeline:
 
 To explore some of the capabilities, we start with an
 example dataset containing the passenger list from the Titanic, which is often used in 
-Kaggle competitions and data science tutorials. First step is to load pandas and download 
+Kaggle competitions and data science tutorials. First step is to load Pandas and download 
 the dataset into a dataframe:
 
 .. code-block:: python
@@ -633,7 +633,7 @@ The columns have names. Here's how to get them:
 
    titanic.columns
 
-However, the rows also have names! This is what pandas calls the **index**:
+However, the rows also have names! This is what Pandas calls the **index**:
 
 .. code-block:: python
 
@@ -726,7 +726,7 @@ The workflow of :meth:`groupby` can be divided into three general steps:
 
 .. image:: img/groupby.png 
 
-For an overview of other data wrangling methods built into pandas, have a look 
+For an overview of other data wrangling methods built into Pandas, have a look 
 at :doc:`pandas-extra`.
 
 

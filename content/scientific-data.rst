@@ -19,7 +19,7 @@ Scientific data
 Types of scientific data 
 ------------------------
 
-bit and byte
+Bit and Byte
 ^^^^^^^^^^^^
 
 The smallest building block of storage in the computer is a **bit**, 
@@ -31,7 +31,7 @@ different types of information, i.e. data.
 
 
 
-Numerical data
+Numerical Data
 ^^^^^^^^^^^^^^
 
 Different numerial data types (integer and floating-point) can be encoded as bytes. 
@@ -115,7 +115,7 @@ CSV (comma-separated values)
 .. admonition:: Key features
 
    - **Type:** Text format
-   - **Packages needed:** numpy, pandas
+   - **Packages needed:** NumPy, Pandas
    - **Space efficiency:** Bad
    - **Good for sharing/archival:** Yes
    - Tidy data:
@@ -135,7 +135,7 @@ However, it is not the best format to use when you're working with big data.
     with enough decimal places so that you won't lose precision.
 
 1. You may lose data precision simply because you do not save the data with enough decimals
-2. CSV writing routines in Pandas and numpy try to avoid problems such as these 
+2. CSV writing routines in Pandas and NumPy try to avoid problems such as these 
    by writing the floating point numbers with enough precision, but even they are not infallible.
 3. Storage of these high-precision CSV files is usually very inefficient storage-wise.
 4. Binary files, where floating point numbers are represented in their native binary format, do not suffer from such problems.
@@ -146,7 +146,7 @@ HDF5 (Hierarchical Data Format version 5)
 .. admonition:: Key features
 
    - **Type:** Binary format
-   - **Packages needed:** pandas, PyTables, h5py
+   - **Packages needed:** Pandas, PyTables, h5py
    - **Space efficiency:** Good for numeric data.
    - **Good for sharing/archival:** Yes, if datasets are named well.
    - Tidy data:
@@ -167,7 +167,7 @@ NetCDF4 (Network Common Data Form version 4)
 .. admonition:: Key features
 
    - **Type**: Binary format
-   - **Packages needed:** pandas, netCDF4/h5netcdf, xarray
+   - **Packages needed:** Pandas, netCDF4/h5netcdf, xarray
    - **Space efficiency:** Good for numeric data.
    - **Good for sharing/archival:** Yes.
    - Tidy data:

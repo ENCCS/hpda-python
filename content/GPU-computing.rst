@@ -591,7 +591,7 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
 
    .. tabs::
 
-      .. tab:: numpy
+      .. tab:: NumPy
 
       	.. code-block:: ipython
          
