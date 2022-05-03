@@ -733,22 +733,6 @@ Exercises
       What type of communication can be used to collect the results on one rank which 
       computes the average and prints it to file?
 
-   Here's how the function can end:
-
-      .. code-block:: python
-
-         #
-             # use collective function
-             acf_tot = ave_word_acf_gather(comm, my_words, clean_text, timesteps)
-          
-             # use p2p function
-             #acf_tot = ave_word_acf_p2p(comm, my_words, clean_text, timesteps)
-          
-             # only rank 0 has the averaged data
-             if rank == 0:
-                 return acf_tot / nwords
-
-
    Study the two "faded" MPI function implementations below, one using point-to-point communication and the other using 
    collective communication. Try to figure out what you should replace the ``____`` with.
 
@@ -758,68 +742,56 @@ Exercises
 
          .. code-block:: python
 
-            def word_count_average_mpi_p2p(my_words, text, rank, n_ranks, timesteps=100):
+            def ave_word_acf_p2p(comm, my_words, text, timesteps=100):
+                rank = comm.Get_rank()
+                n_ranks = comm.Get_size()
                 # each rank computes its own set of acfs
                 my_acfs = np.zeros((len(____), timesteps))
                 for i, word in enumerate(my_words):
-                    my_acfs[i,:] = word_autocorr(word, text, timesteps)
-            
+                    my_acfs[i,:] = word_acf(word, text, timesteps)
+
                 if ____ == ____:
                     results = []
                     # append own results
                     results.append(my_acfs)
                     # receive data from other ranks and append to results
                     for sender in range(1, ____):
-                        results.append(comm.recv(source=____, tag=12))
-                    # compute average and write to file
+                        results.append(comm.____(source=sender, tag=12))
+                    # compute total 
                     acf_tot = np.zeros((timesteps,))
                     for i in range(____):
                         for j in range(len(results[i])):
                             acf_tot += results[i][j]
-                    acf_ave = acf_tot / nwords
-                    return acf_ave
+                    return acf_tot
                 else:
                     # send data
-                    comm.send(my_acfs, dest=____, tag=12)
+                    comm.____(my_acfs, dest=____, tag=12)
 
       .. tab:: Collective
 
          .. code-block:: python
 
-            def word_count_average_mpi_collective(my_words, text, rank, n_ranks, timesteps=100):
-                # each rank computes its own set of acfs
-                my_acfs = np.zeros((len(____), timesteps))
-                for i, word in enumerate(my_words):
-                    my_acfs[i,:] = word_autocorr(word, text, timesteps)
+               def ave_word_acf_gather(comm, my_words, text, timesteps=100):
+                   rank = comm.Get_rank()
+                   n_ranks = comm.Get_size() 
+                   # each rank computes its own set of acfs
+                   my_acfs = np.zeros((len(____), timesteps))
+                   for i, word in enumerate(my_words):
+                       my_acfs[i,:] = word_acf(word, text, timesteps)
 
-                # gather results on rank 0
-                results = comm.gather(____, root=0)
-                # loop over ranks and results. result is a list of lists of ACFs
-                if ____ == ____:
-                    acf_tot = np.zeros((timesteps,))
-                    for i in range(____):
-                        for j in range(len(results[i])):
-                            acf_tot += results[i][j]
-                    # compute average and write to file
-                    acf_ave = acf_tot / nwords
-                    return acf_ave
+                   # gather results on rank 0
+                   results = comm.____(____, root=0)
+                   # loop over ranks and results. result is a list of lists of ACFs
+                   if ____ == ____:
+                       acf_tot = np.zeros((timesteps,))
+                       for i in range(n_ranks):
+                           for j in range(len(results[i])):
+                               acf_tot += results[i][j]
+                       return acf_tot
 
-   To call these functions and write results to disk in the ``__main__`` module, you can do:
 
-   .. code-block:: python
 
-      # 
-          # use collective version
-          #acf_ave = word_count_average_mpi_collective(my_words, clean_text, rank, n_ranks, timesteps=100)
-      
-          # use p2p version
-          acf_ave = word_count_average_mpi_p2p(my_words, clean_text, rank, n_ranks, timesteps=100)
-      
-          # only rank 0 has the averaged data
-          if rank == 0:
-              np.savetxt(sys.argv[3], np.vstack((np.arange(1,101), acf_ave)).T, delimiter=',')      
-
-   Try running your code and time the result for different number of tanks!
+   After implementing one or both of these functions, run your code and time the result for different number of tasks!
 
    .. code-block:: console
 
@@ -828,19 +800,8 @@ Exercises
 
    .. solution:: 
 
-      A solution with both point-to-point and collective communication can be 
-      found on a `branch in the word-count-hpda repository 
-      <https://github.com/ENCCS/word-count-hpda/blob/autocorr-mpi/source/autocorrelation.py>`__.
-      You can also switch to the branch in your repository:
+      .. literalinclude:: exercise/autocorrelation_mpi.py
 
-      .. code-block:: console
-
-         $ # first commit any work you have done:
-         $ git add -u 
-         $ git commit -m "save my work"
-         $ # switch branch
-         $ git checkout autocorr-mpi
-                
 .. exercise:: Extend the Snakefile
 
    Extend the Snakefile in the word-count repository to compute the autocorrelation function for all 
