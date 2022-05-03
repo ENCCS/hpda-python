@@ -213,9 +213,9 @@ is quite often used in climate model data analysis.  The computational cost of t
 roughly :math:`n^3` where  :math:`n` is the size of the input matrix. 
 However, in most cases, we are not using all the output of the SVD, 
 but only the first few rows of its first returned argument. If
-we use the ``svd`` implementation from scipy, we can ask for an incomplete
+we use the ``svd`` implementation from SciPy, we can ask for an incomplete
 version of the SVD. Note that implementations of linear algebra in
-scipy are richer then those in numpy and should be preferred.
+SciPy are richer then those in NumPy and should be preferred.
 The following example demonstrates the performance benefit for a "slim" array
 (i.e. much larger along one axis):
 
@@ -244,7 +244,7 @@ CPU usage optimization
 Vectorization
 ~~~~~~~~~~~~~
 
-Arithmetic is one place where numpy performance outperforms python list and the reason is that it uses vectorization.
+Arithmetic is one place where NumPy performance outperforms python list and the reason is that it uses vectorization.
 A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
 In such cases, vectorization is key for better performance.
 
@@ -311,9 +311,9 @@ We could loop over the array:
 
    # 49.9 ms ± 3.84 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
-However, in order to pass a numpy array it is better to vectorize the function using :meth:`np.vectorize`
-which takes a nested sequence of objects or numpy arrays as inputs and returns a single 
-numpy array or a tuple of numpy arrays:
+However, in order to pass a NumPy array it is better to vectorize the function using :meth:`np.vectorize`
+which takes a nested sequence of objects or NumPy arrays as inputs and returns a single 
+NumPy array or a tuple of NumPy arrays:
 
 .. code-block:: python
 
@@ -357,7 +357,7 @@ Memory usage optimization
 Broadcasting
 ~~~~~~~~~~~~
 
-Basic operations of numpy are elementwise, and the shape of the arrays should be compatible.
+Basic operations of NumPy are elementwise, and the shape of the arrays should be compatible.
 However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
 NumPy expands the arrays such that the operation becomes viable.
 
@@ -381,7 +381,8 @@ NumPy expands the arrays such that the operation becomes viable.
             b = 4 
             a + b
 
-            .. figure:: img/bc_1d.svg 
+
+         .. figure:: img/bc_1d.svg 
 
 
       .. tab:: 2D
@@ -393,17 +394,17 @@ NumPy expands the arrays such that the operation becomes viable.
             b = np.array([1, 2, 3])
             a + b                      
 
-            .. figure:: img/bc_2d_1.svg 
+
+         .. figure:: img/bc_2d_1.svg 
 
 
          .. code-block:: python
 
             import numpy as np
-            a = np.array([0, 10, 20,30])
+            a = np.array([0, 10, 20, 30])
             b = np.array([1, 2, 3]) 
-            a + b                       # array([[11, 12, 13],
-                              			 #        [14, 15, 16]]) 
-				# XXXXX fixing 
+            a + b
+                 
 
          .. figure:: img/bc_2d_2.svg 
 
@@ -472,7 +473,7 @@ Temporary arrays
    # two temporary arrays will be created
    c = 2.0 * a - 4.5 * b
    
-   # four temporary arrays will be created due to unnecessary parenthesis
+   # four temporary arrays will be created, and from which two are due to unnecessary parenthesis
    c = (2.0 * a - 4.5 * b) + (numpy.sin(a) + numpy.cos(b))
 
    # solution
@@ -492,7 +493,7 @@ Temporary arrays
 
    import numpy as np
    X = np.random.random((M, 3))
-   D = npy.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
+   D = np.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
 
 
 Numexpr
@@ -512,9 +513,9 @@ Numexpr
    y = numpy.random.random((1000000, 1))
    poly = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
 
-- By default, numexpr tries to use multiple threads
+- By default, Numexpr tries to use multiple threads
 - Number of threads can be queried and set with
-  ``ne.set_num_threads(nthreads)``
+  ``numexpr.set_num_threads(nthreads)``
 - Supported operators and functions:
   +,-,\*,/,\*\*, sin, cos, tan, exp, log, sqrt
 - Speedups in comparison to NumPy are typically between 0.95 and 4
@@ -529,7 +530,7 @@ Performance boosting
 For many user cases, using NumPy or Pandas is sufficient. However, in some computationally heavy applications, 
 it is possible to improve the performance by pre-compiling expensive functions.
 `Cython <https://cython.org/>`__ and `Numba <https://numba.pydata.org/>`__ 
-are among the popular choices and both of them have good support for numpy arrays. 
+are among the popular choices and both of them have good support for NumPy arrays. 
 
 
 Cython
@@ -543,7 +544,7 @@ Developers can run the ``cython`` command-line utility to produce a ``.c`` file 
 a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library 
 which can then be directly imported in a Python program. There is, however, also an easy 
 way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic 
-command. We will restrict the discussion here to the Jupyter-way - for a full overview 
+command. We will restrict the discussion here to the Jupyter-way. For a full overview 
 of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
 
 
@@ -588,9 +589,11 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
       %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
       # 276 ms ± 20.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
+   Simply by using Cython and a copy-and-paste gives us about 10% increase in performance. 
    Now we can start adding data type annotation to the input variables:
 
    .. literalinclude:: example/integrate_cython_dtype0.py 
+      :emphasize-lines: 6,9,16
 
    .. code-block:: ipython
 
@@ -628,6 +631,7 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    might be as slow as ``def`` declared functions.  
 
    .. literalinclude:: example/integrate_cython_dtype1.py 
+      :emphasize-lines: 6,9,16
 
    .. code-block:: ipython
 
@@ -637,6 +641,7 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    Last step, we can add type annotation to the local variables within the functions and output.
 
    .. literalinclude:: example/integrate_cython_dtype2.py 
+      :emphasize-lines: 6,9,10,11,16,20,21
 
    .. code-block:: ipython
 

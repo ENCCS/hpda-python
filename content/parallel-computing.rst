@@ -554,7 +554,7 @@ Examples
 
 In addition to the lower-case methods :meth:`send`, :meth:`recv`, :meth:`broadcast` etc., there 
 are also *upper-case* methods :meth:`Send`, :meth:`Recv`, :meth:`Broadcast`. These work with 
-*buffer-like* objects (including strings and numpy arrays) which have known memory location and size. 
+*buffer-like* objects (including strings and NumPy arrays) which have known memory location and size. 
 Upper-case methods are faster and are strongly recommended for large numeric data.
 
 ipyparallel

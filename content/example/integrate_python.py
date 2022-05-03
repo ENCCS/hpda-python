@@ -16,5 +16,3 @@ def apply_integrate_f(col_a, col_b, col_N):
     for i in range(n):
         res[i] = integrate_f(col_a[i], col_b[i], col_N[i])
     return res
-
-

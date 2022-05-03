@@ -450,12 +450,12 @@ to make them lazy and tasks into a graph which we will run later on parallel har
 
    .. tabs::
 
-      .. tab:: numpy
+      .. tab:: NumPy
 
          .. literalinclude:: example/chunk_np.py
             :language: python
 
-      .. tab:: dask
+      .. tab:: Dask
 
          .. literalinclude:: example/chunk_dask.py
             :language: python
