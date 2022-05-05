@@ -113,6 +113,50 @@ Summary
 - In order to use the GPU efficiently, one has to split their the problem  in many parts that can run simultaneously.
 
 
+Python on GPU
+-------------
+
+There has been a lot of progress on Pyhton using GPUs, it is still evolving.
+There are a couple of options available to work with GPU, but none of them is perfect.
+
+
+.. note::
+
+   CUDA is the programming model developed by NVIDIA to work with GPU
+
+
+CuPy
+^^^^
+
+CuPy is a NumPy/SciPy-compatible data array library used on GPU. 
+CuPy has a highly compatible interface with NumPy and SciPy, As stated on its official website, 
+"All you need to do is just replace *numpy* and *scipy* with *cupy* and *cupyx.scipy* in your Python code." 
+If you know NumPy, CuPy is a very easy way to get started on the GPU.
+
+
+cuDF
+^^^^
+
+RAPIDS is a high level packages collections which implement CUDA functionalities and API with Python bindings.
+cuDF belongs to RAPIDS and is the library for manipulating data frames on GPU.
+cuDF provides a pandas-like API, so if you are familiar with Pandas, you can accelerate your work 
+without knowing too much CUDA programming.
+
+
+PyCUDA
+^^^^^^
+
+PyCUDA is a Python programming environment for CUDA. It allows users to access to NVIDIA's CUDA API from Python. 
+PyCUDA is powerful library but only runs on NVIDIA GPUs. Knowledge of CUDA programming is needed.
+
+
+Numba
+^^^^^
+
+Same as for CPU, Numba allows users to JIT compile Python code to work on GPU as well.
+This workshop will focus on Numba only.
+
+
 Numba for GPUs
 --------------
 
@@ -362,8 +406,9 @@ parallel programming model). It is therefore crucial  to know which thread
 operates on which array element(s).
 
 In order to know the thread positioning, we need some information about the hierarchy on a software level. 
-When CPU invokes a kernel grid, all the threads launched in the given kernel are partitioned/grouped 
-into the so-called thread blocks, and the thread blocks of the grid are enumerated and distributed to SMs 
+When CPU invokes a kernel, all the threads launched in the given kernel are partitioned/grouped 
+into the so-called thread blocks and multiple blocks are combined to form a grid. 
+The thread blocks of the grid are enumerated and distributed to SMs 
 with available execution capacity. Thread blocks are required to execute independently, 
 i.e. it must be possible to execute them in any order: in parallel or in series. In other words, 
 each thread block can be scheduled on any of the available SM within a GPU, in any order, 
@@ -644,7 +689,7 @@ GPU can be easily misused and which leads to a low performance. One should condi
         - high arithmetic intensity
   - Maximize memory throughput
 	- minimizing data transfers between the host and the device
-	- minimizing data transfers between global memory and the device by using shared memory and cache
+	- minimizing redundant data accesses to global memory by using shared memory and cache
   - Maximize instruction throughput
 	- Asynchronous execution
 	- data types: 64bit data types (integer and floating point) have a significant cost when running on GPU compared to 32bit.
@@ -801,6 +846,6 @@ Exercises
 
 .. keypoints::
 
-   - 1
-   - 2
-   - 3
+   - Numba gufuncs are easy to use on GPU
+   - Always consider input data size, compute complexity, 
+     host/device data copy and data type when programing with GPU
