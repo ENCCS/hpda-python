@@ -130,7 +130,7 @@ CuPy
 
 CuPy is a NumPy/SciPy-compatible data array library used on GPU. 
 CuPy has a highly compatible interface with NumPy and SciPy, As stated on its official website, 
-"All you need to do is just replace numpy and scipy with cupy and cupyx.scipy in your Python code." 
+"All you need to do is just replace *numpy* and *scipy* with *cupy* and *cupyx.scipy* in your Python code." 
 If you know NumPy, CuPy is a very easy way to get started on the GPU.
 
 
