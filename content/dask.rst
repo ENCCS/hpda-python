@@ -252,6 +252,8 @@ a Dask dataframe:
 
    url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
    df = pd.read_csv(url, index_col="Name")
+   # add a column
+   df["Child"] = df["Age"] < 12
 
    ddf = dd.from_pandas(df, npartitions=10)
 
