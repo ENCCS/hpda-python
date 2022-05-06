@@ -45,6 +45,12 @@ and distributed computing and finally GPU computing.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Preparation
+
+   setup
+
+.. toctree::
+   :maxdepth: 1
    :caption: The lesson
 
    motivation
@@ -68,7 +74,6 @@ and distributed computing and finally GPU computing.
    :maxdepth: 1
    :caption: Reference
 
-   setup
    guide
 
 
