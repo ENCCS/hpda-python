@@ -756,6 +756,26 @@ now needs the result of the ``func1(..)`` to be evaluated. This is easy to do in
 Exercises
 ---------
 
+.. exercise:: Perform matrix multiplication with single precision
+
+   In this exercise, we will look at the downgrade of performance by using a wrong data type.
+   We will first run the matrix multiplication CUDA kernel i.e. matmul_kernel using input data with 
+   diff precisions. You can further improve the performance with single precison input data 
+   by a simple change. Try to find where the error is and fix it:
+   
+      .. literalinclude:: exercise/matmul_dtype.py
+   
+      .. solution:: Hint
+   
+        - data type of variable tmp is by default double precison, this will downgrade the performance 
+          when we compute with single precision input data
+   
+      .. solution:: 
+   
+         .. literalinclude:: exercise/matmul_dtype_solution.py
+            :emphasize-lines: 9
+
+
 .. exercise:: Perform matrix multiplication with shared memory
 
    We will start from one implementation of the square matrix multiplication using shared memory.
