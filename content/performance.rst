@@ -27,6 +27,25 @@ Once your code is working reliably, you can start thinking of optimising it.
 Profilers 
 ---------
 
+time
+^^^^
+
+One of the easy way to profile the program is to use the time function:
+
+.. code-block:: python
+
+   import time
+   # start the timer
+   start_time=time.time()
+   # here are the code you would like to profile
+   a = np.arange(1000)
+   a = a ** 2
+   # stop the timer
+   end_time=time.time()
+   print("Runtime: {} seconds".format(round(end_time - start_time, 2)))
+
+
+
 Timeit
 ^^^^^^
 
