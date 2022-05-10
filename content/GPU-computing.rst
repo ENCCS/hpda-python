@@ -239,11 +239,14 @@ type signature and  target attribute.
 
       .. tab:: python
 
-	 .. code-block:: ipython
+	 .. code-block:: python
 
             import numpy as np
 	    x = np.random.rand(10000000)
 	    res = np.random.rand(10000000)
+
+	 .. code-block:: ipython
+
 	    %%timeit -r 1
             for i in range(10000000):
                 res[i]=f(x[i], x[i])

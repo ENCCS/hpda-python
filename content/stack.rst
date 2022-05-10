@@ -205,35 +205,7 @@ Similar arrays as an existing array:
 Array Operations and Manipulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`for` loops in Python are slow. If one needs to apply a mathematical operation
-on multiple (consecutive) elements of an array, it is always better to use a
-vectorised operation if possible.
-
-In practice, a vectorised operation means reframing the code in a manner that
-completely avoids a loop and instead uses e.g. slicing to apply the operation
-on the whole array (slice) at one go. For example, the following code for 
-calculating the difference of neighbouring elements in an array:
-
-.. code-block:: python
-
-   # brute force using a for loop
-   arr = numpy.arange(1000)
-   dif = numpy.zeros(999, int)
-   for i in range(1, len(arr)):
-       dif[i-1] = arr[i] - arr[i-1]
-
-can be re-written as a vectorised operation:
-
-.. code-block:: python
-
-   # vectorised operation
-   arr = numpy.arange(1000)
-   dif = arr[1:] - arr[:-1]
-
-The first brute force approach using a for loop is approx. 80 times slower
-than the second vectorised form!
-
-All the familiar arithmetic operators in NumPy are applied in vectorised form:
+All the familiar arithmetic operators in NumPy are applied elementwise:
 
 .. tabs:: 
 
@@ -242,14 +214,14 @@ All the familiar arithmetic operators in NumPy are applied in vectorised form:
       .. code-block:: python
 
          import numpy as np
-         a = np.array([1, 3, 5])
+         a = np.array([1, 2, 3])
          b = np.array([4, 5, 6])
          
          a + b
 
       .. figure:: img/np_add_1d_new.svg 
 
-      .. code-block:: py
+      .. code-block:: python
 
          a/b
          
@@ -349,20 +321,20 @@ One of the most common need is to transposing the matrix
 during the dot product. Switching the dimensions of 
 a NumPy array is also quite common in more advanced cases.
 
-.. code-block:: py
+.. code-block:: python
 
    import numpy as np
-   data = np.array([1,2,3,4,6,7,8,9,10,11,12])
+   data = np.array([1,2,3,4,5,6,7,8,9,10,11,12])
 
 .. figure:: img/np_reshape0.svg 
 
-.. code-block:: py
+.. code-block:: python
 
    data.reshape(4,3)
 
 .. figure:: img/np_reshape43.svg 
 
-.. code-block:: py
+.. code-block:: python
 
    data.reshape(3,4)
  
@@ -725,6 +697,8 @@ The workflow of :meth:`groupby` can be divided into three general steps:
 - Combining: Put the results back together into a single object.
 
 .. image:: img/groupby.png 
+
+(Image source from lecture Earth and Environmental Data Science `<https://earth-env-data-science.github.io/intro.html>`__)
 
 For an overview of other data wrangling methods built into Pandas, have a look 
 at :doc:`pandas-extra`.
