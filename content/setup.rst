@@ -126,19 +126,30 @@ You now need to either log in to the cluster again or start a new shell session 
 
    $ bash
 
-Now create a new environment with all required dependencies by:
+Now, either create a new environment with all required dependencies or activate 
+a pre-existing environment created in a directory you have access to:
 
-.. code-block:: console
+.. tabs:: 
 
-   $ conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+   .. tab:: Create new environment in $HOME
 
-The installation will take a few minutes.   
+      .. code-block:: console
+      
+         $ conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
 
-Now activate the environment by:
+      The installation can take several minutes. 
+      Now activate the environment by:
 
-.. code-block:: console
+      .. code-block:: console
+      
+         $ conda activate pyhpda
 
-   $ conda activate pyhpda
+   .. tab:: Activate existing environment
+
+      .. code-block:: console
+
+         $ conda activate /path/to/envdir/
+
 
 mpi4py
 ^^^^^^
