@@ -429,21 +429,27 @@ to make them lazy and tasks into a graph which we will run later on parallel har
    # 603 ms ± 181 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
-.. challenge:: Dask delay
+Comparison to Spark
+-------------------
 
-   We extend the previous example a little bit more by applying the function 
-   on a data array using for loop and adding an *if* condition:
+Dask has much in common with the `Apache Spark <https://spark.apache.org/>`__.
+Here are `some differences <https://docs.dask.org/en/stable/spark.html>`__ 
+between the two frameworks:
 
-   .. literalinclude:: example/delay_more.py 
+- Dask is smaller and more lightweight but is used together with other packages in 
+  the Python ecosystem. Spark is an all-in-one project with its own ecosystem. 
+- Spark is written in Scala, with some support for Python and R, while Dask is in Python. 
+- Spark is more focused on business intelligence (SQL, lightweight machine learning) while 
+  Dask is more general and is used more in scientific applications.
+- Both Dask and Spark can scale from one to thousands of nodes.
+- Dask supports the NumPy model for multidimensional arrays which Spark doesn't.
+- Spark generally expects users to compose computations out of high-level primitives 
+  (map, reduce, groupby, join, etc.), while Dask allows to specify arbitrary task 
+  graphs for more complex and custom systems.
 
 
-   Please add dask.delayed to parallelize the program as much as possible 
-   and check graph visualizations.
-
-   .. solution::
-
-      .. literalinclude:: example/delay_more_solution.py 
-
+Exercises
+---------
 
 .. challenge:: chunk size
 
@@ -486,7 +492,23 @@ to make them lazy and tasks into a graph which we will run later on parallel har
    with millions of tasks will lead to overhead being in the range from minutes to hours which is not recommended.
 
 
-.. challenge:: Climate simulation data using Xarray
+.. challenge:: Dask delay
+
+   We extend the previous example a little bit more by applying the function 
+   on a data array using for loop and adding an *if* condition:
+
+   .. literalinclude:: example/delay_more.py 
+
+
+   Please add dask.delayed to parallelize the program as much as possible 
+   and check graph visualizations.
+
+   .. solution::
+
+      .. literalinclude:: example/delay_more_solution.py 
+
+
+.. challenge:: Climate simulation data using Xarray and Dask
 
    This exercise is working with NetCDF files using Xarray. The files contain 
    monthly global 2m air temperature from a Last Millennium simulation. 
@@ -572,28 +594,6 @@ to make them lazy and tasks into a graph which we will run later on parallel har
    At 95% process memory load (terminate threshold), all workers will be terminated. Tasks will be cancelled 
    as well and data on the worker will be lost and need to be recomputed.
 
-
-Comparison to Spark
--------------------
-
-Dask has much in common with the `Apache Spark <https://spark.apache.org/>`__.
-Here are `some differences <https://docs.dask.org/en/stable/spark.html>`__ 
-between the two frameworks:
-
-- Dask is smaller and more lightweight but is used together with other packages in 
-  the Python ecosystem. Spark is an all-in-one project with its own ecosystem. 
-- Spark is written in Scala, with some support for Python and R, while Dask is in Python. 
-- Spark is more focused on business intelligence (SQL, lightweight machine learning) while 
-  Dask is more general and is used more in scientific applications.
-- Both Dask and Spark can scale from one to thousands of nodes.
-- Dask supports the NumPy model for multidimensional arrays which Spark doesn't.
-- Spark generally expects users to compose computations out of high-level primitives 
-  (map, reduce, groupby, join, etc.), while Dask allows to specify arbitrary task 
-  graphs for more complex and custom systems.
-
-
-Exercises
----------
 
 .. exercise:: Benchmarking dask.dataframes.apply()
 

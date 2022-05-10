@@ -79,7 +79,6 @@ ecosystem to work with large data. Specifically, we will learn to use:
 - multiprocessing
 - MPI4Py
 - Dask
-- cuPy
 
 
 What you will learn

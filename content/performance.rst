@@ -59,7 +59,7 @@ If you're using a Jupyter notebook, the best choice will be to use
    a = np.arange(1000)
 
    %timeit a ** 2
-   #  100000 loops, best of 3: 5.73 us per loop
+   # 1.4 µs ± 25.1 ns per loop 
 
 One can also use the cell magic ``%%timeit`` to benchmark a full cell.
 
@@ -146,7 +146,7 @@ line-by-line breakdown of where time is being spent. For this information, we ca
 
    .. code-block:: console
 
-       $ kernprof.py -l -v walk.py
+       $ kernprof -l -v walk.py
 
    ``line_profiler`` also works in a Jupyter notebook. First one needs to load the extension:
 
@@ -263,14 +263,19 @@ CPU usage optimization
 Vectorization
 ~~~~~~~~~~~~~
 
-Arithmetic is one place where NumPy performance outperforms python list and the reason is that it uses vectorization.
-A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
-In such cases, vectorization is key for better performance.
+Arithmetic is one place where NumPy performance outperforms python list and 
+the reason is that it uses vectorization. A lot of the data analysis involves 
+a simple operation being applied to each element of a large dataset. 
+In such cases, vectorization is key for better performance. 
+In practice, a vectorised operation means reframing the code in a manner that
+completely avoids a loop and instead uses e.g. slicing to apply the operation
+on the whole array (slice) at one go. For example, the following code for 
+calculating the difference of neighbouring elements in an array:
 
 
 Consider the following code:
 
-.. code-block:: python
+.. code-block:: ipython
 
    %%timeit
 
@@ -285,7 +290,7 @@ Consider the following code:
 How can the ``for`` loop be vectorized? We need to use clever indexing to get rid of the 
 loop:
 
-.. code-block:: python
+.. code-block:: ipython
 
    %%timeit
 
@@ -294,6 +299,8 @@ loop:
    a_dif = a[1:] - a[:-1]
 
    # 2.12 µs ± 25.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+
+The first brute force approach using a for loop is much slower than the second vectorised form!
 
 So one should consider using *vectorized* operations whenever possible, not only for 
 performance but also because the vectorized version can be more convenient. 
@@ -306,7 +313,7 @@ Let's define a simple function ``f`` which takes scalars input:
 
    import math
    def f(x, y):
-       return x**3 + 4*math.sin(y) 
+       return math.pow(x,3.0) + 4*math.sin(y) 
 
 If we pass an array we get an error 
    
@@ -322,7 +329,7 @@ If we pass an array we get an error
 
 We could loop over the array:
 
-.. code-block:: python
+.. code-block:: ipython
 
    %%timeit 
    for i in x:
@@ -334,13 +341,13 @@ However, in order to pass a NumPy array it is better to vectorize the function u
 which takes a nested sequence of objects or NumPy arrays as inputs and returns a single 
 NumPy array or a tuple of NumPy arrays:
 
-.. code-block:: python
+.. code-block:: ipython
 
    import numpy as np
    import math
 
    def f(x, y):
-       return x**3 + 4*math.sin(y) 
+       return math.pow(x,3.0) + 4*math.sin(y) 
 
    f_numpy = np.vectorize(f)
 
@@ -353,13 +360,13 @@ NumPy array or a tuple of NumPy arrays:
 For high performance vectorization, another choice is to use Numba. 
 Adding the decorator in a function, Numba will figure out the rest for you:
 
-.. code-block:: python
+.. code-block:: ipython
 
    import numba
    import math
 
    def f(x, y):
-       return x**3 + 4*math.sin(y) 
+       return math.pow(x,3.0) + 4*math.sin(y) 
 
    f_numba = numba.vectorize(f)
 
@@ -393,7 +400,7 @@ NumPy expands the arrays such that the operation becomes viable.
 
       .. tab:: 1D
 
-         .. code-block:: py
+         .. code-block:: python
 
             import numpy as np
             a = np.array([1, 2, 3])
@@ -422,7 +429,10 @@ NumPy expands the arrays such that the operation becomes viable.
             import numpy as np
             a = np.array([0, 10, 20, 30])
             b = np.array([1, 2, 3]) 
-            a + b
+            a + b # this does not work
+            a[:,None] +b 
+            # or
+            a[:,np.newaxis] +b
                  
 
          .. figure:: img/bc_2d_2.svg 
@@ -439,7 +449,7 @@ other things that **smaller strides are faster**:
 
 .. code-block:: python
 
-   c = np.zeros((1e4, 1e4), order='C')
+   c = np.zeros((10000, 10000), order='C')
 
    %timeit c.sum(axis=0)
    # 1 loops, best of 3: 3.89 s per loop
@@ -451,30 +461,7 @@ other things that **smaller strides are faster**:
    # (80000, 8)
 
 This is the reason why Fortran ordering or C ordering may make a big
-difference on operations:
-
-.. code-block:: python
-
-   a = np.random.rand(20, 2**18)
-   b = np.random.rand(20, 2**18)
-
-   %timeit np.dot(b, a.T)
-   # 1 loops, best of 3: 194 ms per loop
-
-   c = np.ascontiguousarray(a.T)
-
-   %timeit np.dot(b, c)
-   # 10 loops, best of 3: 84.2 ms per loop
-
-Note that copying the data to work around this effect may not be worth it:
-
-.. code-block:: python
-
-   %timeit c = np.ascontiguousarray(a.T)
-   # 10 loops, best of 3: 106 ms per loop
-
-Using `numexpr <http://code.google.com/p/numexpr/>`_ can be useful to
-automatically optimize code for such effects.
+difference on operations.
 
 
 Temporary arrays
@@ -525,12 +512,13 @@ Numexpr
 
 - Numexpr package provides fast evaluation of array expressions
 
-.. code-block:: python
+.. code-block:: ipython
 
    import numexpr as ne
-   x = numpy.random.random((1000000, 1))
-   y = numpy.random.random((1000000, 1))
-   poly = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
+   x = numpy.random.random((10000000, 1))
+   y = numpy.random.random((10000000, 1))
+   %timeit y = ((.25*x + .75)*x - 1.5)*x - 2
+   %timeit y = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
 
 - By default, Numexpr tries to use multiple threads
 - Number of threads can be queried and set with
@@ -627,6 +615,9 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
       You can not pass a Series directly since the Cython definition is specific to an array. 
       Instead using the ``Series.to_numpy()`` to get the underlying NumPy array
       which works nicely with Cython.
+
+      We use C data types like ``double``, ``long`` to define variables.
+
 
    Next step, we can start adding type annotation to the functions.
    There are three ways of declaring functions: 
