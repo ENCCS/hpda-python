@@ -120,7 +120,11 @@ The following command adds the necessary configuration to your ``.bashrc`` file:
 
    $ conda init bash
 
-You now need to either log in to the cluster again or start a new shell session by typing ``bash``.
+You now need to either log in to the cluster again or start a new shell session by typing ``bash``:
+
+.. code-block:: console
+
+   $ bash
 
 Now create a new environment with all required dependencies by:
 
