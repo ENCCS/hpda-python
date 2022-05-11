@@ -598,7 +598,7 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
 		c = np.random.rand(10000000)
 	        threadsperblock = 32
 		blockspergrid = 256
-		%timeit math_kernel[threadsperblock, blockspergrid](a, b, c)
+		%timeit math_kernel[threadsperblock, blockspergrid](a, b, c); numba.cuda.synchronize()
                 # 103 ms ± 616 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
       .. tab:: CUDA kernel without data transfer
@@ -616,7 +616,7 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
                 d_c = numba.cuda.to_device(c)
 	        threadsperblock = 32
 		blockspergrid = 256
-		%timeit math_kernel[threadsperblock, blockspergrid](d_a, d_b, d_c)
+		%timeit math_kernel[threadsperblock, blockspergrid](d_a, d_b, d_c); numba.cuda.synchronize()
                 # 62.3 µs ± 81.2 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 
@@ -839,17 +839,17 @@ Exercises
          .. tab:: numpy
    
             .. literalinclude:: exercise/lap2d_numpy.py
-               :language: python
+               :language: ipython
    
          .. tab:: numba gufunc
    
             .. literalinclude:: exercise/lap2d_numba_gu_cpu.py
-               :language: python
+               :language: ipython
    
          .. tab:: numba JIT
    
             .. literalinclude:: exercise/lap2d_numba_jit_cpu.py
-               :language: python
+               :language: ipython
    
    
       Optimization on GPU 
@@ -859,12 +859,15 @@ Exercises
          .. tab:: numba gufunc
    
             .. literalinclude:: exercise/lap2d_numba_gu_gpu.py
-               :language: python
+               :language: ipython
    
          .. tab:: numba CUDA kernel
    
             .. literalinclude:: exercise/lap2d_cuda.py
-               :language: python
+               :language: ipython
+
+            .. literalinclude:: exercise/lap2d_cuda_benchmark.py
+               :language: ipython
 
 
 .. keypoints::

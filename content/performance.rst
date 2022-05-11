@@ -76,7 +76,7 @@ For more complex code, one can use the `built-in python profilers
 <https://docs.python.org/3/library/profile.html>`_, ``cProfile`` or ``profile``.
 
 As a demo, let us consider the following code which simulates a random walk in one dimension
-(we can save it as ``walk.py``):
+(we can save it as ``walk.py`` or download from :download:`here <example/walk.py>`):
 
 .. code-block:: python
 
