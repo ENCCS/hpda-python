@@ -87,7 +87,7 @@ What you will learn
 This lesson provides a broad overview of methods to work with large 
 datasets using tools and libraries from the Python ecosystem. Since this field is fairly 
 extensive we will not have time to go into much depth. Instead, the objective is to expose 
-just details on each topic for you to get a good idea of the big picture and an 
+just enough details on each topic for you to get a good idea of the big picture and an 
 understanding of what combination of tools and libraries will work well for your particular 
 use case.
 

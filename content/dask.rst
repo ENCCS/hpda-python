@@ -451,9 +451,9 @@ between the two frameworks:
 Exercises
 ---------
 
-.. challenge:: chunk size
+.. challenge:: Chunk size
 
-   The following example calculate the mean value of a ramdom generated array. 
+   The following example calculate the mean value of a random generated array. 
    Run the example and see the performance improvement by using dask.
 
    .. tabs::

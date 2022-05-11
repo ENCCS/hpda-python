@@ -737,8 +737,161 @@ standpoint: you aren't just using some unknown function, but have a
 full scientific description and citation to the method and
 implementation.
 
+Let us look more closely into one out of the countless useful functions available 
+in SciPy. :meth:`curve_fit` is a non-linear least squares fitting function. NumPy 
+has least-squares fitting via the :meth:`np.linalg.lstsq` function, but we need to 
+go to SciPy to find non-linear curve fitting.
+This example fits a power-law to a vector:
+
+.. code-block:: python
+
+   import numpy as np
+   from scipy.optimize import curve_fit
+
+   def powerlaw(x, A, s):
+       return A * np.power(x, s)
+
+   # data
+   X = np.arange(Y.shape[0]) + 1.0
+   Y = np.array([9115, 8368, 7711, 5480, 3492, 3376, 2884, 2792, 2703, 2701])
+
+   # initial guess for variables 
+   p0 = [100, -1]   
+   params, cov = curve_fit(f=powerlaw, xdata=X, ydata=Y, p0=p0, bounds=(-np.inf, np.inf))
+
+   print("A =", params[0], "+/-", cov[0,0]**0.5)
+   print("s =", params[1], "+/-", cov[1,1]**0.5)
+
+   # optionally plot
+   import matplotlib.pyplot as plt
+   plt.plot(X,Y)
+   plt.plot(X, powerlaw(X, params[0], params[1]))
+
+In an exercise below, you will learn to perform an operation like curve fitting 
+on all rows of a pandas dataframe in an effective manner.
+
+
 Exercises
 ---------
+
+.. challenge:: Working effectively with dataframes
+
+   Recall the :meth:`curve_fit` method from SciPy discussed above, and imagine that we 
+   want to fit powerlaws to every row in a large dataframe. How can this be done effectively?
+
+   First define the :meth:`powerlaw` function and another function for fitting a row of numbers:
+
+   .. code-block:: python
+
+      import numpy as np
+      import pandas as pd
+      from scipy.optimize import curve_fit
+
+      def powerlaw(x, A, s):
+          return A * np.power(x, s)
+
+      def fit_powerlaw(row):
+          X = np.arange(row.shape[0]) + 1.0
+          params, cov = curve_fit(f=powerlaw, xdata=X, ydata=row, p0=[100, -1], bounds=(-np.inf, np.inf))
+          return params[1]
+
+   Next load a dataset with multiple rows similar to the one used in the example above:
+
+   .. code-block:: python
+
+      df = pd.read_csv("https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/data/results.csv")
+      # print first few rows
+      df.head()
+
+   Now consider these four different ways of fitting a powerlaw to each row of the dataframe:
+
+   .. tabs:: 
+
+      .. tab:: Loop
+
+         .. code-block:: python
+
+            powers = []
+            for row_indx in range(df.shape[0]):
+                row = df.iloc[row_indx,1:]
+                p = fit_powerlaw(row)
+                powers.append(p)
+
+      .. tab:: :meth:`iterrows`
+
+         .. code-block:: python
+
+            powers = []
+            for row_indx,row in df.iterrows():
+                p = fit_powerlaw(row[1:])
+                powers.append(p)            
+
+      .. tab:: :meth:`apply`
+
+         .. code-block:: python
+
+            powers = df.iloc[:,1:].apply(fit_powerlaw, axis=1)
+
+      .. tab:: :meth:`apply` with ``raw=True``
+
+         .. code-block:: python
+
+            # raw=True passes numpy ndarrays instead of series to fit_powerlaw 
+            powers = df.iloc[:,1:].apply(fit_powerlaw, axis=1, raw=True)
+
+   Which one do you think is most efficient? You can measure the execution time 
+   by adding ``%%timeit`` to the first line of a Jupyter code cell. More on timing 
+   and profiling in a later episode.
+
+
+   .. solution::
+
+      The execution time drops as you go from the version in the left tab to the right tab:
+
+      .. tabs::
+
+         .. tab:: Loop 
+
+            .. code-block:: python
+
+               %%timeit
+               powers = []
+               for row_indx in range(df.shape[0]):
+                  row = df.iloc[row_indx,1:]
+                  p = fit_powerlaw(row)
+                  powers.append(p)
+
+               # 33.6 ms ± 682 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+         .. tab:: :meth:`iterrows`
+
+            .. code-block:: python
+
+               %%timeit
+               powers = []
+               for row_indx,row in df.iterrows():
+                  p = fit_powerlaw(row[1:])
+                  powers.append(p)            
+
+               # 28.7 ms ± 947 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+         .. tab:: :meth:`apply`
+
+            .. code-block:: python
+
+               %%timeit
+               powers = df.iloc[:,1:].apply(fit_powerlaw, axis=1)
+
+               # 26.1 ms ± 1.19 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+
+         .. tab:: :meth:`apply` with ``raw=True``
+
+            .. code-block:: python
+
+               %%timeit
+               powers = df.iloc[:,1:].apply(fit_powerlaw, axis=1, raw=True)
+
+               # 24 ms ± 1.27 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 .. challenge:: Further analysis of the Titanic passenger list dataset
 
@@ -777,6 +930,7 @@ Exercises
       4. Names of members of largest family(ies): ``titanic[titanic["SibSp"] == 8].index``
       5. ``titanic.hist("SibSp", lambda x: "Poor" if titanic["Fare"].loc[x] < titanic["Fare"].mean() else "Rich", rwidth=0.9)``
    
+
 
 
 See also
