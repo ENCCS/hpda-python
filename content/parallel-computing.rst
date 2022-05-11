@@ -214,7 +214,7 @@ and multithreading will be turned on.
 .. demo:: Demo: Multithreading NumPy 
 
    Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
-   To run it, we can save it in a file named `omp_test.py`.
+   To run it, we can save it in a file named `omp_test.py` or download from :download:`here <example/omp_test.py>`.
 
    .. code-block:: python
 

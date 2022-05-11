@@ -28,4 +28,4 @@ N = 4096
 u = np.zeros((M, N), dtype=np.float64)
 unew = np.zeros((M, N), dtype=np.float64)
 
-%timeit lap2d_cuda[(16,16),(16,16)](u, unew);numba.cuda.synchronize()
+%timeit lap2d_cuda[(16,16),(16,16)](u, unew); numba.cuda.synchronize()
