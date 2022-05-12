@@ -187,6 +187,16 @@ NetCDF4 is by far the most common format for storing large data from big simulat
 The advantage of NetCDF4 compared to HDF5 is that one can easily add other metadata e.g. spatial dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
 As the format is standardized, many programs can use this metadata for visualization and further analysis.
 
+There's more
+~~~~~~~~~~~~
+
+- `Feather <https://arrow.apache.org/docs/python/feather.html>`__: a portable file format 
+  for storing Arrow tables or data frames (from languages like Python or R)
+- `Parquet <https://arrow.apache.org/docs/python/parquet.html>`__: a standardized open-source 
+  columnar storage format for use in data analysis systems
+- `npy <https://numpy.org/doc/stable/reference/routines.io.html>`__: numpy array format for 
+  saving and loading numpy arrays.
+
 Xarray
 ~~~~~~
 
