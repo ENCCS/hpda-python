@@ -3,12 +3,15 @@
 Parallel computing
 ==================
 
+.. questions::
+
+   - What is the Global Interpreter Lock in Python?
+   - How can Python code be parallelised?
+
 .. objectives::
 
-   - Understand the Global Interpreter Lock in Python
-   - Understand concurrency
-   - Understand the difference between multithreading and multiprocessing
-   - Learn the basics of *multiprocessing*, *threading*, *ipyparallel* and *MPI4Py*
+   - Become familiar with different types of parallelism 
+   - Learn the basics of parallel workflows, multiprocessing and distributed memory parallelism
 
 .. instructor-note::
 
@@ -16,19 +19,14 @@ Parallel computing
    - 40 min exercises
 
 
-The performance of a single CPU core has stagnated over the last ten years,
-and as such most of the speed-up in modern CPUs is coming from using multiple
+The performance of a single CPU core has stagnated over the last ten years
+and most of the speed-up in modern CPUs is coming from using multiple
 CPU cores, i.e. parallel processing. Parallel processing is normally based
-either on multiple threads or multiple processes. Unfortunately, the memory
-management of the standard CPython interpreter is not thread-safe, and it uses
-something called Global Interpreter Lock (GIL) to safeguard memory integrity.
-In practice, this limits the benefits of multiple threads only to some
-special situations (e.g. I/O). Fortunately, parallel processing with multiple
-processes is relatively straightforward also with Python.
+either on multiple threads or multiple processes. 
 
 There are three main models of parallel computing:
 
-- **Embarrassingly parallel:** the code does not need to synchronize/communicate
+- **"Embarrassingly" parallel:** the code does not need to synchronize/communicate
   with other instances, and you can run
   multiple instances of the code separately, and combine the results
   later.  If you can do this, great!  
@@ -49,7 +47,7 @@ There are three main models of parallel computing:
   - Running multiple processes is *only effective for CPU-bound tasks*
 
 In the next episode we will look at `Dask <https://dask.org/>`__, an array model extension and task scheduler, 
-which goes beyond these three approaches.
+which combines multiprocessing with (embarrassingly) parallel workflows and "lazy" execution.
 
 In the Python world, it is common to see the word `concurrency` denoting any type of simultaneous 
 processing, including *threads*, *tasks* and *processes*.
@@ -75,8 +73,6 @@ At first glance, this is bad for parallelism.  *But it's not all bad!:*
 - External libraries (NumPy, SciPy, Pandas, etc), written in C or other
   languages, can release the lock and run multi-threaded.  
 - Most input/output releases the GIL, and input/output is slow.
-- If speed is important enough you need things parallel, you usually
-  wouldn't use pure Python.
 - There are several Python libraries that side-step the GIL, e.g. by using 
   *subprocesses* instead of threads.
 
@@ -98,9 +94,10 @@ Let us have a look at a toy example which many of us can hopefully relate to.
 
       $ git clone https://github.com/ENCCS/word-count-hpda.git
 
-   This toy project is about analyzing the frequency of words in texts. The ``data``
-   directory contains 64 public domain books from Project Gutenberg and source files 
-   under ``source`` can be used to count words:
+   This project is about counting words in a given text and print out the 10 most common 
+   words which can be used to test `Zipf's law <https://en.wikipedia.org/wiki/Zipf%27s_law>`__.
+   The ``data`` directory contains 64 public domain books from `Project Gutenberg <https://www.gutenberg.org/>`__ 
+   and source files under ``source`` can be used to count words:
 
    .. code-block:: console
 
@@ -109,7 +106,7 @@ Let us have a look at a toy example which many of us can hopefully relate to.
       $ python source/wordcount.py data/pg65.txt processed_data/pg65.dat
       
       $ # print frequency of 10 most frequent words in both books to file
-      $ python source/zipf_test.py 10 processed_data/pg10.dat processed_data/pg65.dat > results/results.txt
+      $ python source/zipf_test.py 10 processed_data/pg10.dat processed_data/pg65.dat > results/results.csv
       
    This workflow is encoded in the ``Snakefile`` which can be used to run
    through all data files:
@@ -154,7 +151,7 @@ results (targets). This is how the Snakefile looks:
    # the default rule
    rule all:
        input:
-           'results/results.txt'
+           'results/results.csv'
    
    # count words in one of our books
    # logfiles from each run are put in .log files"
@@ -176,7 +173,7 @@ results (targets). This is how the Snakefile looks:
            books=expand('processed_data/{book}.dat', book=DATA)
        params:
            nwords = 10
-       output: 'results/results.txt'
+       output: 'results/results.csv'
        shell:  'python {input.zipf} {params.nwords} {input.books} > {output}'
 
 
@@ -216,17 +213,8 @@ and multithreading will be turned on.
    Here is an example which does a symmetrical matrix inversion of size 4000 by 4000.
    To run it, we can save it in a file named `omp_test.py` or download from :download:`here <example/omp_test.py>`.
 
-   .. code-block:: python
-
-      import numpy as np
-      import time
-      
-      A = np.random.random((4000,4000))
-      A = A * A.T
-      time_start = time.time()
-      np.linalg.inv(A)
-      time_end = time.time()
-      print("time spent for inverting A is", round(time_end - time_start,2), 's')
+   .. literalinclude:: example/omp_test.py
+      :language: python
 
    Let us test it with 1 and 4 threads:
 
@@ -287,50 +275,26 @@ the parallel :meth:`Pool.map` function, similarly to what we saw for multithread
 In the following code, we define a :meth:`square` 
 function, call the :meth:`cpu_count` method to get the number of CPUs on the machine,
 and then initialize a Pool object in a context manager and inside of it call the 
-:meth:`Pool.map` method to parallelize the computation:
+:meth:`Pool.map` method to parallelize the computation.
+We can save the code in a file named `mp_map.py` or download from :download:`here <example/mp_map.py>`.
 
-.. code-block:: python
+.. literalinclude:: example/mp_map.py
+   :language: python
    :emphasize-lines: 1, 11-12
 
-   import multiprocessing as mp
-   
-   def square(x):
-       return x * x
-   
-   if __name__ == '__main__':
-       nprocs = mp.cpu_count()
-       print(f"Number of CPU cores: {nprocs}")
-   
-       # use context manager to allocate and release the resources automatically
-       with mp.Pool(processes=nprocs) as pool:
-           result = pool.map(square, range(20))    
-       print(result)
- 
 For functions that take multiple arguments one can instead use the :meth:`Pool.starmap`
-function:
+function (save as `mp_starmap.py` or download :download:`here <example/mp_starmap.py>`)
 
-.. code-block:: python
+.. literalinclude:: example/mp_starmap.py
+   :language: python
    :emphasize-lines: 1, 10-11
-
-   import multiprocessing as mp
-
-   def power_n(x, n):
-       return x ** n
-
-   if __name__ == '__main__':
-       nprocs = mp.cpu_count()
-       print(f"Number of CPU cores: {nprocs}")
-  
-       with mp.Pool(processes=nprocs) as pool:
-           result = pool.starmap(power_n, [(x, 2) for x in range(20)])
-       print(result)
 
 .. callout:: Interactive environments
 
    Functionality within multiprocessing requires that the ``__main__`` module be 
    importable by children processes. This means that for example ``multiprocessing.Pool`` 
    will not work in the interactive interpreter. A fork of multiprocessing, called 
-   ``multiprocess``, can be used in interactive environments like IPython sessions.
+   ``multiprocess``, can be used in interactive environments like Jupyter.
 
 ``multiprocessing`` has a number of other methods which can be useful for certain 
 use cases, including ``Process`` and ``Queue`` which make it possible to have direct 
