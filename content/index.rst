@@ -109,7 +109,8 @@ practical advice.
 See also
 --------
 
-
+Each lesson episode has a "See also" section at the end which lists 
+recommended further learning material.
 
 
 
@@ -128,7 +129,7 @@ educational material, in particular:
 - `Python for Scientific Computing <https://aaltoscicomp.github.io/python-for-scicomp/>`__
 - `Data analysis workflows with R and Python <https://aaltoscicomp.github.io/data-analysis-workflows-course/>`__
 - `Python in High Performance Computing <https://github.com/csc-training/hpc-python>`__
-- `Code examples from High Performance Python <https://github.com/mynameisfiber/high_performance_python_2e>`
+- `Code examples from High Performance Python <https://github.com/mynameisfiber/high_performance_python_2e>`__
 - `HPC Carpentry's Introduction to High-Performance Computing in Python <http://www.hpc-carpentry.org/hpc-python/>`__
 
 Instructional Material

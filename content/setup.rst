@@ -166,7 +166,7 @@ linked with the system's MPI libraries.
 
       .. code-block:: console
       
-         $ module load foss/2020b
+         $ ml add foss/2020b
          $ CC=gcc MPICC=mpicc python3 -m pip install mpi4py --no-binary=mpi4py
 
    .. group-tab:: Karolina
