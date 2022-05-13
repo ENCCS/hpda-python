@@ -181,24 +181,33 @@ Running jobs
 ^^^^^^^^^^^^
 
 Resources can be allocated both through batch jobs (submitting a script to the scheduler)
-and interactively. 
+and interactively. You will need to provide a project ID when asking for an allocation.
+To find out what projects you belong to on the cluster, type:
+
+.. code-block:: console
+
+   $ sacctmgr -p show associations user=$USER
+
+The second column of the output contains the project ID.
 
 .. tabs::
 
    .. group-tab:: Vega
 
-      Vega uses the SLURM scheduler.
-      To allocate one interactive node for 1 hour on 1 node in the CPU partition:
+      Vega uses the SLURM scheduler. 
+      Use the following command to allocate one interactive node with 8 cores for 1 hour 
+      in the CPU partition. If there is a reservation on the cluster for the workshop, 
+      add ``--reservation=RESERVATIONNAME`` to the command.
 
       .. code-block:: console
       
-         $ salloc -N 1 -A vega-training-users --partition=cpu --reservation=FIXME -t 01:00:00
+         $ salloc -N 1 --ntasks-per-node=8 -A <PROJECT-ID> --partition=cpu  -t 01:00:00
 
-      To instead book a GPU node, type:
+      To instead book a GPU node, type (again adding reservation flag if relevant):
 
       .. code-block:: console
       
-         $ salloc -n 1 -A vega-training-users --partition=gpu --gres=gpu:1 --reservation=FIXME --cpus-per-task 1 -t 01:00:00
+         $ salloc -N 1 -A <PROJECT-ID> --partition=gpu --gres=gpu:1 --cpus-per-task 1 -t 01:00:00
 
    .. group-tab:: Karolina 
 
@@ -234,12 +243,14 @@ After allocating an interactive node you will see the name of the node in the ou
       You now need to ssh to that node, switch to the pyhpda 
       conda environment, and start the Jupyter-Lab server on a particular port 
       (choose one between 8000 and 9000) 
-      and IP address (the name of the compute node):
+      and IP address (the name of the compute node). Also load a module containing 
+      OpenMPI to have access to MPI inside Jupyter:
 
       .. code-block:: console
       
          $ ssh cn0709
          $ conda activate pyhpda
+         $ ml add foss/2021b
          $ jupyter-lab --no-browser --port=8123 --ip=cn0709
 
    .. group-tab:: Karolina
