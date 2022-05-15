@@ -752,11 +752,12 @@ This example fits a power-law to a vector:
        return A * np.power(x, s)
 
    # data
-   X = np.arange(Y.shape[0]) + 1.0
    Y = np.array([9115, 8368, 7711, 5480, 3492, 3376, 2884, 2792, 2703, 2701])
+   X = np.arange(Y.shape[0]) + 1.0
 
    # initial guess for variables 
-   p0 = [100, -1]   
+   p0 = [100, -1]
+   # fit data   
    params, cov = curve_fit(f=powerlaw, xdata=X, ydata=Y, p0=p0, bounds=(-np.inf, np.inf))
 
    print("A =", params[0], "+/-", cov[0,0]**0.5)
@@ -949,7 +950,8 @@ See also
    - NumPy provides a static array data structure, fast mathematical operations for 
      arrays and tools for linear algebra and random numbers
    - Pandas dataframes are a good data structure for tabular data
-   - Dataframes allow both simple and advanced analysis in very compact form 
+   - Dataframes allow both simple and advanced analysis in very compact form
+   - SciPy contains a lot of interfaces to battle-tested numerical routines 
 
 
 
