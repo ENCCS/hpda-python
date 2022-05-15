@@ -581,6 +581,37 @@ for the word-count project.
 Exercises
 ---------
 
+.. demo:: Word-autocorrelation example project
+
+   Inspired by a study of `dynamic correlations of words in written text 
+   <https://www.scirp.org/journal/paperinformation.aspx?paperid=92643>`__,
+   we decide to investigate autocorrelations (ACFs) of words in our database of book texts
+   in the `word-count project <https://github.com/enccs/word-count-hpda>`__.
+   Many of the exercises below are based on working with the following 
+   word-autocorrelation code, so let us get familiar with it.
+
+   .. solution:: Full source code
+
+      .. literalinclude:: exercise/autocorrelation.py
+
+   - The script takes three command-line arguments: the path of a datafile (book text), 
+     the path to the processed word-count file, and the output filename for the 
+     computed autocorrelation function.
+   - The ``__main__`` block calls the :meth:`setup` function to preprocess the text  
+     (remove delimiters etc.) and load the pre-computed word-count results.
+   - :meth:`word_acf` computes the word ACF in a text for a given word using simple 
+     for-loops (you will learn to speed it up later).
+   - :meth:`ave_word_acf` loops over a list of words and computes their average ACF.
+
+   To run this code for one book:
+
+   .. code-block:: console
+
+      $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat
+
+   It will print out the time it took to calculate the ACF.      
+
+
 .. exercise:: Measure Snakemake parallelisation efficiency
 
    Explore the parallel efficiency of Snakemake for the word-count project.
@@ -597,39 +628,23 @@ Exercises
 
       $ time snakemake -j 1
 
-   Now compare the execution time when using more processes! How much improvement can be obtained?
-   Of course, the more time-consuming each job in the workflow is, the larger will the parallel efficiency be.
+   Now compare the execution time when using more processes. How much improvement can be obtained?
 
+   The more time-consuming each job in the workflow is, the larger will be the parallel efficiency, 
+   as you will see if you get to the last exercise below!
 
-.. exercise:: Word-autocorrelation: parallelizing word-count with multiprocessing
-
-   Inspired by a study of 
-   `dynamic correlations of words in written text <https://www.scirp.org/journal/paperinformation.aspx?paperid=92643>`__,
-   we decide to investigate autocorrelations of words in our database of book texts.
+.. exercise:: Parallelize word-autocorrelation code with multiprocessing
 
    A serial version of the code is available in the 
    `source/autocorrelation.py <https://github.com/ENCCS/word-count-hpda/blob/main/source/autocorrelation.py>`__
-   script in the word-count repository. The full script can be viewed below, 
-   but we focus on the :meth:`word_autocorr` and :meth:`word_autocorr_average` functions:
+   script in the word-count repository. The full script can be viewed above, 
+   but we focus on the :meth:`word_acf` and :meth:`ave_word_acf` functions:
 
    .. literalinclude:: exercise/autocorrelation.py
       :pyobject: word_acf
       
    .. literalinclude:: exercise/autocorrelation.py
       :pyobject: ave_word_acf
-
-
-   .. solution:: Full script
-
-      .. literalinclude:: exercise/autocorrelation.py
-
-   - :meth:`word_acf` computes the autocorrelation in a text for a given word
-   - :meth:`ave_word_acf` loops over a list of words and computes their average autocorrelation
-   - To run this code: 
-
-     .. code-block:: console
-
-        $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/pg99_acf.csv
 
    - Think about what this code is doing and try to find a good place to parallelize it using 
      a pool of processes. 

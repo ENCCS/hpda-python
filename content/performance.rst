@@ -732,9 +732,9 @@ Exercises
 
    .. code-block:: console
 
-      $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+      $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat
 
-   Add ``@profile`` to the :meth:`word_autocorr` function, and run ``kernprof.py`` (or just ``kernprof``) 
+   Add ``@profile`` to the :meth:`word_acf` function, and run ``kernprof.py`` (or just ``kernprof``) 
    from the command line. What lines of this function are the most expensive?
 
    .. solution:: 
@@ -752,12 +752,12 @@ Exercises
          
          Total time: 15.5976 s
          File: source/autocorrelation.py
-         Function: word_autocorr at line 24
+         Function: word_acf at line 24
          
          Line #      Hits         Time  Per Hit   % Time  Line Contents
          ==============================================================
              24                                           @profile
-             25                                           def word_autocorr(word, text, timesteps):
+             25                                           def word_acf(word, text, timesteps):
              26                                               """
              27                                               Calculate word-autocorrelation function for given word 
              28                                               in a text. Each word in the text corresponds to one "timestep".
@@ -773,26 +773,12 @@ Exercises
              38        10         10.0      1.0      0.0      return acf
          
 
-.. exercise:: Is the :meth:`word_autocorr` function efficient?
+.. exercise:: Is the :meth:`word_acf` function efficient?
 
-   Have another look at the :meth:`word_autocorr` function from the word-count project. 
+   Have another look at the :meth:`word_acf` function from the word-count project. 
 
-   .. code-block:: python
-
-      def word_autocorr(word, text, timesteps):
-          """
-          Calculate word-autocorrelation function for given word 
-          in a text. Each word in the text corresponds to one "timestep".
-          """
-          acf = np.zeros((timesteps,))
-          mask = [w==word for w in text]
-          nwords_chosen = np.sum(mask)
-          nwords_total = len(text)
-          for t in range(timesteps):
-              for i in range(1,nwords_total-t):
-                  acf[t] += mask[i]*mask[i+t]
-              acf[t] /= nwords_chosen      
-          return acf
+   .. literalinclude:: exercise/autocorrelation.py
+      :pyobject: word_acf
       
    Do you think there is any room for improvement? How would you go about optimizing 
    this function?
@@ -807,19 +793,8 @@ Exercises
       Another is to find an in-built vectorized NumPy function which can calculate the 
       autocorrelation for us! Here's one way to do it:
 
-      .. code-block:: python
-
-         def word_autocorr_numpy(word, text, timesteps):
-             """
-             Calculate word-autocorrelation function for given word 
-             in a text using numpy.correlate function. 
-             Each word in the text corresponds to one "timestep".
-             """
-             acf = np.zeros((timesteps,))
-             mask = np.array([w==word for w in text]).astype(np.float64)
-             nwords_chosen = np.sum(mask)
-             acf = np.correlate(mask, mask, mode='full') / nwords_chosen
-             return acf[int(acf.size/2):int(acf.size/2)+timesteps]         
+      .. literalinclude:: exercise/autocorrelation_numba_numpy.py
+         :pyobject: word_acf_numpy
 
 
 .. exercise:: Pairwise distance
