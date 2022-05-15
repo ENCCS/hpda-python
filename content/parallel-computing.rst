@@ -789,6 +789,36 @@ Exercises
 
       .. literalinclude:: exercise/autocorrelation_mpi.py
 
+.. exercise:: Use the MPI version of word-autocorrelation with ipyparallel
+
+   Now try to use the MPI version of the autocorrelation.py script inside Jupyter 
+   using ipyparallel! Of course, you can also use the provided MPI solution.
+
+   Start by creating a new Jupyter notebook in the `word-count-hpda/source/` directory.
+
+
+   .. code-block:: python
+
+      import ipyparallel as ipp
+      
+      # request an MPI cluster with 4 engines
+      with ipp.Cluster(engines='mpi', n=4) as cluster:
+          # get a broadcast_view on the cluster which is best suited for MPI style computation
+          view = cluster.broadcast_view()
+          with view.sync_imports():
+      #        import numpy as np
+              from autocorrelation import preprocess_text, setup, word_acf
+              from autocorrelation import ave_word_acf_gather, ave_word_acf_p2p
+              from autocorrelation import mpi_acf
+          # run the mpi_example function on all engines in parallel
+          book = "../data/pg99.txt"
+          wc_book = "../processed_data/pg99.dat"
+          r = view.apply_sync(mpi_acf, book, wc_book)
+      
+      # Retrieve and print the result from the engines
+      print(r[0])      
+
+
 .. exercise:: Extend the Snakefile
 
    Extend the Snakefile in the word-count repository to compute the autocorrelation function for all 
