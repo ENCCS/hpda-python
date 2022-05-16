@@ -63,7 +63,14 @@ for example:
 Each cluster will be allocated with a given number of "workers" associated with 
 CPU and RAM and the Dask scheduling system automatically maps jobs to each worker.
 
-Here we will focus on using a LocalCluster, and it is recommended to use 
+Dask provides four different schedulers: 
+
+  - threading: a single-machine scheduler backed by a thread pool 
+  - processes: a single-machine scheduler backed by a process pool 
+  - sync: a single-threaded scheduler, used for debugging 
+  - distributed: a distributed scheduler for executing on multiple machines
+
+Here we will focus on using a ``LocalCluster``, and it is recommended to use 
 a distributed sceduler ``dask.distributed``. It is more sophisticated, offers more features,
 but requires minimum effort to set up. It can run locally on a laptop and scale up to a cluster. 
 We can start a LocalCluster scheduler which makes use of all the cores and RAM 
@@ -84,7 +91,7 @@ Or you can simply lauch a Client() call which is shorthand for what is described
 .. code-block:: python
 
    from dask.distributed import Client
-   client = Client()
+   client = Client() # same as Client(processes=True)
    client
 
 
@@ -98,6 +105,16 @@ We can also specify the resources to be allocated to a Dask cluster by:
    # 1 thread per worker
    # 4 GiB memory limit for a worker
    cluster = LocalCluster(n_workers=4,threads_per_worker=1,memory_limit='4GiB')
+
+
+.. note::
+
+   When setting up the cluster, one should consider the balance between the number of workers 
+   and threads per worker with different workloads by setting the parameter ``processes``. 
+   By default ``processes=True`` and this is a good choice for workloads that have the GIL,
+   thus it is better to have more workers and fewer threads per worker. Otherwise, when ``processes=False``, 
+   in this case all workers run as threads within the same process as the client, 
+   and they share memory resources. This works well for large datasets.
 
 
 Cluster managers also provide useful utilities: for example if a cluster manager supports scaling, 
