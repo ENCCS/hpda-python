@@ -42,8 +42,8 @@ One of the easy way to profile the program is to use the time function:
    a = a ** 2
    # stop the timer
    end_time=time.time()
-   print("Runtime: {} seconds".format(round(end_time - start_time, 2)))
-
+   print("Runtime: {:.4f} seconds".format(end_time - start_time))
+   # Runtime: 0.0001 seconds
 
 
 Timeit
