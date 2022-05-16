@@ -549,31 +549,74 @@ general way and this enables many different styles of parallelism, including:
 
 This is similar to Dask which will be covered in a later episode. 
 
-One way to work with ipyparallel is to start an IPython Cluster directly in a code cell in 
-Jupyter. Let's explore how ipyparallel can be used together with MPI.  
-The following code cell will initialize 4 MPI engines inside a context manager (to automatically 
-manage starting and stopping engines), create a "broadcast view" 
-to the engines, and finally use the :meth:`apply_sync` function to run the :meth:`mpi_example` 
-function on the engines:
+Let's explore how ipyparallel can be used together with MPI.  
+The following code will initialize an IPython Cluster with 8 MPI engines in one of two ways:
 
-.. code-block:: python
+- Inside a context manager to automatically manage starting and stopping engines.
+- In a terminal and connect to it from a Jupyter notebook. 
 
-   import ipyparallel as ipp
+After initializing the cluster, we create a "broadcast view" to the engines, and finally 
+use the :meth:`apply_sync` function to run the :meth:`mpi_example` function on the engines:
 
-   def mpi_example():
-       from mpi4py import MPI
-       comm = MPI.COMM_WORLD
-       return f"Hello World from rank {comm.Get_rank()}. Total ranks={comm.Get_size()}"
+.. tabs:: 
 
-   # request an MPI cluster with 4 engines
-   with ipp.Cluster(engines='mpi', n=4) as cluster:
-      # get a broadcast_view on the cluster which is best suited for MPI style computation
-      view = cluster.broadcast_view()
-      # run the mpi_example function on all engines in parallel
-      r = view.apply_sync(mpi_example)
+   .. tab:: Context manager
 
-   # Retrieve and print the result from the engines
-   print("\n".join(r))   
+      Define function: 
+
+      .. code-block:: python
+      
+         def mpi_example():
+             from mpi4py import MPI
+             comm = MPI.COMM_WORLD
+             return f"Hello World from rank {comm.Get_rank()}. Total ranks={comm.Get_size()}"
+
+      Start cluster in context manager:
+
+      .. code-block:: python
+      
+         import ipyparallel as ipp
+         # request an MPI cluster with 4 engines
+         with ipp.Cluster(engines='mpi', n=4) as cluster:
+            # get a broadcast_view on the cluster which is best suited for MPI style computation
+            view = cluster.broadcast_view()
+            # run the mpi_example function on all engines in parallel
+            r = view.apply_sync(mpi_example)
+
+         # Retrieve and print the result from the engines
+         print("\n".join(r))   
+
+   .. tab:: In terminal with ``ipcluster``
+
+      Define function: 
+
+      .. code-block:: python
+      
+         def mpi_example():
+             from mpi4py import MPI
+             comm = MPI.COMM_WORLD
+             return f"Hello World from rank {comm.Get_rank()}. Total ranks={comm.Get_size()}"
+
+      Start engines in terminal:
+
+      .. code-block:: console
+      
+         $ # load module with MPI
+         $ ml add foss/2021b
+         $ ipcluster start -n 8 --engines=MPI
+
+      Connect from a code cell in Jupyter:
+      
+      .. code-block:: python
+      
+         import ipyparallel as ipp
+         cluster = ipp.Client()
+         # print engine indices
+         print(cluster.ids)
+         view = cluster.broadcast_view()
+         r = view.apply_sync(mpi_example)
+         print("\n".join(r))
+
 
 In an exercise below you can practice using ipyparallel for running an interactive MPI job in Jupyter 
 for the word-count project.
@@ -792,32 +835,67 @@ Exercises
 .. exercise:: Use the MPI version of word-autocorrelation with ipyparallel
 
    Now try to use the MPI version of the autocorrelation.py script inside Jupyter 
-   using ipyparallel! Of course, you can also use the provided MPI solution.
+   using ipyparallel! Of course, you can also use the provided MPI solution above.
 
-   Start by creating a new Jupyter notebook in the `word-count-hpda/source/` directory.
+   Start by creating a new Jupyter notebook :file:`autocorrelation.ipynb` 
+   in the :file:`word-count-hpda/source/` directory.
 
+   Then start the IPython cluster with e.g. 8 cores in a Jupyter **terminal**:
+
+   .. code-block:: console
+
+      $ ipcluster start -n 8 --engines=MPI
+
+   Now create a cluster in Jupyter:
 
    .. code-block:: python
 
       import ipyparallel as ipp
-      
-      # request an MPI cluster with 4 engines
-      with ipp.Cluster(engines='mpi', n=4) as cluster:
-          # get a broadcast_view on the cluster which is best suited for MPI style computation
-          view = cluster.broadcast_view()
-          with view.sync_imports():
-      #        import numpy as np
-              from autocorrelation import preprocess_text, setup, word_acf
-              from autocorrelation import ave_word_acf_gather, ave_word_acf_p2p
-              from autocorrelation import mpi_acf
-          # run the mpi_example function on all engines in parallel
-          book = "../data/pg99.txt"
-          wc_book = "../processed_data/pg99.dat"
-          r = view.apply_sync(mpi_acf, book, wc_book)
-      
-      # Retrieve and print the result from the engines
-      print(r[0])      
+      cluster = ipp.Client()
 
+   Instead of copying functions from :file:`autocorrelation.py` to your notebook, you can 
+   import them *on each engine*. But you may first need to change the current working 
+   directory (CWD) if your Jupyter session was started in the :file:`word-count-hpda/` directory:
+
+   .. code-block:: python
+
+      import os
+      # create a direct view to be able to change CWD on engines
+      dview = rc.direct_view()
+      # print CWD on each engine
+      print(dview.apply_sync(os.getcwd))
+      # set correct CWD, adapt if needed (run %pwd to find full path)
+      dview.map(os.chdir, ['/full/path/to/word-count-hpda/source']*len(cluster))
+
+   Now you need to import all needed functions explicitly on the engines: 
+
+   .. code-block:: python
+
+      with view.sync_imports():
+          from autocorrelation import preprocess_text, setup, word_acf
+          from autocorrelation import ave_word_acf_gather, ave_word_acf_p2p, mpi_acf
+
+   Finally you're ready to run MPI code on the engines! The following code uses 
+   :meth:`apply_sync` to run the :meth:`mpi_acf` function on all engines with given 
+   input arguments:
+
+   .. code-block:: python
+
+      # run the mpi_example function on all engines in parallel
+      book = "../data/pg99.txt"
+      wc_book = "../processed_data/pg99.dat"
+      r = view.apply_sync(mpi_acf, book, wc_book)
+
+      # Print the result from the engines
+      print(r[0])
+
+   Tasks:
+
+   - Time the execution of the last code cell by adding ``%%time`` at the top of the cell.
+   - Stop the cluster in terminal (CTRL-c), and start a new cluster with a different number 
+     of MPI engines. Time the cell again to explore the parallel efficiency.
+   - Instead of running through only one data file (book), create a loop to run through 
+     them all.
 
 .. exercise:: Extend the Snakefile
 
