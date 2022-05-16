@@ -201,13 +201,13 @@ The second column of the output contains the project ID.
 
       .. code-block:: console
       
-         $ salloc -N 1 --ntasks-per-node=8 -A <PROJECT-ID> --partition=cpu  -t 01:00:00
+         $ salloc -N 1 --ntasks-per-node=8 --ntasks-per-core=1 -A <PROJECT-ID> --partition=cpu  -t 01:00:00
 
       To instead book a GPU node, type (again adding reservation flag if relevant):
 
       .. code-block:: console
       
-         $ salloc -N 1 -A <PROJECT-ID> --partition=gpu --gres=gpu:1 --cpus-per-task 1 -t 01:00:00
+         $ salloc -N 1 --ntasks-per-node=1 --ntasks-per-core=1 -A <PROJECT-ID> --partition=gpu --gres=gpu:1 --cpus-per-task 1 -t 01:00:00
 
    .. group-tab:: Karolina 
 
