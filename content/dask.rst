@@ -7,6 +7,7 @@ Dask for scalable analytics
 
    - Understand how Dask achieves parallelism
    - Learn a few common workflows with Dask
+   - Understand lazy execution
 
 .. instructor-note::
 
@@ -56,7 +57,7 @@ Dask needs computing resources in order to perform parallel computations.
 for example: 
 
   - `LocalCluster` on laptop/desktop
-  - `PBSCluster` or SLURMCluster on HPC
+  - `PBSCluster` or `SLURMCluster` on HPC
   - `Kubernetes` cluster in the cloud
  
 Each cluster will be allocated with a given number of "workers" associated with 
@@ -251,12 +252,18 @@ a Dask dataframe:
    import dask.dataframe as dd
 
    url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
+   # read from Pandas DataFrame
    df = pd.read_csv(url, index_col="Name")
-   # add a column
-   df["Child"] = df["Age"] < 12
-
    ddf = dd.from_pandas(df, npartitions=10)
-
+   # "blocksize=None" means a single chunk is used
+   df = dd.read_csv(url,blocksize=None).set_index('Name')
+   ddf= df.repartition(npartitions=10)
+   # blocksize="4MB" or blocksize=4e6
+   ddf = dd.read_csv(url,blocksize="4MB").set_index('Name')
+   ddf.npartitions
+   # blocksize="default" means the chunk is computed based on available memory and cores with a maximum of 64MB
+   ddf = dd.read_csv(url,blocksize="default").set_index('Name')
+   ddf.npartitions
 
 Dask dataframes do not support the entire interface of Pandas dataframes, but 
 the most `commonly used methods are available <https://docs.dask.org/en/stable/dataframe.html#scope>`__. 
@@ -267,41 +274,12 @@ We can for example perform the group-by operation we did earlier, but this time 
 
 .. code-block:: python
 
+   # add a column
+   df["Child"] = df["Age"] < 12
    ddf[ddf["Age"] < 12].groupby(["Sex", "Child"])["Survived"].mean().compute()
 
 However, for a small dataframe like this the overhead of parallelisation will far 
 outweigh the benefit. 
-
-As an additional use case, recall the word-count project that we encountered earlier. 
-The :download:`results.csv <data/results.csv>` file contains word counts of the 10 
-most frequent words in different texts, and we want to fit a power law to the 
-individual distributions in each row.
-
-Here is our fitting function:
-
-.. code-block:: python
-
-   def linear_fit_loglog(row):
-       X = np.log(np.arange(row.shape[0]) + 1.0)
-       ones = np.ones(row.shape[0])
-       A = np.vstack((X, ones)).T
-       Y = np.log(row)
-       res = np.linalg.lstsq(A, Y, rcond=-1)
-       return res[0][0]
-
-Earlier we saw that iterating over a pandas dataframe was slower than using the 
-:meth:`apply` function. With dask dataframes, we should not iterate over dataframes at all!
-We load the `results.txt` file directly into a dask dataframe and fit the power law 
-to each row:
-
-.. code-block:: python
-
-   ddf = dd.read_csv("/some/path/to/results.txt")
-   results = ddf.iloc[:,1:].apply(linear_fit_loglog, axis=1, meta=(None, "float64"))
-
-Note the additional argument ``meta`` which is required for dask dataframes. 
-It should contain an empty ``pd.DataFrame`` or ``pd.Series`` that matches the 
-dtypes and column names of the output, or a dict of ``{name: dtype}`` or iterable of ``(name, dtype)``. 
 
 You can find additional details and examples here 
 https://examples.dask.org/dataframe.html.
@@ -367,9 +345,9 @@ specifically the step where we count words in a text.
       ddf = filtered.to_dataframe(columns=['words'])
       ddf['words'].value_counts().compute()[:10]
 
-.. callout:: When to use a Dask
+.. callout:: When to use Dask
 
-   There is no benefit from using a Dask on small datasets. But imagine we were 
+   There is no benefit from using Dask on small datasets. But imagine we were 
    analysing a very large text file (all tweets in a year? a genome?). Dask provides 
    both parallelisation and the ability to utilize RAM on multiple machines.
 
@@ -511,7 +489,7 @@ Exercises
 .. challenge:: Climate simulation data using Xarray and Dask
 
    This exercise is working with NetCDF files using Xarray. The files contain 
-   monthly global 2m air temperature from a Last Millennium simulation. 
+   monthly global 2m air temperature from a Last Millennium (850 -1850 CE) simulation. 
    Xarray is chosen due to its ability to seamlessly integrate with Dask 
    to support parallel computations on datasets.
 
@@ -521,7 +499,11 @@ Exercises
 
    .. code-block:: ipython
 
-      ds=xr.open_mfdataset('/home/x_qiali/qiang/hpda/airdata/tas*.nc', parallel=True)
+      import dask
+      import xarray
+      import matplotlib.pyplot as plt
+      %matplotlib inline
+      ds=xr.open_mfdataset('/ceph/hpc/home/euqiamgl/airdata/tas*.nc', parallel=True,use_cftime=True)
 
 
    ``open_mfdataset()`` is for reading multiple files and will chunk each file into a single Dask array by default. 
@@ -534,25 +516,26 @@ Exercises
 
       ds
       ds.tas
-      #dask.visualize(ds.tas) 
-      ds['tas'] = ds['tas'] - 273.15     # convert temperature unit
+      #dsnew = ds.chunk({"time": 1,"lat": 80,"lon":80})   # you can further rechunk the data
+      #dask.visualize(ds.tas) # do not visualize, the graph is too big
+      ds['tas'] = ds['tas'] - 273.15     # convert from Kelvin to degree Celsius
       mean_tas=ds.tas.mean("time")  # lazy compuation
       mean_tas.plot(cmap=plt.cm.RdBu_r,vmin=-50,vmax=50) # plotting triggers computation
       tas_ann=ds.tas.groupby('time.year').mean() # lazy compuation
       tas_sto=tas_ann.sel(lon=18.07, lat=59.33,method='nearest')  # slicing is lazy as well  
-      tas_sto.compute()
-      plt.plot(tas_sto)  # plotting trigers computation
+      plt.plot(tas_sto.year,tas_sto)  # plotting trigers computation
 
 
-.. challenge:: SVD with large matrix
+.. challenge:: SVD with large skinny matrix
 
-   We can use dask to compute SVD of a large matrix which doesnot fit into the memory of a 
+   We can use dask to compute SVD of a large matrix which does not fit into the memory of a 
    normal laptop/desktop.
 
    .. code-block:: python
 
        import dask
        import dask.array as da
+       # X = da.random.random((20000000, 1000), chunks=(10000, 1000))
        X = da.random.random((200000, 100), chunks=(10000, 100))
        u, s, v = da.linalg.svd(X)
        dask.visualize(u, s, v)
@@ -564,7 +547,7 @@ Exercises
 
        import dask
        import dask.array as da
-       X = da.random.random((10000, 10000), chunks=(2000, 2000)).persist()
+       X = da.random.random((10000, 10000), chunks=(2000, 2000))
        u, s, v = da.linalg.svd_compressed(X, k=5)
        dask.visualize(u, s, v)
 
@@ -597,11 +580,43 @@ Exercises
 
 .. exercise:: Benchmarking dask.dataframes.apply()
 
+   Recall the word-count project that we encountered earlier. 
+   The :download:`results.csv <data/results.csv>` file contains word counts of the 10 
+   most frequent words in different texts, and we want to fit a power law to the 
+   individual distributions in each row.
+
+   Here is our fitting function:
+
+   .. code-block:: python
+
+      def linear_fit_loglog(row):
+          X = np.log(np.arange(row.shape[0]) + 1.0)
+          ones = np.ones(row.shape[0])
+          A = np.vstack((X, ones)).T
+          Y = np.log(row)
+          res = np.linalg.lstsq(A, Y, rcond=-1)
+          return res[0][0]
+
+
    Compare the performance of :meth:`dask.dataframes.apply` with :meth:`pandas.dataframes.apply` 
    for the word-count example. You will probably see a slowdown due to the parallelisation 
-   overhead. 
-   But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
+   overhead. But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
    emulate a time-consuming calculation? 
+
+   .. solution::
+
+      .. tabs::
+
+         .. tab:: Pandas
+
+            .. literalinclude:: exercise/apply_pd.py
+               :language: ipython
+
+         .. tab:: Dask
+
+            .. literalinclude:: exercise/apply_dask.py
+               :language: ipython
+
 
 .. exercise:: Break down the dask.bag computational pipeline
 
@@ -619,6 +634,5 @@ Exercises
 
 .. keypoints::
 
-   - 1
-   - 2
-   - 3
+   - Dask uses lazy execution
+   - Only use Dask for processing very large amount of data
