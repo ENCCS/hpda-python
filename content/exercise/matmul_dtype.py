@@ -15,7 +15,7 @@ def matmul_kernel(A, B, C):
 
 # first run with double precision input data
 
-N = 500
+N = 5000
 A = np.random.rand(N,N)
 B = np.random.rand(N,N)
 C = np.random.rand(N,N)
