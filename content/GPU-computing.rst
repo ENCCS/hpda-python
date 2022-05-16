@@ -761,17 +761,20 @@ Exercises
 
 .. exercise:: Perform matrix multiplication with single precision
 
-   In this exercise, we will look at the downgrade of performance by using a wrong data type.
-   We will first run the matrix multiplication CUDA kernel i.e. matmul_kernel using input data with 
-   diff precisions. You can further improve the performance with single precison input data 
-   by a simple change. Try to find where the error is and fix it:
+   In this exercise, we will compare the performance by using different precisions.
+   We will run the matrix multiplication CUDA kernel i.e. matmul_kernel using input data with 
+   double and single precisions. Depending on what generation of GPU you are running on, 
+   you may further improve the performance with single precison input data by a simple change:
    
       .. literalinclude:: exercise/matmul_dtype.py
    
       .. solution:: Hint
    
-        - data type of variable tmp is by default double precison, this will downgrade the performance 
-          when we compute with single precision input data
+         The data type of variable tmp is by default double precison, this will downgrade the performance 
+         when we compute with single precision input data on certain GPUs. 
+         
+         One can find more information about different Nvidia GPUs' throughputs of the arithmetic instructions  
+         `here <https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#maximize-instruction-throughput>`__
    
       .. solution:: 
    
