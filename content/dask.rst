@@ -597,28 +597,39 @@ Exercises
 
 .. exercise:: Benchmarking dask.dataframes.apply()
 
-   Recall the word-count project that we encountered earlier. 
+   Recall the word-count project that we encountered earlier and the :meth:`scipy.optimize.curve_fit` function. 
    The :download:`results.csv <data/results.csv>` file contains word counts of the 10 
    most frequent words in different texts, and we want to fit a power law to the 
    individual distributions in each row.
 
-   Here is our fitting function:
+   Here are our fitting functions:
 
    .. code-block:: python
 
-      def linear_fit_loglog(row):
-          X = np.log(np.arange(row.shape[0]) + 1.0)
-          ones = np.ones(row.shape[0])
-          A = np.vstack((X, ones)).T
-          Y = np.log(row)
-          res = np.linalg.lstsq(A, Y, rcond=-1)
-          return res[0][0]
+      from scipy.optimize import curve_fit
 
+      def powerlaw(x, A, s):
+          return A * np.power(x, s)
+
+      def fit_powerlaw(row):
+          X = np.arange(row.shape[0]) + 1.0
+          params, cov = curve_fit(f=powerlaw, xdata=X, ydata=row, p0=[100, -1], bounds=(-np.inf, np.inf))
+          return params[1]
 
    Compare the performance of :meth:`dask.dataframes.apply` with :meth:`pandas.dataframes.apply` 
-   for the word-count example. You will probably see a slowdown due to the parallelisation 
-   overhead. But what if you add a ``time.sleep(0.01)`` inside ``linear_fit_loglog`` to 
+   for the this example. You will probably see a slowdown due to the parallelisation 
+   overhead. But what if you add a ``time.sleep(0.01)`` inside :meth:`fit_powerlaw` to 
    emulate a time-consuming calculation? 
+
+   .. solution:: Hints
+
+      - You will need to call :meth:`apply` on the dataframe starting from column 1: ``dataframe.iloc[:,1:].apply()``
+      - Remember that both Pandas and Dask have the :meth:`read_csv` function.
+      - Try repartitioning the dataframe into 4 partitions with ``ddf4=ddf.repartition(npartitions=4)``.
+      - You will probably get a warning in your Dask version that `You did not provide metadata`. 
+        To remove the warning, add the ``meta=(None, "float64")`` flag to :meth:`apply`. For the 
+        current data, this does not affect the performance.
+
 
    .. solution::
 
