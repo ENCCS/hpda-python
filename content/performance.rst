@@ -87,8 +87,8 @@ We can profile it with ``cProfile``:
    $  python -m cProfile -s time walk.py
 
 
-we use the ``-s`` switch to sort the results by ``time``, other options include 
-e.g. function name, cummulative time, etc. However, this will print a lot of 
+The ``-s`` switch sorts the results by ``time``. Other options include 
+e.g. function name, cumulative time, etc. However, this will print a lot of 
 output which is difficult to read. 
 
 .. code-block:: console
@@ -452,21 +452,21 @@ Temporary arrays
 
 .. code-block:: python
 
-   a = numpy.random.random((1024, 1024, 50))
-   b = numpy.random.random((1024, 1024, 50))
+   a = np.random.random((1024, 1024, 50))
+   b = np.random.random((1024, 1024, 50))
    
    # two temporary arrays will be created
    c = 2.0 * a - 4.5 * b
    
    # four temporary arrays will be created, and from which two are due to unnecessary parenthesis
-   c = (2.0 * a - 4.5 * b) + (numpy.sin(a) + numpy.cos(b))
+   c = (2.0 * a - 4.5 * b) + (np.sin(a) + np.cos(b))
 
    # solution
    # apply the operation one by one for really large arrays
    c = 2.0 * a
    c = c - 4.5 * b
-   c = c + numpy.sin(a)
-   c = c + numpy.cos(b)
+   c = c + np.sin(a)
+   c = c + nunpmpy.cos(b)
 
 - Broadcasting approaches can lead also to hidden temporary arrays  
 
@@ -494,8 +494,8 @@ Numexpr
 .. code-block:: ipython
 
    import numexpr as ne
-   x = numpy.random.random((10000000, 1))
-   y = numpy.random.random((10000000, 1))
+   x = np.random.random((10000000, 1))
+   y = np.random.random((10000000, 1))
    %timeit y = ((.25*x + .75)*x - 1.5)*x - 2
    %timeit y = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
 

@@ -195,10 +195,10 @@ Similar arrays as an existing array:
 
 .. code-block:: python
 
-   a = numpy.zeros((4, 6), float)
-   b = numpy.empty_like(a)
-   c = numpy.ones_like(a)
-   d = numpy.full_like(a, 9.1)
+   a = np.zeros((4, 6), float)
+   b = np.empty_like(a)
+   c = np.ones_like(a)
+   d = np.full_like(a, 9.1)
 
 
 
@@ -350,7 +350,7 @@ Views and copies of arrays
 
 .. code-block:: python
 
-   a = numpy.arange(10)
+   a = np.arange(10)
    b = a              # reference, changing values in b changes a
    b = a.copy()       # true copy
 
