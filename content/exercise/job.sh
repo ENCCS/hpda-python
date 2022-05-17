@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --partition=gpu
 #SBATCH --mem=4GB
-#SBATCH --account=XXXX
+#SBATCH --account=vega-training-users
 
 module add Anaconda3/2020.11
 conda activate pyhpda
