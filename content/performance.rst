@@ -42,8 +42,8 @@ One of the easy way to profile the program is to use the time function:
    a = a ** 2
    # stop the timer
    end_time=time.time()
-   print("Runtime: {} seconds".format(round(end_time - start_time, 2)))
-
+   print("Runtime: {:.4f} seconds".format(end_time - start_time))
+   # Runtime: 0.0001 seconds
 
 
 Timeit
@@ -772,8 +772,17 @@ Exercises
       Another is to find an in-built vectorized NumPy function which can calculate the 
       autocorrelation for us! Here's one way to do it:
 
-      .. literalinclude:: exercise/autocorrelation_numba_numpy.py
-         :pyobject: word_acf_numpy
+      .. tabs:: 
+   
+         .. tab:: NumPy
+
+            .. literalinclude:: exercise/autocorrelation_numba_numpy.py
+               :pyobject: word_acf_numpy
+
+         .. tab:: Numba
+
+            .. literalinclude:: exercise/autocorrelation_numba_numpy.py
+               :pyobject: word_acf_numba_py
 
 
 .. exercise:: Pairwise distance
