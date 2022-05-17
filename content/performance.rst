@@ -781,6 +781,20 @@ Exercises
    Do you think there is any room for improvement? How would you go about optimizing 
    this function?
 
+   Try to implement one faster version!
+
+   .. solution:: Hints
+
+      - You can replace the double loop (the manual calculation of an ACF) with an 
+        in-built NumPy function, :meth:`np.correlate`. NumPy gurus often know which 
+        function to use for which algorithms, but searching the internet also helps.
+        One typically needs to figure out how to use the in-built function for the 
+        particular use case.
+      - There are two ways of using Numba, one with ``nopython=False`` and one with 
+        ``nopython=True``. The latter needs a rewrite of the :meth:`word_acf` function 
+        to accept the ``mask`` array, since Numba cannot pre-compile the expression 
+        defining ``mask``.
+
    .. solution:: 
 
       The function uses a Python object (``mask``) inside a double for-loop, 
@@ -789,7 +803,7 @@ Exercises
       see below. 
 
       Another is to find an in-built vectorized NumPy function which can calculate the 
-      autocorrelation for us! Here's one way to do it:
+      autocorrelation for us! Here are the Numpy and Numba ``(nopython=False)`` versions:
 
       .. tabs:: 
    
@@ -802,6 +816,13 @@ Exercises
 
             .. literalinclude:: exercise/autocorrelation_numba_numpy.py
                :pyobject: word_acf_numba_py
+
+         In the `autocorr-numba-numpy branch <https://github.com/enccs/word-count-hpda/tree/autocorr-numba-numpy>`__ 
+         of the word-count-hpda repository you 
+         can additionally find a ``nopython=True`` Numba version as well as benchmarking 
+         of all the versions. Note that the Numba functions use ``cache=True`` to save the 
+         precompiled code so that subsequent executions of the ``autocorrelation.py`` script 
+         are faster than the first.
 
 
 .. exercise:: Pairwise distance
