@@ -13,6 +13,6 @@
 module add Anaconda3/2020.11
 conda activate pyhpda
 
-python $1
+python $1 > $1.out
 
 exit 0
