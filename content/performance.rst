@@ -466,7 +466,7 @@ Temporary arrays
    c = 2.0 * a
    c = c - 4.5 * b
    c = c + np.sin(a)
-   c = c + nunpmpy.cos(b)
+   c = c + np.cos(b)
 
 - Broadcasting approaches can lead also to hidden temporary arrays  
 

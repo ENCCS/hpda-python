@@ -1,6 +1,7 @@
 import numpy as np
 import numba
 import numba.cuda
+import time
 
 @numba.cuda.jit
 def matmul_kernel(A, B, C):
@@ -31,9 +32,19 @@ d_C = numba.cuda.to_device(C)
 threadsperblock = (16, 16)
 blockspergrid = (10,10)
 
+# create array to save profiling information
+n_loop=20
+test1=np.empty(n_loop)
+test2=np.empty(n_loop)
+
+
 # benchmark double precision input data
 
-%timeit matmul_kernel[blockspergrid, threadsperblock](d_A, d_B, d_C); numba.cuda.synchronize()
+for i in range(n_loop):
+    t_s=time.time()
+    matmul_kernel[blockspergrid, threadsperblock](d_A, d_B, d_C); numba.cuda.synchronize()
+    t_e=time.time()
+    test1[i]=t_e - t_s
 
 # then generate single precision input data
 
@@ -43,4 +54,19 @@ d_C32 = numba.cuda.to_device(C.astype(np.float32))
 
 # benchmark single precision input data
 
-%timeit matmul_kernel[blockspergrid, threadsperblock](d_A32, d_B32, d_C32); numba.cuda.synchronize()
+for i in range(n_loop):
+    t_s=time.time()
+    matmul_kernel[blockspergrid, threadsperblock](d_A32, d_B32, d_C32); numba.cuda.synchronize()
+    t_e=time.time()
+    test2[i]=t_e - t_s
+
+
+# calculate mean runtime
+
+record = test1
+print("matmul_kernel dtype64 Runtime")
+print("average {:.5f} second (except 1st run)".format(record[1:].mean()))
+
+record = test2
+print("matmul_kernel dtype32 Runtime")
+print("average {:.5f} second (except 1st run)".format(record[1:].mean()))
