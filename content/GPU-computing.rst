@@ -764,22 +764,39 @@ Exercises
    In this exercise, we will compare the performance by using different precisions.
    We will run the matrix multiplication CUDA kernel i.e. matmul_kernel using input data with 
    double and single precisions. Depending on what generation of GPU you are running on, 
-   you may further improve the performance with single precison input data by a simple change:
+   the performance can be quite different.
+
+   One can find more information about different Nvidia GPUs' throughputs of the arithmetic instructions 
+   `here <https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#maximize-instruction-throughput>`__
    
-      .. literalinclude:: exercise/matmul_dtype.py
+   .. tabs::
+
+      .. tab:: Interactive mode
+
+         .. literalinclude:: exercise/matmul_dtype.py
+            :language: python
+
+      .. tab:: Batch mode
+
+         .. literalinclude:: exercise/sbatch_matmul_dtype.py
+            :language: python
+
+
+   .. solution:: TEST USING BATCH MODE!!!
    
-      .. solution:: Hint
-   
-         The data type of variable tmp is by default double precison, this will downgrade the performance 
-         when we compute with single precision input data on certain GPUs. 
-         
-         One can find more information about different Nvidia GPUs' throughputs of the arithmetic instructions  
-         `here <https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#maximize-instruction-throughput>`__
-   
-      .. solution:: 
-   
-         .. literalinclude:: exercise/matmul_dtype_solution.py
-            :emphasize-lines: 9
+      .. literalinclude:: exercise/job.sh
+         :language: bash
+
+      - Save the solution in a Python script called ``sbatch_matmul_dtype.py`` 
+      - Save the above template file :download:`job.sh <exercise/job.sh>` in the same folder as ``sbatch_matmul_dtype.py`` 
+      - Submit the job by following the instructions below
+      - The output will be written in *sbatch_matmul_dtype.py.out*
+
+      .. code-block:: console
+
+         # go to the directory where the files job.sh and sbatch_matmul_dtype.py are
+         $ cd /path/to/somewhere  
+         $ sbatch job.sh sbatch_matmul_dtype.py
 
 
 .. exercise:: Perform matrix multiplication with shared memory
@@ -800,6 +817,25 @@ Exercises
       .. solution:: 
    
          .. literalinclude:: exercise/matmul_sm_solution.py
+
+      .. solution:: Benchmark
+
+         .. literalinclude:: exercise/matmul_sm_benchmark.py
+
+      .. solution:: RUN THIS!!!
+   
+         - Save the solution and add benchmark part as well in a Python script called ``sbatch_matmul_sm.py`` 
+         - Copy or download :download:`job.sh <exercise/job.sh>` to the same folder as ``sbatch_matmul_sm.py`` 
+         - Submit the job by following the instructions below
+         - The output will be written in *sbatch_matmul_sm.py.out*
+
+         .. code-block:: console
+
+            # go to the directory where job.sh and sbatch_matmul_sm.py are
+            $ cd /path/to/somewhere  
+            $ sbatch job.sh sbatch_matmul_sm.py
+
+
 
 
 .. exercise:: Discrete Laplace Operator
@@ -872,6 +908,10 @@ Exercises
             .. literalinclude:: exercise/lap2d_cuda_benchmark.py
                :language: ipython
 
+         .. tab:: RUN THIS!!!
+
+            .. literalinclude:: exercise/sbatch_lap2d_gpu.py
+               :language: python
 
 .. keypoints::
 
