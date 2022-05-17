@@ -6,8 +6,7 @@ Efficient array computing
 .. objectives::
 
    - Understand limitations of Python's standard library for large data processing
-   - Understand vectorization and basic array computing in NumPy
-   - Learn to use several of NumPy's numerical computing tools 
+   - Understand the logic behind NumPy ndarrays and learn to use some NumPy numerical computing tools 
    - Learn to use data structures and analysis tools from Pandas
 
 .. instructor-note::
@@ -42,58 +41,58 @@ languages.
 
 Python is an interpreted language, and many features that make development
 rapid with Python are a result of that, with the price of reduced performance
-in some cases.
+in many cases.
 
 Dynamic typing
 ^^^^^^^^^^^^^^
 
-Python is a very dynamic language. As variables get type only during the
-runtime as values (Python objects) are assigned to them, it is more difficult
-for the interpreter to optimize the execution (in comparison, a compiler can
-make extensive analysis and optimization before the execution). Even though,
-in recent years, there has been a lot of progress in just-in-time (JIT)
+Python is a *dynamic* language. Variables get a type only during the
+runtime when values (Python objects) are assigned to them, so it is more difficult
+for the interpreter to optimize the execution. In comparison, a compiler can
+make extensive analysis and optimization before the execution. Even though there has 
+in recent years been a lot of progress in just-in-time (JIT)
 compilation techniques that allow programs to be optimized at runtime, the
-inherent, very dynamic nature of the Python programming language remains one
+inherent, dynamic nature of the Python programming language remains one
 of its main performance bottlenecks.
 
 Flexible data structures
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 The built-in data structures of Python, such as lists and dictionaries,
-are very flexible, but they are also very generic, which makes them not so
-well suited for extensive numerical computations. Actually, the implementation
-of the data structures (e.g. in the standard CPython interpreter) is often
-quite efficient when one needs to process different types of data. However,
-when one is processing only a single type of data, for example only
-floating point numbers, there is a lot of unnecessary overhead due to the
-generic nature of these data structures.
+are very flexible, but they are also very generic which makes them not
+well suited for extensive numerical computations. Even though the implementation
+of data structures is often quite efficient when processing 
+different types of data, there is a lot of overhead due to the
+generic nature of these data structures when processing only a single type of data.
 
-In summary, the flexibility and dynamic nature of Python, that enhances
-the programmer productivity greatly, is also the main cause for the
-performance problems. Flexibility comes with a price! Fortunately, as we
+In summary, the flexibility and dynamic nature of Python, which enhances
+programmer productivity greatly, is also the main cause for the
+performance problems. Fortunately, as we
 discuss in the course, many of the bottlenecks can be circumvented.
 
 
 NumPy
 -----
 
-Being one of the most fundamental part of python scientific computing ecosystem, 
+As probably the most fundamental building block of the scientific computing ecosystem in Python, 
 NumPy offers comprehensive mathematical functions, random number generators, 
-linear algebra routines, Fourier transforms, and more. NumPy is based on well-optimized 
-C code, which gives much better performace than Python. In particular, by using homogeneous 
+linear algebra routines, Fourier transforms, and more. 
+
+NumPy is based on well-optimized C code, which gives much better performace than regular Python. 
+In particular, by using homogeneous 
 data structures, NumPy *vectorizes* mathematical operations where fast pre-compiled code 
 can be applied to a sequence of data instead of using traditional ``for`` loops.
 
 Arrays
 ^^^^^^
 
-The core of NumPy is the NumPy ``ndarray`` (n-dimensional array).
-Compared to a Python list, the NumPy array is similar in terms of serving as a data container.
+The core of NumPy is the NumPy ``ndarray`` (n-dimensional array). Compared to a Python list, 
+an ndarray is similar in terms of serving as a data container.
 Some differences between the two are: 
 
-- ndarrays can have multi dimensions, e.g. a 1-D array is a vector, a 2-D array is a matrix 
+- ndarrays can have multiple dimensions, e.g. a 1-D array is a vector, a 2-D array is a matrix 
 - ndarrays are fast only when all data elements are of the same type 
-- ndarrays are fast when vectorized  
+- ndarray operations are fast when vectorized  
 - ndarrays are slower for certain operations, e.g. appending elements 
 
 
@@ -124,10 +123,10 @@ unsigned integers (``uint``) floating point (``float``) and complex (``complex``
 Creating NumPy arrays
 ^^^^^^^^^^^^^^^^^^^^^
 
-One way to create a NumPy array is to convert from a python list, but make sure that the list is homogeneous 
-(same data type) otherwise you will downgrade the performace of NumPy array. 
+One way to create a NumPy array is to convert from a Python list, but make sure that the list is homogeneous 
+(contains same data type) otherwise performace will be downgraded. 
 Since appending elements to an existing array is slow, it is a common practice to preallocate the necessary space 
-with ``np.zeros`` or ``np.empty`` when converting from a python list is not possible.
+with ``np.zeros`` or ``np.empty`` when converting from a Python list is not possible.
 
 .. code-block:: python
 
@@ -245,7 +244,7 @@ All the familiar arithmetic operators in NumPy are applied elementwise:
 Array Indexing
 ^^^^^^^^^^^^^^
 
-Basic indexing is similar to python lists.
+Basic indexing is similar to Python lists.
 Note that advanced indexing creates copies of arrays.
 
 .. tabs:: 
@@ -677,10 +676,10 @@ further sub-groups based on ``Child``:
 
 Here we chose to summarize the data by its mean, but many other common
 statistical functions are available as dataframe methods, like
-``std()``, ``min()``, ``max()``, ``cumsum()``, ``median()``, ``skew()``,
-``var()`` etc. 
+:meth:`std`, :meth:`min`, :meth:`max()`, :meth:`cumsum`, :meth:`median`, :meth:`skew`,
+:meth:`var` etc. 
 
-Similarly, one can use the ``by`` parameter to the :meth:`hist` histogram plotting 
+In a similar vein, one can use the ``by`` parameter to the :meth:`hist` histogram plotting 
 method to create subplots by groups:
 
 .. code-block:: python

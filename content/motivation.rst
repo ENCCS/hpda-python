@@ -5,7 +5,7 @@ Motivation
 
 .. objectives::
 
-   - Understand why high-performance data analytics techniques are needed
+   - Become familiar with the term "big data"
    - Know what to expect from this course
 
 .. instructor-note::
@@ -103,7 +103,7 @@ Specifically, the lesson covers:
 The lesson does not cover the following:
 
 - Visualisation techniques
-- Machine learning workflows
+- Machine learning 
 
 
 .. keypoints::

@@ -7,9 +7,9 @@ Scientific data
 
    - Get an overview of different formats for scientific data
    - Understand performance pitfalls when working with big data
-   - Learn how to work with the HDF5 and NetCDF formats
+   - Learn how to work with the NetCDF format through Xarray
    - Discuss the pros and cons of open science
-   - Learn how to mint a DOI for your project   
+   - Learn how to mint a DOI for your project or dataset   
 
 .. instructor-note::
 
@@ -26,7 +26,7 @@ The smallest building block of storage in the computer is a **bit**,
 which stores either a 0 or 1.
 Normally a number of 8 bits are combined in a group to make a **byte**. 
 One byte (8 bits) can represent/hold at most :math:`2^8` distint values.
-Organising bytes in different ways could further represent 
+Organising bytes in different ways can represent 
 different types of information, i.e. data.
 
 
@@ -34,16 +34,19 @@ different types of information, i.e. data.
 Numerical Data
 ^^^^^^^^^^^^^^
 
-Different numerial data types (integer and floating-point) can be encoded as bytes. 
-The more bytes we use for each value, the more range or precision we get, 
-however the more memory it takes. For example, integers stored with 1 byte (8 bits) 
-have a range from [-128, 127], while with 2 bytes (16 bits), the ranges becomes  [-32768, 32767].
-Integers are whole numbers and can be represented precisely given enough bytes. 
-However, for floating-point numbers the decimal fractions simply 
+Different numerical data types (e.g. integer and floating-point numbers) 
+can be represented by bytes. 
+The more bytes we use for each value, the larger is the range or precision we get, 
+but more bytes require more memory. 
+
+For example, integers stored with 1 byte (8 bits) have a range from 
+[-128, 127], while with 2 bytes (16 bits) the range becomes [-32768, 32767].
+Integers are whole numbers and can be represented exactly given enough bytes. 
+However, for floating-point numbers the decimal fractions 
 can not be represented exactly as binary (base 2) fractions in most cases 
-which is known as the representation error. Arithmetic operations will 
+which is known as the *representation error*. Arithmetic operations will 
 further propagate this error. That is why in scienctific computing, 
-numerical algorithms have to be carefully chosen and 
+numerical algorithms have to be carefully designed to not accumulate errors, and 
 floating-point numbers are usally allocated with 8 bytes  
 to make sure the inaccuracy is under control and does not lead to unsteady solutions.
 
@@ -61,32 +64,33 @@ Text Data
 When it comes to text data, the simplest character encoding 
 is ASCII (American Standard Code for Information Interchange) and was the most 
 common character encodings until 2008 when UTF-8 took over.
-The orignal ASCII uses only 7 bits for representing each character/letter and 
-therefore encodes only 128 specified characters. Later  it became common 
+The orignal ASCII uses only 7 bits for representing each character and 
+therefore encodes only 128 specified characters. Later it became common 
 to use an 8-bit byte to store each character in memory, providing an extended ASCII. 
-As computer becomes more powerful and  there is need for including more characters 
-from other languages like Chinese, Greek, Arabic, etc. UTF-8  becomes 
-the most common encoding nowadays and it uses minimum one byte up to four bytes per character. 
+
+As computers became more powerful and the need for including more characters 
+from other languages like Chinese, Greek and Arabic became more pressing, UTF-8 became
+the most common encoding. UTF-8 uses a minimum of one byte and up to four bytes per character. 
 
 
 Data and storage format
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-In real applications, the scientific data is more complex and usually contains both numerical and text data. 
-Here we list a few of the data and file storage formats commonly used:
+In real scientific applications, data is complex and structured and usually contains both numerical and text data. 
+Here we list a few of the data and file storage formats commonly used.
 
 Tabular Data
 ~~~~~~~~~~~~
 
-A very common type of data is the so-called "tabular data". The data is structured 
-typically into rows and columns. Each column usually have a name and a specific data type 
-while each row is a distinct sample which provides data according to each column including missing value.
-The simplest and most common way to save tablular data is via the so-called CSV (comma-separated values) file.
+A very common type of data is "tabular data". Tabular data is structured 
+into rows and columns. Each column usually has a name and a specific data type 
+while each row is a distinct sample which provides data according to each column (including missing values).
+The simplest and most common way to save tabular data is via the so-called CSV (comma-separated values) file.
 
 Gridded Data
 ~~~~~~~~~~~~
 
-Gridded data is another very common type, and usually the numerical data is saved 
+Gridded data is another very common data type in which numerical data is normally saved 
 in a multi-dimentional rectangular grid. Most probably it is saved in one of the following formats:
 
 - Hierarchical Data Format (HDF5) - Container for many arrays
@@ -96,17 +100,17 @@ in a multi-dimentional rectangular grid. Most probably it is saved in one of the
 Metadata
 ~~~~~~~~
 
-Metadata consists of the information about the data. 
+Metadata consists of various information about the data. 
 Different types of data may have different metadata conventions. 
 
 In Earth and Environmental science, there are widespread robust practices around metadata. 
 For NetCDF files, metadata can be embedded directly into the data files. 
-The most common metadata convention is Climate and Forecast (CF) Conventions, commonly used with NetCDF data
+The most common metadata convention is Climate and Forecast (CF) Conventions, 
+commonly used with NetCDF data.
 
-
-When it comes to data storage, there are many types of data storage format used 
+When it comes to data storage, there are many types of storage formats used 
 in scietific computing and data analysis. There isn't one data storage format that 
-works in all cases, choose a file format that best suits you.
+works in all cases, so choose a file format that best suits your data.
 
 
 CSV (comma-separated values)
@@ -131,14 +135,15 @@ However, it is not the best format to use when you're working with big data.
 
 .. important::
 
-    When working with floating point numbers, you should be careful to save the data 
-    with enough decimal places so that you won't lose precision.
+   When working with floating point numbers, you should be careful to save the data 
+   with enough decimal places so that you won't lose precision.
 
-1. You may lose data precision simply because you do not save the data with enough decimals
-2. CSV writing routines in Pandas and NumPy try to avoid problems such as these 
-   by writing the floating point numbers with enough precision, but even they are not infallible.
-3. Storage of these high-precision CSV files is usually very inefficient storage-wise.
-4. Binary files, where floating point numbers are represented in their native binary format, do not suffer from such problems.
+   1. You may lose data precision simply because you do not save the data with enough decimals
+   2. CSV writing routines in Pandas and NumPy try to avoid such problems 
+      by writing floating point numbers with enough precision, but they are not perfect.
+   3. Storage of high-precision CSV files is usually very inefficient storage-wise.
+   4. Binary files, where floating point numbers are represented in their native binary format, 
+      do not suffer from these problems.
 
 HDF5 (Hierarchical Data Format version 5)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -176,15 +181,16 @@ NetCDF4 (Network Common Data Form version 4)
    - Array data:
        - Speed: Good
        - Ease of use: Great
-   - **Best use cases:** Working with big datasets in array data format. Especially useful if the dataset contains spatial or temporal dimensions. Archiving or sharing those datasets.
+   - **Best use cases:** Working with big datasets in array data format. Especially useful if the dataset 
+     contains spatial or temporal dimensions. Archiving or sharing those datasets.
 
-NetCDF4 is a data format that uses HDF5 as its file format, but it has standardized structure of datasets and metadata related to these datasets.
-This makes it possible to be read from various different programs.
+NetCDF4 is a data format that uses HDF5 as its file format, but it has standardized structure of 
+datasets and metadata related to these datasets. This makes it possible to be read from various different programs.
 
 NetCDF4 is by far the most common format for storing large data from big simulations in physical sciences.
 
-
-The advantage of NetCDF4 compared to HDF5 is that one can easily add other metadata e.g. spatial dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
+The advantage of NetCDF4 compared to HDF5 is that one can easily add additional metadata, e.g. spatial 
+dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
 As the format is standardized, many programs can use this metadata for visualization and further analysis.
 
 There's more
@@ -209,14 +215,10 @@ Xarray is particularly tailored to working with NetCDF files. It reads and write
 exercise below!
 
 
-   
-
 Sharing data
 ------------
 
-
-The Open Science movement encourages researchers
-to share research output beyond the contents of a
+The Open Science movement encourages researchers to share research output beyond the contents of a
 published academic article (and possibly supplementary information).
 
 .. figure:: img/Open_Science_Principles.png
