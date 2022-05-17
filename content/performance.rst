@@ -793,8 +793,17 @@ Exercises
       Another is to find an in-built vectorized NumPy function which can calculate the 
       autocorrelation for us! Here's one way to do it:
 
-      .. literalinclude:: exercise/autocorrelation_numba_numpy.py
-         :pyobject: word_acf_numpy
+      .. tabs:: 
+   
+         .. tab:: NumPy
+
+            .. literalinclude:: exercise/autocorrelation_numba_numpy.py
+               :pyobject: word_acf_numpy
+
+         .. tab:: Numba
+
+            .. literalinclude:: exercise/autocorrelation_numba_numpy.py
+               :pyobject: word_acf_numba_py
 
 
 .. exercise:: Pairwise distance
