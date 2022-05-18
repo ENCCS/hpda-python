@@ -8,10 +8,12 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --partition=gpu
 #SBATCH --mem=4GB
-#SBATCH --account=vega-training-users
+#SBATCH --account=d2021-135-users
+#SBATCH --reservation=ENCCS-HPDA-Workshop
 
 module add Anaconda3/2020.11
-conda activate pyhpda
+#conda activate pyhpda
+conda activate /ceph/hpc/home/euqiamgl/.conda/envs/pyhpda
 
 python $1 > $1.out
 

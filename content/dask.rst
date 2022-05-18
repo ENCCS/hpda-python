@@ -292,8 +292,8 @@ We can for example perform the group-by operation we did earlier, but this time 
 .. code-block:: python
 
    # add a column
-   df["Child"] = df["Age"] < 12
-   ddf[ddf["Age"] < 12].groupby(["Sex", "Child"])["Survived"].mean().compute()
+   ddf["Child"] = ddf["Age"] < 12
+   ddf.groupby(["Sex", "Child"])["Survived"].mean().compute()
 
 However, for a small dataframe like this the overhead of parallelisation will far 
 outweigh the benefit. 
@@ -517,7 +517,7 @@ Exercises
    .. code-block:: ipython
 
       import dask
-      import xarray
+      import xarray as xr
       import matplotlib.pyplot as plt
       %matplotlib inline
       ds=xr.open_mfdataset('/ceph/hpc/home/euqiamgl/airdata/tas*.nc', parallel=True,use_cftime=True)
@@ -546,16 +546,19 @@ Exercises
 .. challenge:: SVD with large skinny matrix
 
    We can use dask to compute SVD of a large matrix which does not fit into the memory of a 
-   normal laptop/desktop.
+   normal laptop/desktop. While it is computing, you should switch to the Dask dashboard and 
+   watch column "Workers" and "Graph".
 
    .. code-block:: python
 
        import dask
        import dask.array as da
        # X = da.random.random((20000000, 1000), chunks=(10000, 1000))
-       X = da.random.random((200000, 100), chunks=(10000, 100))
+       X = da.random.random((2000000, 100), chunks=(10000, 100))
+       X
        u, s, v = da.linalg.svd(X)
        dask.visualize(u, s, v)
+       s.compute()
 
 
    We could also use approximate algorithm.
@@ -567,6 +570,7 @@ Exercises
        X = da.random.random((10000, 10000), chunks=(2000, 2000))
        u, s, v = da.linalg.svd_compressed(X, k=5)
        dask.visualize(u, s, v)
+       s.compute()
 
 
 .. callout:: Memory management
