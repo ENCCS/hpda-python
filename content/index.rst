@@ -131,6 +131,20 @@ educational material, in particular:
 - `Python in High Performance Computing <https://github.com/csc-training/hpc-python>`__
 - `Code examples from High Performance Python <https://github.com/mynameisfiber/high_performance_python_2e>`__
 - `HPC Carpentry's Introduction to High-Performance Computing in Python <http://www.hpc-carpentry.org/hpc-python/>`__
+- `Python Data Science Handbook <https://jakevdp.github.io/PythonDataScienceHandbook/index.html/>`__
+- `An Introduction to Earth and Environmental Data Science <https://earth-env-data-science.github.io/>`__
+- `Parallel and GPU Programming in Python <https://github.com/vcodreanu/SURFsara-PTC-Python-Parallel-and-GPU-Programming/tree/master/gpu_programming/>`__
+- `Python in HPC <https://git.ichec.ie/training/studentresources/hpc-python/march-2021/>`__
+- `High-performance computing with Python <https://gitlab.jsc.fz-juelich.de/sdlbio-courses/hpc-python/>`__
+- `Advanced Python for data science in biology <https://github.com/NBISweden/workshop-advanced-python/>`__
+- `Introduction to Numba <https://nyu-cds.github.io/python-numba/>`__
+- `Python for Data Analysis <https://github.com/wesm/pydata-book/>`__
+- `GTC2017-numba <https://github.com/ContinuumIO/gtc2017-numba/>`__
+- `IPython Cookbook <https://ipython-books.github.io/>`__
+- `Scipy Lecture Notes <https://scipy-lectures.org/>`__
+- `Machine Learning and Data Science Notebooks <https://sebastianraschka.com/notebooks/ml-notebooks/>`__
+- `Elegant SciPy <https://github.com/elegant-scipy/notebooks/>`__
+- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html/>`__
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
