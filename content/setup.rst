@@ -278,7 +278,7 @@ port and IP:
 
       .. code-block:: console
       
-         $ ssh -TN -f YourUsername@login.vega.izum.si -L localhost:8123:cn0709:8123
+         $ ssh -TN -f YourUsername@login.vega.izum.si -L localhost:8123:cn0709:8123 -L localhost:8787:cn0709:8787
 
    .. group-tab:: Karolina
 
