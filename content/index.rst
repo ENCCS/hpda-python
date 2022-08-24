@@ -38,7 +38,8 @@ and distributed computing and finally GPU computing.
    35 min ; :doc:`scientific-data`
    50 min ; :doc:`stack`
    80 min ; :doc:`parallel-computing`
-   80 min ; :doc:`performance`
+   40 min ; :doc:`optimization`
+   40 min ; :doc:`performance-boosting`
    80 min ; :doc:`dask`
    110 min ; :doc:`GPU-computing`
 
@@ -57,7 +58,8 @@ and distributed computing and finally GPU computing.
    scientific-data
    stack
    parallel-computing
-   performance
+   optimization
+   performance-boosting
    dask
    GPU-computing
    
