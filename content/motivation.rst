@@ -74,10 +74,8 @@ ecosystem to work with large data. Specifically, we will learn to use:
 - Xarray
 - Numba
 - Cython
-- Snakemake
 - multithreading
 - multiprocessing
-- MPI4Py
 - Dask
 
 
@@ -98,13 +96,12 @@ Specifically, the lesson covers:
 - Main methods of efficiently working with tabular data and multidimensional arrays
 - How to measure performance and boost performance of time consuming Python functions
 - Various methods to parallelise Python code
-- How to port Python code to run on graphical processing units (GPUs)
 
 The lesson does not cover the following:
 
 - Visualisation techniques
 - Machine learning 
-
+- GPU related
 
 .. keypoints::
 

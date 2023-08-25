@@ -9,8 +9,6 @@ dependencies:
   - pandas
   - cython
   - numba
-  - cudatoolkit
-  - cupy
   - h5py
   - hdf5
   - netcdf4 
@@ -23,7 +21,6 @@ dependencies:
   - dask-jobqueue
   - dask-labextension   
   - snakemake-minimal
-  - ipyparallel
   - xarray
   - jupyter
   - jupyterlab

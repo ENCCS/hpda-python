@@ -61,7 +61,7 @@ and distributed computing and finally GPU computing.
    optimization
    performance-boosting
    dask
-   GPU-computing
+
    
 
 
@@ -70,6 +70,7 @@ and distributed computing and finally GPU computing.
    :caption: Optional material
 
    pandas-extra
+   GPU-computing
 
 
 .. toctree::
