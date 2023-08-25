@@ -30,7 +30,7 @@ With conda installed, install the required dependencies by running:
 
 .. code-block:: console
 
-   $ conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+   $ conda env create -f https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/env/environment.yml
 
 This will create a new environment ``pyhpda`` which you need to activate by:
 
