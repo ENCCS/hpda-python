@@ -235,6 +235,59 @@ The following example demonstrates the performance benefit for a "slim" array
    %timeit np.linalg.svd(data, full_matrices=False)
    # 23.8 ms ± 3.06 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
+
+The Fibonacci sequence
+~~~~~~~~~~~~~~~~~~~~~~
+
+The `Fibonacci sequence <https://en.wikipedia.org/wiki/Fibonacci_sequence>`_ is defined by the recurrence relatioin:
+
+   .. math:: 
+
+          F[0] &= 0 \text{ , } F[1] =1 \\
+          F[n] &= F[n-1] + F[n-2] \text{ for } n > 1
+
+
+
+The most straightforward version of the Fibonacci sequence is the one using recursion. 
+However, it turns out that it performs very badly. Things can be improved by using the 
+iterative version or the cached version.
+
+.. tabs:: 
+
+   .. tab:: Recursion
+
+	  .. code-block:: ipython
+
+	     def fib_rec(n):
+	         if n < 2:
+		     return n
+		 return fib_rec(n-2) + fib_rec(n-1)
+
+   .. tab:: Iteration
+
+	  .. code-block:: ipython
+
+	     def fib_iter(n):
+		 a, b = 0, 1
+		 for i in range(n):
+		     a, b = a + b, a
+		 return a
+
+   .. tab:: Cached version
+
+	  .. code-block:: ipython
+
+	     def fib_cached(n, cache={}):
+		 if n < 2:
+		     return n
+		 try:
+		     val = cache[n]
+		 except KeyError:
+		     val = fib(n-2) + fib(n-1)
+		     cache[n] = val
+		 return val
+
+
 CPU usage optimization
 ^^^^^^^^^^^^^^^^^^^^^^
 
