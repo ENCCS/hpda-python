@@ -1,8 +1,9 @@
 %%cython
 
 import numpy as np
+from libc.math cimport sqrt
 
-def dis_cython(double[:,:] X):
+def dis_cython_v1(double[:,:] X):
     cdef ssize_t i,j,k,M,N
     cdef double d,tmp
     cdef double[:,:] D
@@ -15,5 +16,5 @@ def dis_cython(double[:,:] X):
             for k in range(N):
                 tmp = X[i, k] - X[j, k]
                 d += tmp * tmp
-            D[i, j] = np.sqrt(d)
+            D[i, j] = sqrt(d)
     return D
