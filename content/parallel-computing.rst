@@ -623,8 +623,7 @@ for the word-count project.
 
 Exercises
 ---------
-.. exercise:: Measure Snakemake parallelisation efficiency
-.. exercise:: Measure Snakemake parallelisation efficiency
+
 .. demo:: Word-autocorrelation example project
 
    Inspired by a study of `dynamic correlations of words in written text 
