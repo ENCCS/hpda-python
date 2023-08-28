@@ -56,7 +56,7 @@ Dask needs computing resources in order to perform parallel computations.
 "Dask Clusters" have different names corresponding to different computing environments, 
 for example: 
 
-  - `LocalCluster` on laptop/desktop
+  - `LocalCluster` on laptop/desktop/cluster
   - `PBSCluster` or `SLURMCluster` on HPC
   - `Kubernetes` cluster in the cloud
  
@@ -65,15 +65,21 @@ CPU and RAM and the Dask scheduling system automatically maps jobs to each worke
 
 Dask provides four different schedulers: 
 
-  - threading: a single-machine scheduler backed by a thread pool 
-  - processes: a single-machine scheduler backed by a process pool 
-  - sync: a single-threaded scheduler, used for debugging 
-  - distributed: a distributed scheduler for executing on multiple machines
+.. csv-table::
+   :widths: auto
+   :delim: ;
+
+   Type ; Multi-node ; Description   
+   ``threads`` ; No ; A single-machine scheduler backed by a thread pool
+   ``processes`` ; No ;  A single-machine scheduler backed by a process pool 
+   ``synchronous`` ; No ; A single-threaded scheduler, used for debugging
+   ``distributed`` ;  yes ; A distributed scheduler for executing on multiple nodes/machines
+
 
 Here we will focus on using a ``LocalCluster``, and it is recommended to use 
 a distributed sceduler ``dask.distributed``. It is more sophisticated, offers more features,
 but requires minimum effort to set up. It can run locally on a laptop and scale up to a cluster. 
-We can start a LocalCluster scheduler which makes use of all the cores and RAM 
+We can start a ``LocalCluster`` scheduler which makes use of all the cores and RAM 
 we have on the machine by: 
 
 .. code-block:: python
@@ -231,18 +237,18 @@ One way to trigger the computation is to call :meth:`compute`:
 
 .. code-block:: python
 
-   sum_da.compute()
-   # or
    dask.compute(sum_da)
+   # or
+   sum_da.compute()
 
 
 We can visualize the symbolic operations by calling :meth:`visualize`:
 
 .. code-block:: python
 
-   sum_da.visualize()
-   # or 
    dask.visualize(sum_da)
+   # or 
+   sum_da.visualize()
 
 
 You can find additional details and examples here 
@@ -424,6 +430,26 @@ to make them lazy and tasks into a graph which we will run later on parallel har
    # 603 ms ± 181 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
+.. callout:: Default scheduler for dask collections
+
+   ``dask.array`` and ``dask.dataframe`` use the ``threads`` scheduler
+
+   ``dask.bag`` uses the ``processes`` scheduler
+
+   In case to change the default scheduler, using `dask.config.set` is recommanded:
+
+   .. code-block:: ipython
+
+      # To set globally
+      dask.config.set(scheduler='processes')
+      x.compute()
+
+      # To set it as a context manager
+      with dask.config.set(scheduler='threads'):
+	  x.compute()
+
+
+
 Comparison to Spark
 -------------------
 
@@ -472,7 +498,7 @@ Exercises
    - What happens if the dask chunks=(250,250)
 
 
-.. callout:: Choice of chunk size
+.. solution:: Choice of chunk size
 
    The choice is problem dependent, but here are a few things to consider:
 
@@ -501,6 +527,50 @@ Exercises
    .. solution::
 
       .. literalinclude:: example/delay_more_solution.py 
+
+
+.. challenge:: Testing different schedulers
+
+   We will test different schedulers and compare the performance on a simple task calculating 
+   the mean of a random generated array.
+   
+   Here is the code using NumPy:
+
+   .. literalinclude:: example/dask_gil.py
+      :language: ipython
+
+   Here we run the same code using different schedulers from Dask:
+
+   .. tabs::
+
+      .. tab::  ``threads``
+
+	 .. literalinclude:: example/dask_gil_threads.py
+            :language: ipython
+
+      .. tab::  ``processes``
+
+	 .. literalinclude:: example/dask_gil_processes.py
+            :language: ipython
+
+      .. tab::  ``distributed``
+
+	 .. literalinclude:: example/dask_gil_distributed.py
+            :language: ipython
+
+.. solution:: Testing different schedulers
+
+   threads is limited by the GIL on Python code, so no multi-core speedup on pure Python functions
+
+   Except for threads, the other two copy data around between processes
+
+   creating and destroying processes takes more time, i.e. processes have more overhead than threads
+
+   Running multiple processes is only effective when there is enough computational work to do i.e. CPU-bound tasks, 
+   e.g. in our case, most of the time is actually spent on transferring the data rather than computing the mean
+
+   using distributed scheduler has advantages over processes, this is related to better handling of data copying
+
 
 
 .. challenge:: Climate simulation data using Xarray and Dask
