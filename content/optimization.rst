@@ -530,6 +530,7 @@ Temporary arrays
 .. code-block:: python
 
    import numpy as np
+   M = 10000
    X = np.random.random((M, 3))
    D = np.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
 
