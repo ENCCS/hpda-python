@@ -483,27 +483,6 @@ is divided into 'n' segments or bins. Below is a basic serial code.
    It will print out the time it took to calculate the ACF.      
 
 
-.. exercise:: Measure Snakemake parallelisation efficiency
-
-   Explore the parallel efficiency of Snakemake for the word-count project.
-
-   First clone the repo:
-
-   .. code-block:: console
-
-      $ git clone https://github.com/ENCCS/word-count-hpda.git
-
-   Run the workflow on one core and time it:
-
-   .. code-block:: console
-
-      $ time snakemake -j 1
-
-   Now compare the execution time when using more processes. How much improvement can be obtained?
-
-   The more time-consuming each job in the workflow is, the larger will be the parallel efficiency, 
-   as you will see if you get to the last exercise below!
-
 .. exercise:: Parallelize word-autocorrelation code with multiprocessing
 
    A serial version of the code is available in the 
@@ -660,97 +639,6 @@ is divided into 'n' segments or bins. Below is a basic serial code.
 
       .. literalinclude:: exercise/autocorrelation_mpi.py
 
-.. exercise:: Use the MPI version of word-autocorrelation with ipyparallel
-
-   Now try to use the MPI version of the autocorrelation.py script inside Jupyter 
-   using ipyparallel! Of course, you can also use the provided MPI solution above.
-
-   Start by creating a new Jupyter notebook :file:`autocorrelation.ipynb` 
-   in the :file:`word-count-hpda/source/` directory.
-
-   Then start the IPython cluster with e.g. 8 cores in a Jupyter **terminal**:
-
-   .. code-block:: console
-
-      $ ipcluster start -n 8 --engines=MPI
-
-   Now create a cluster in Jupyter:
-
-   .. code-block:: python
-
-      import ipyparallel as ipp
-      cluster = ipp.Client()
-
-   Instead of copying functions from :file:`autocorrelation.py` to your notebook, you can 
-   import them *on each engine*. But you may first need to change the current working 
-   directory (CWD) if your Jupyter session was started in the :file:`word-count-hpda/` directory:
-
-   .. code-block:: python
-
-      import os
-      # create a direct view to be able to change CWD on engines
-      dview = rc.direct_view()
-      # print CWD on each engine
-      print(dview.apply_sync(os.getcwd))
-      # set correct CWD, adapt if needed (run %pwd to find full path)
-      dview.map(os.chdir, ['/full/path/to/word-count-hpda/source']*len(cluster))
-
-   Now you need to import all needed functions explicitly on the engines: 
-
-   .. code-block:: python
-
-      with view.sync_imports():
-          from autocorrelation import preprocess_text, setup, word_acf
-          from autocorrelation import ave_word_acf_gather, ave_word_acf_p2p, mpi_acf
-
-   Finally you're ready to run MPI code on the engines! The following code uses 
-   :meth:`apply_sync` to run the :meth:`mpi_acf` function on all engines with given 
-   input arguments:
-
-   .. code-block:: python
-
-      # run the mpi_example function on all engines in parallel
-      book = "../data/pg99.txt"
-      wc_book = "../processed_data/pg99.dat"
-      r = view.apply_sync(mpi_acf, book, wc_book)
-
-      # Print the result from the engines
-      print(r[0])
-
-   Tasks:
-
-   - Time the execution of the last code cell by adding ``%%time`` at the top of the cell.
-   - Stop the cluster in terminal (CTRL-c), and start a new cluster with a different number 
-     of MPI engines. Time the cell again to explore the parallel efficiency.
-   - Instead of running through only one data file (book), create a loop to run through 
-     them all.
-
-.. exercise:: Extend the Snakefile
-
-   Extend the Snakefile in the word-count repository to compute the autocorrelation function for all 
-   books! If you are running on a cluster you can add e.g. ``threads: 4`` to the rule and run a parallel 
-   version of the ``autocorrelation.py`` script that you wrote in an earlier exercise.
-
-   .. solution:: Hints
-
-      Apart from adding a new rule for computing the autocorrelation functions, you will need to add dependencies 
-      to the top-level ``all`` rule in order to instruct Snakemake to run your new rule. For instance, you 
-      can replace it with:
-
-      .. code-block:: python
-
-         rule all:
-             input:
-                 'results/results.txt', expand('results/acf_{book}.dat', book=DATA)
- 
-      Make sure to name the ``output`` files accordingly in your new rule.
-
-   .. solution::
-
-      .. literalinclude:: exercise/Snakefile
-         :language: python
-
-
 
 .. _See also:
 
@@ -775,6 +663,5 @@ See also
 
 .. keypoints::
 
-   - 1
-   - 2
-   - 3
+   - 1 Beaware of GIL and its impact on performance
+   - 2 Use threads for I/O-bound tasks
