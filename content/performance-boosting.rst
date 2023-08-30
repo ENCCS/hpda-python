@@ -160,7 +160,7 @@ There are three ways of declaring functions:
 
 Called by Python or Cython code, and both input/output are Python objects.
 Declaring the types of arguments and local types (thus return values) can allow Cython 
-to generate optimised code which speeds up the execution. Once the types are declared, 
+to generate optimized code which speeds up the execution. Once the types are declared, 
 a ``TypeError`` will be raised if the function is passed with the wrong types.
 
 - ``cdef`` - C style:
