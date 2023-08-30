@@ -1,12 +1,12 @@
 .. _performance:
 
-Profiling and optimising
+Profiling and optimizing
 ========================
 
 .. objectives::
 
    - Learn how to benchmark and profile Python code
-   - Understand how optimisation can be algorithmic or based on CPU or memory usage
+   - Understand how optimization can be algorithmic or based on CPU or memory usage
 
 .. instructor-note::
 
@@ -14,7 +14,7 @@ Profiling and optimising
    - 20 min exercises
 
 
-Once your code is working reliably, you can start thinking of optimising it.
+Once your code is working reliably, you can start thinking of optimizing it.
 
 
 .. warning::
@@ -569,5 +569,5 @@ Numexpr
 .. keypoints::
 
    - Measure and benchmark before you start optimizing
-   - Optimization can be to change algorithms, optimise memory usage or add
+   - Optimization can be to change algorithms, optimize memory usage or add
      vectorization, or to convert performance-critical functions to Numba or Cython

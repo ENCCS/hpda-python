@@ -160,7 +160,7 @@ There are three ways of declaring functions:
 
 Called by Python or Cython code, and both input/output are Python objects.
 Declaring the types of arguments and local types (thus return values) can allow Cython 
-to generate optimised code which speeds up the execution. Once the types are declared, 
+to generate optimized code which speeds up the execution. Once the types are declared, 
 a ``TypeError`` will be raised if the function is passed with the wrong types.
 
 - ``cdef`` - C style:
@@ -289,16 +289,18 @@ Exercises
 
    .. code-block:: console
 
+      $ cd word-count-hpda
+      $ python source/wordcount.py data/pg99.txt processed_data/pg99.dat
       $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat
 
-   Add ``@profile`` to the :meth:`word_acf` function, and run ``kernprof.py`` (or just ``kernprof``) 
+   Add ``@profile`` to the :meth:`word_acf` function, and run ``kernprof``
    from the command line. What lines of this function are the most expensive?
 
    .. solution:: 
 
       .. code-block:: console
 
-         $ kernprof -l -v source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+         $ kernprof -l -v source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat 
 
       Output: 
 

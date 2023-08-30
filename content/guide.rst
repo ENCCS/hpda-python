@@ -26,7 +26,7 @@ By the end of a workshop covering this lesson, learners should:
 - Be comfortable working with NumPy arrays and Pandas dataframes 
 - Be able to explain why Python code is often slow 
 - Understand the concept of vectorisation 
-- Understand the importance of measuring performance and profiling code before optimising
+- Understand the importance of measuring performance and profiling code before optimizing
 - Be able to describe the difference between "embarrasing", shared-memory and distributed-memory parallelism
 - Know the basics of parallel workflows, multiprocessing, multithreading and MPI
 - Understand pre-compilation and know basic usage of Numba and Cython

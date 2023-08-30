@@ -474,10 +474,13 @@ is divided into 'n' segments or bins. Below is a basic serial code.
      for-loops (you will learn to speed it up later).
    - :meth:`ave_word_acf` loops over a list of words and computes their average ACF.
 
-   To run this code for one book:
+   To run this code for one book e.g. *pg99.txt*:
 
    .. code-block:: console
 
+      $ git clone https://github.com/ENCCS/word-count-hpda.git
+      $ cd word-count-hpda 
+      $ python source/wordcount.py data/pg99.txt processed_data/pg99.dat
       $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat
 
    It will print out the time it took to calculate the ACF.      
