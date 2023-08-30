@@ -289,16 +289,18 @@ Exercises
 
    .. code-block:: console
 
+      $ cd word-count-hpda
+      $ python source/wordcount.py data/pg99.txt processed_data/pg99.dat
       $ python source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat
 
-   Add ``@profile`` to the :meth:`word_acf` function, and run ``kernprof.py`` (or just ``kernprof``) 
+   Add ``@profile`` to the :meth:`word_acf` function, and run ``kernprof``
    from the command line. What lines of this function are the most expensive?
 
    .. solution:: 
 
       .. code-block:: console
 
-         $ kernprof -l -v source/autocorrelation.py data/pg99.txt processed_data/pg99.dat
+         $ kernprof -l -v source/autocorrelation.py data/pg99.txt processed_data/pg99.dat results/acf_pg99.dat 
 
       Output: 
 
