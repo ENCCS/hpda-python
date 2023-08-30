@@ -68,13 +68,15 @@ that **only one thread in a process can run actual Python code**
 by using the so-called **global interpreter lock (GIL)**.
 This means that approaches that may work in other languages (C, C++, Fortran),
 may not work in Python without being a bit careful.
-At first glance, this is bad for parallelism.  *But it's not all bad!:*
+The reason GIL is needed is because part of the Python implementation related to
+the memory management is not thread-safe.
+At first glance, this is bad for parallelism.  But one can avoid GIL through the folowing:
 
 - External libraries (NumPy, SciPy, Pandas, etc), written in C or other
   languages, can release the lock and run multi-threaded.  
-- Most input/output releases the GIL, and input/output is slow.
+- Most input/output tasks release the GIL.
 - There are several Python libraries that side-step the GIL, e.g. by using 
-  *subprocesses* instead of threads.
+  *multiprocessing* instead of *threading*.
 
 
 Multithreading
@@ -436,7 +438,9 @@ Exercises
 
 .. exercise:: Compute numerical integrals
 
-   The primary objective of this exercise is to compute integrals :math:`\int_0^1 x^{3/2} \, dx` numerically. One approach to integration is by establishing a grid along the x-axis. Specifically, the integration range is divided into 'n' segments or bins. Below is a basic serial code.
+   The primary objective of this exercise is to compute integrals :math:`\int_0^1 x^{3/2} \, dx` numerically. 
+One approach to integration is by establishing a grid along the x-axis. Specifically, the integration range 
+is divided into 'n' segments or bins. Below is a basic serial code.
 
    .. literalinclude:: exercise/1d_Integration_serial.py
 
