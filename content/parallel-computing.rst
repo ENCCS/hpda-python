@@ -83,7 +83,7 @@ Multithreading
 --------------
 
 Due to the GIL only one thread can execute Python code at once, and this makes 
-threading rather useless for *compute-bound* problems in pure Puthon. 
+threading rather useless for *compute-bound* problems in pure Python. 
 However, multithreading is still relevant in two situations:
 
 - External libraries written in non-Python languages can take advantage of multithreading 
