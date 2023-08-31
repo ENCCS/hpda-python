@@ -538,38 +538,93 @@ Exercises
 
    .. literalinclude:: example/dask_gil.py
       :language: ipython
+      :lines: 1-7
 
    Here we run the same code using different schedulers from Dask:
 
    .. tabs::
 
+      .. tab::  ``serial``
+
+	 .. literalinclude:: example/dask_gil.py
+            :language: ipython
+            :lines: 9-12
+
       .. tab::  ``threads``
 
 	 .. literalinclude:: example/dask_gil_threads.py
             :language: ipython
+            :lines: 1-10
+
+	 .. literalinclude:: example/dask_gil_threads.py
+            :language: ipython
+            :lines: 12-15
+
+	 .. literalinclude:: example/dask_gil_threads.py
+            :language: ipython
+            :lines: 17-20
+
+	 .. literalinclude:: example/dask_gil_threads.py
+            :language: ipython
+            :lines: 22-25
 
       .. tab::  ``processes``
 
 	 .. literalinclude:: example/dask_gil_processes.py
             :language: ipython
+            :lines: 1-10
+
+	 .. literalinclude:: example/dask_gil_processes.py
+            :language: ipython
+            :lines: 12-15
+
+	 .. literalinclude:: example/dask_gil_processes.py
+            :language: ipython
+            :lines: 17-20
+
+	 .. literalinclude:: example/dask_gil_processes.py
+            :language: ipython
+            :lines: 22-25
 
       .. tab::  ``distributed``
 
 	 .. literalinclude:: example/dask_gil_distributed.py
             :language: ipython
+            :lines: 1-14
 
-.. solution:: Testing different schedulers
+	 .. literalinclude:: example/dask_gil_distributed.py
+            :language: ipython
+            :lines: 16-17
 
-   threads is limited by the GIL on Python code, so no multi-core speedup on pure Python functions
+	 .. literalinclude:: example/dask_gil_distributed.py
+            :language: ipython
+            :lines: 19-21
 
-   Except for threads, the other two copy data around between processes
+	 .. literalinclude:: example/dask_gil_distributed.py
+            :language: ipython
+            :lines: 23-25
 
-   creating and destroying processes takes more time, i.e. processes have more overhead than threads
+	 .. literalinclude:: example/dask_gil_distributed.py
+            :language: ipython
+            :lines: 27
 
-   Running multiple processes is only effective when there is enough computational work to do i.e. CPU-bound tasks, 
-   e.g. in our case, most of the time is actually spent on transferring the data rather than computing the mean
 
-   using distributed scheduler has advantages over processes, this is related to better handling of data copying
+
+   .. solution:: Testing different schedulers
+
+      Using ``threads`` scheduler is limited by the GIL on Python code, so no multi-core speedup on pure Python functions
+
+      Except for ``threads``, the other two schedulers copy data between processes and this can introduce performance penalties,
+      particularly when the data being transferred between processes is large.
+
+      Creating and destroying processes takes more time, i.e. ``processes`` have more overhead than ``threads``
+
+      Running multiple processes is only effective when there is enough computational work to do i.e. CPU-bound tasks. 
+      In this very example, most of the time is actually spent on transferring the data rather than computing the mean
+
+      Using ``distributed`` scheduler has advantages over ``processes``, this is related to better handling of data copying
+
+
 
 
 

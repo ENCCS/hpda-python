@@ -13,15 +13,15 @@ output = [dask.delayed(calc_mean)(i, n) for i in range(100)]
 cluster = LocalCluster(n_workers = 1,threads_per_worker=1)
 c = Client(cluster)
 
-%timeit
-rs = dask.compute(output,n_workers = 1)
+%timeit dis_1 = dask.compute(output,n_workers = 1)
+#619 ms ± 253 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+cluster.scale(2)
+%timeit dis_2 = dask.compute(output,n_workers = 2)
+#357 ms ± 131 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 cluster.scale(4)
-%timeit
-rs = dask.compute(output,n_workers = 4)
-
-cluster.scale(8)
-%timeit
-rs = dask.compute(output,n_workers = 8)
+%timeit dis_4 = dask.compute(output,n_workers = 4)
+#265 ms ± 53.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 c.shutdown()

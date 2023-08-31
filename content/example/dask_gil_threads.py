@@ -11,12 +11,15 @@ output = [dask.delayed(calc_mean)(i, n) for i in range(100)]
 
 %%timeit
 with dask.config.set(scheduler='threads',num_workers=1):
-    rs = dask.compute(output)
+    mt_1 = dask.compute(output)
+#395 ms ± 18.5 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+%%timeit
+with dask.config.set(scheduler='threads',num_workers=2):
+    mt_2 = dask.compute(output)
+#1.28 s ± 1.46 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 %%timeit
 with dask.config.set(scheduler='threads',num_workers=4):
-    rs = dask.compute(output)
-
-%%timeit
-with dask.config.set(scheduler='threads',num_workers=8):
-    rs = dask.compute(output)
+    mt_4 = dask.compute(output)
+#1.28 s ± 3.84 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
