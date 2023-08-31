@@ -13,5 +13,5 @@ def fit_powerlaw(row):
     return params[1]
 
 
-df = pd.read_csv("https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/data/results.csv")
+df = pd.read_csv("https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/data/results.csv")
 %timeit results = df.iloc[:,1:].apply(fit_powerlaw, axis=1)
