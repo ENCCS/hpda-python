@@ -135,7 +135,7 @@ a pre-existing environment created in a directory you have access to:
 
       .. code-block:: console
       
-         $ conda env create -f https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+         $ conda env create -f https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/env/environment.yml
 
       The installation can take several minutes. 
       Now activate the environment by:

@@ -12,7 +12,7 @@ def fit_powerlaw(row):
     time.sleep(0.01)
     return params[1]
 
-ddf = dd.read_csv("https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/data/results.csv")
+ddf = dd.read_csv("https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/data/results.csv")
 ddf4=ddf.repartition(npartitions=4)
 
 # Note the optional argument ``meta`` which is recommended for dask dataframes. 

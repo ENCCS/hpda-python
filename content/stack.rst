@@ -799,7 +799,7 @@ Exercises
 
    .. code-block:: python
 
-      df = pd.read_csv("https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/data/results.csv")
+      df = pd.read_csv("https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/data/results.csv")
       # print first few rows
       df.head()
 
