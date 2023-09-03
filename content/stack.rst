@@ -147,8 +147,6 @@ with ``np.zeros`` or ``np.empty`` when converting from a Python list is not poss
    mat.size
    # 6
 
-Helper functions
-~~~~~~~~~~~~~~~~
 
 ``arange`` and ``linspace`` can generate ranges of numbers:
 
