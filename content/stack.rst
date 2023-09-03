@@ -531,9 +531,7 @@ When it comes to data analysis using Pandas, the tidy format is recommended:
 
 The name "tidy data" comes from `Wickham’s paper (2014) <https://vita.had.co.nz/papers/tidy-data.pdf>`__ 
 which describes the ideas in great detail.
-This image from Hadley Wickham’s book *R for Data Science* visualizes the idea:
 
-.. figure:: img/tidy_data.png
 
 Data analysis workflow
 ^^^^^^^^^^^^^^^^^^^^^^
