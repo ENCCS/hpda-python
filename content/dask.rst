@@ -426,6 +426,9 @@ to make them lazy and tasks into a graph which we will run later on parallel har
 .. code-block:: ipython
 
    %%timeit
+   x = inc_delay(1)
+   y = dec_delay(2)
+   z = add_delay(x, y)
    z.compute()
    # 603 ms ± 181 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
