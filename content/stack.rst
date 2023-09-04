@@ -755,6 +755,7 @@ This example fits a power-law to a vector:
    import matplotlib.pyplot as plt
    plt.plot(X,Y)
    plt.plot(X, powerlaw(X, params[0], params[1]))
+   plt.show()
 
 In an exercise below, you will learn to perform an operation like curve fitting 
 on all rows of a pandas dataframe in an effective manner.
