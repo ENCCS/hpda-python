@@ -283,7 +283,7 @@ iterative version or the cached version.
 		 try:
 		     val = cache[n]
 		 except KeyError:
-		     val = fib(n-2) + fib(n-1)
+		     val = fib_cached(n-2) + fib_cached(n-1)
 		     cache[n] = val
 		 return val
 
