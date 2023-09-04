@@ -65,7 +65,7 @@ We generate a dataframe and apply the :meth:`apply_integrate_f` function on its 
    # 321 ms ± 10.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
-In order to ue Cython, we need to import the Cython extension:
+In order to use Cython, we need to import the Cython extension:
 
 .. code-block:: ipython
 
