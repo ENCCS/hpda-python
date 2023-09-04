@@ -899,9 +899,9 @@ Exercises
     
    Now investigate the family size of the passengers (i.e. the "SibSp" column):
 
-   1. What different family sizes exist in the passenger list? Hint: try the :meth:`unique` method 
-   2. What are the names of the people in the largest family group?
-   3. (Advanced) Create histograms showing the distribution of family sizes for 
+   3. What different family sizes exist in the passenger list? Hint: try the :meth:`unique` method 
+   4. What are the names of the people in the largest family group?
+   5. (Advanced) Create histograms showing the distribution of family sizes for 
       passengers split by the fare, i.e. one group of high-fare passengers (where 
       the fare is above average) and one for low-fare passengers 
       (Hint: instead of an existing column name, you can give a lambda function
