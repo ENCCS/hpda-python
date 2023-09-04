@@ -8,7 +8,7 @@ Scientific data
    - Get an overview of different formats for scientific data
    - Understand performance pitfalls when working with big data
    - Learn how to work with the NetCDF format through Xarray
-   - Discuss the pros and cons of open science
+   - Know the pros and cons of open science
    - Learn how to mint a DOI for your project or dataset   
 
 .. instructor-note::
@@ -290,10 +290,10 @@ but they apply also for research software.
 
 Note that FAIR principles do not require data/software to be open.
 
-.. discussion:: Discuss open science
+.. discussion:: Think about open science in your own situation
 
    - Do you share any other research outputs besides published articles and possibly source code?
-   - Discuss pros and cons of sharing research data.
+   - Is there any particular reason which stops you from sharing research data?
 
  
 

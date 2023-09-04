@@ -137,6 +137,7 @@ with ``np.zeros`` or ``np.empty`` when converting from a Python list is not poss
 
    list1 = [[1, 2, 3], [4, 5, 6]]
    mat = np.array(list1, complex)
+   # create complex array, with imaginary part equal to zero
    mat
    # array([[ 1.+0.j, 2.+0.j, 3.+0.j],
    #       [ 4.+0.j, 5.+0.j, 6.+0.j]])
@@ -613,13 +614,12 @@ refer to columns and rows either by number or by their name:
 .. code-block:: python
 
    titanic.loc["Lam, Mr. Ali","Age"]          # select single value by row and column
-   titanic.loc[:"Lam, Mr. Ali","Survived":"Age"]  # slice the dataframe by row and column *names*
-   titanic.iloc[0:2,3:6]                      # same slice as above by row and column *numbers*
+   titanic.loc["Lam, Mr. Ali","Survived":"Age"]  # slice the dataframe by row and column *names*
+   titanic.iloc[692,3:6]                      # same slice as above by row and column *numbers*
 
-   titanic.at["Lam, Mr. Ali","Age"] = 42      # set single value by row and column *name* (fast)
    titanic.at["Lam, Mr. Ali","Age"]           # select single value by row and column *name* (fast)
    titanic.at["Lam, Mr. Ali","Age"] = 42      # set single value by row and column *name* (fast)
-   titanic.iat[0,5]                           # select same value by row and column *number* (fast)
+   titanic.iat[692,4]                         # select same value by row and column *number* (fast)
 
    titanic["somecolumns"] = "somevalue"       # set a whole column
 
@@ -647,6 +647,7 @@ with any value we like or do forward or backward filling:
    titanic.dropna(subset=["Cabin"])  # only drop NaNs from one column
    titanic.fillna(0)                 # replace NaNs with zero
    titanic.fillna(method='ffill')    # forward-fill NaNs
+   titanic.fillna(method='bfill')    # backward-fill NaNs
 
 
 Groupby
@@ -674,14 +675,6 @@ Here we chose to summarize the data by its mean, but many other common
 statistical functions are available as dataframe methods, like
 :meth:`std`, :meth:`min`, :meth:`max()`, :meth:`cumsum`, :meth:`median`, :meth:`skew`,
 :meth:`var` etc. 
-
-In a similar vein, one can use the ``by`` parameter to the :meth:`hist` histogram plotting 
-method to create subplots by groups:
-
-.. code-block:: python
-
-   titanic.hist(column='Age', by='Survived', bins=25, figsize=(8,10),
-                layout=(2,1), zorder=2, sharex=True, rwidth=0.9)
 
 
 The workflow of :meth:`groupby` can be divided into three general steps:
