@@ -672,13 +672,12 @@ Exercises
 
    We can use dask to compute SVD of a large matrix which does not fit into the memory of a 
    normal laptop/desktop. While it is computing, you should switch to the Dask dashboard and 
-   watch column "Workers" and "Graph".
+   watch column "Workers" and "Graph". 
 
    .. code-block:: python
 
        import dask
        import dask.array as da
-       # X = da.random.random((20000000, 1000), chunks=(10000, 1000))
        X = da.random.random((2000000, 100), chunks=(10000, 100))
        X
        u, s, v = da.linalg.svd(X)
@@ -686,7 +685,9 @@ Exercises
        s.compute()
 
 
-   We could also use approximate algorithm.
+   SVD is only supported for arrays with chunking in one dimension, which requires that the matrix
+   is either *tall-and-skinny* or *short-and-fat*.
+   If chunking in both dimensions is needed, one should use approximate algorithm.
 
    .. code-block:: python
 

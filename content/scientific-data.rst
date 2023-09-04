@@ -333,7 +333,7 @@ Exercises
 
 .. exercise:: Use Xarray to work with NetCDF files
 
-   This exercise is derived from `this tutorial <https://xarray-contrib.github.io/xarray-tutorial/scipy-tutorial/01_datastructures_and_io.html#NetCDF>`__,
+   This exercise is derived from `Xarray Tutorials <https://tutorial.xarray.dev/intro.html>`__,
    which is distributed under an Apache-2.0 License.
 
    First create an Xarray dataset: 
@@ -373,24 +373,23 @@ Exercises
       ds1.to_netcdf("ds1.nc")
       ds2.to_netcdf("ds2.nc")
 
-   You can read an individual file from disk by:
+   You can read an individual file from disk by using :meth:`open_dataset` method:
 
    .. code-block:: python
 
-      ds1 = xr.open_dataset("ds1.nc")
+      ds3 = xr.open_dataset("ds1.nc")
 
-   But you can also read both at once into an aggregated dataset object using the :meth:`open_mfdataset` method:
+   or using the :meth:`load_dataset` method:
 
    .. code-block:: python
 
-      ds = xr.open_mfdataset('ds*.nc')
+      ds4 = xr.load_dataset('ds1.nc')
 
    Tasks:
 
    - Explore the hierarchical structure of the ``ds1`` and ``ds2`` datasets in a Jupyter notebook by typing the 
      variable names in a code cell and execute. Click the disk-looking objects on the right to expand the fields.
-   - Explore the ``ds`` dataset and compare its dimensions to the ``ds1`` and ``ds2`` datasets. Have the two 
-     datasets been merged?
+   - Explore ``ds3`` and ``ds4`` datasets, and compare them with ``ds1``. What are the differences?
 
 
 
