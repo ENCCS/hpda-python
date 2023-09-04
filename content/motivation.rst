@@ -31,7 +31,7 @@ and data source."* (from `Wikipedia <https://en.wikipedia.org/wiki/Big_data>`__)
 research communities are increasingly adopting high-throughput data production methods 
 which lead to very large datasets. One driving force behind this development is the advent 
 of powerful machine learning methods which enable researchers to derive novel scientific 
-insights from large datasets. Another is the strong development of high perfomance 
+insights from large datasets. Another is the strong development of high performance 
 computing (HPC) hardware and the accompanying development of software libraries and 
 packages which can efficiently take advantage of the hardware.
 

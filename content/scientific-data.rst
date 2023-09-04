@@ -25,7 +25,7 @@ Bit and Byte
 The smallest building block of storage in the computer is a **bit**, 
 which stores either a 0 or 1.
 Normally a number of 8 bits are combined in a group to make a **byte**. 
-One byte (8 bits) can represent/hold at most :math:`2^8` distint values.
+One byte (8 bits) can represent/hold at most :math:`2^8` distinct values.
 Organising bytes in different ways can represent 
 different types of information, i.e. data.
 
@@ -45,9 +45,9 @@ Integers are whole numbers and can be represented exactly given enough bytes.
 However, for floating-point numbers the decimal fractions 
 can not be represented exactly as binary (base 2) fractions in most cases 
 which is known as the *representation error*. Arithmetic operations will 
-further propagate this error. That is why in scienctific computing, 
+further propagate this error. That is why in scientific computing, 
 numerical algorithms have to be carefully designed to not accumulate errors, and 
-floating-point numbers are usally allocated with 8 bytes  
+floating-point numbers are usually allocated with 8 bytes  
 to make sure the inaccuracy is under control and does not lead to unsteady solutions.
 
 .. discussion:: Single vs double precision
@@ -64,7 +64,7 @@ Text Data
 When it comes to text data, the simplest character encoding 
 is ASCII (American Standard Code for Information Interchange) and was the most 
 common character encodings until 2008 when UTF-8 took over.
-The orignal ASCII uses only 7 bits for representing each character and 
+The original ASCII uses only 7 bits for representing each character and 
 therefore encodes only 128 specified characters. Later it became common 
 to use an 8-bit byte to store each character in memory, providing an extended ASCII. 
 
@@ -91,7 +91,7 @@ Gridded Data
 ~~~~~~~~~~~~
 
 Gridded data is another very common data type in which numerical data is normally saved 
-in a multi-dimentional rectangular grid. Most probably it is saved in one of the following formats:
+in a multi-dimensional rectangular grid. Most probably it is saved in one of the following formats:
 
 - Hierarchical Data Format (HDF5) - Container for many arrays
 - Network Common Data Form (NetCDF) - Container for many arrays which conform to the NetCDF data model
@@ -109,7 +109,7 @@ The most common metadata convention is Climate and Forecast (CF) Conventions,
 commonly used with NetCDF data.
 
 When it comes to data storage, there are many types of storage formats used 
-in scietific computing and data analysis. There isn't one data storage format that 
+in scientific computing and data analysis. There isn't one data storage format that 
 works in all cases, so choose a file format that best suits your data.
 
 
