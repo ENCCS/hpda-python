@@ -35,12 +35,12 @@ and distributed computing.
    :delim: ;
 
    15 min ; :doc:`motivation`
-   35 min ; :doc:`scientific-data`
-   50 min ; :doc:`stack`
-   80 min ; :doc:`parallel-computing`
-   40 min ; :doc:`optimization`
-   40 min ; :doc:`performance-boosting`
-   80 min ; :doc:`dask`
+   60 min ; :doc:`scientific-data`
+   90 min ; :doc:`stack`
+   90 min ; :doc:`parallel-computing`
+   90 min ; :doc:`optimization`
+   90 min ; :doc:`performance-boosting`
+   90 min ; :doc:`dask`
 
 
 
