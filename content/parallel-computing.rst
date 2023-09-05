@@ -247,8 +247,6 @@ comes with the MPI library:
 
 .. code-block:: console
 
-   # on some HPC systems you might need 'srun -n 4' instead of 'mpirun -np 4'
-   # on Vega, add this module for MPI libraries: ml add foss/2020b  
    $ mpirun -np 4 python hello.py
 
    # Hello from process 1 out of 4
@@ -256,18 +254,6 @@ comes with the MPI library:
    # Hello from process 2 out of 4
    # Hello from process 3 out of 4
 
-.. callout:: MPI libraries
-
-   A number of available MPI libraries have been developed (`OpenMPI <https://www.open-mpi.org/>`__, 
-   `MPICH <https://www.mpich.org/>`__, `IntelMPI <https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html#gs.up6uyn>`__, 
-   `MVAPICH <http://mvapich.cse.ohio-state.edu/>`__) and HPC centers normally offer one or more of these for users 
-   to compile/run MPI code.
-
-   For example, on Vega one can load the GNU compiler suite along with OpenMPI using:
-
-   .. code-block:: console
-
-      $ ml add foss/2021b
 
 Point-to-point and collective communication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
