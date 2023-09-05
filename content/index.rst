@@ -18,7 +18,7 @@ This lesson is meant to give an overview of working with research data in
 Python using general libraries for storing, processing, analysing and sharing data. 
 The focus is on high performance. After covering tools for performant 
 processing on single workstations the focus shifts to profiling and optimising, parallel 
-and distributed computing and finally GPU computing.
+and distributed computing.
 
 
 
@@ -41,7 +41,7 @@ and distributed computing and finally GPU computing.
    40 min ; :doc:`optimization`
    40 min ; :doc:`performance-boosting`
    80 min ; :doc:`dask`
-   110 min ; :doc:`GPU-computing`
+
 
 
 .. toctree::
