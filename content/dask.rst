@@ -501,19 +501,19 @@ Exercises
    - What happens if the dask chunks=(250,250)
 
 
-.. solution:: Choice of chunk size
+   .. solution:: Choice of chunk size
 
-   The choice is problem dependent, but here are a few things to consider:
+      The choice is problem dependent, but here are a few things to consider:
 
-   Each chunk of data should be small enough so that it fits comforably in each worker's available memory. 
-   Chunk sizes between 10MB-1GB are common, depending on the availability of RAM. Dask will likely 
-   manipulate as many chunks in parallel on one machine as you have cores on that machine. 
-   So if you have a machine with 10 cores and you choose chunks in the 1GB range, Dask is likely to use at least 
-   10 GB of memory. Additionally, there should be enough chunks available so that each worker always has something to work on.
+      Each chunk of data should be small enough so that it fits comforably in each worker's available memory. 
+      Chunk sizes between 10MB-1GB are common, depending on the availability of RAM. Dask will likely 
+      manipulate as many chunks in parallel on one machine as you have cores on that machine. 
+      So if you have a machine with 10 cores and you choose chunks in the 1GB range, Dask is likely to use at least 
+      10 GB of memory. Additionally, there should be enough chunks available so that each worker always has something to work on.
 
-   On the otherhand, you also want to avoid chunk sizes that are too small as we see in the exercise.
-   Every task comes with some overhead which is somewhere between 200us and 1ms. Very large graphs 
-   with millions of tasks will lead to overhead being in the range from minutes to hours which is not recommended.
+      On the otherhand, you also want to avoid chunk sizes that are too small as we see in the exercise.
+      Every task comes with some overhead which is somewhere between 200us and 1ms. Very large graphs 
+      with millions of tasks will lead to overhead being in the range from minutes to hours which is not recommended.
 
 
 .. challenge:: Dask delay
@@ -757,7 +757,7 @@ Exercises
 .. challenge:: Climate simulation data using Xarray and Dask
 
    This exercise is working with NetCDF files using Xarray. The files contain 
-   monthly global 2m air temperature from a Last Millennium (850 -1850 CE) simulation. 
+   monthly global 2m air temperature for 10 years. 
    Xarray is chosen due to its ability to seamlessly integrate with Dask 
    to support parallel computations on datasets.
 
@@ -765,13 +765,16 @@ Exercises
    We will first read data with Dask and Xarray. See 
    https://xarray.pydata.org/en/stable/dask.html#reading-and-writing-data for more details.
 
+   Note that depending on where you launched the Jupyter-lab, you may need to change the path to 
+   the data folder.
+
    .. code-block:: ipython
 
       import dask
       import xarray as xr
       import matplotlib.pyplot as plt
       %matplotlib inline
-      ds=xr.open_mfdataset('./airdata/tas*.nc', parallel=True,use_cftime=True)
+      ds=xr.open_mfdataset('./data/tas*.nc', parallel=True,use_cftime=True)
 
 
    ``open_mfdataset()`` is for reading multiple files and will chunk each file into a single Dask array by default. 
