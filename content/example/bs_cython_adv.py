@@ -13,7 +13,7 @@ cpdef bs_clist(a_list):
         c_list[i] = a_list[i]
 
     for i in range(N):
-        for j in range(1, N):
+        for j in range(1, N-i):
             if c_list[j] < c_list[j-1]:
                 c_list[j-1], c_list[j] = c_list[j], c_list[j-1]
 

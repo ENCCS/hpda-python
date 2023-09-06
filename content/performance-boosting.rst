@@ -489,6 +489,7 @@ Exercises
                 .. code-block:: ipython
 
                    import random
+                   import numpy as np
                    l = [random.randint(1,1000) for num in range(1, 1000)]
                    l_arr = np.asarray(l)
                    %timeit bs_cython(l_arr)
@@ -512,10 +513,12 @@ Exercises
                 .. code-block:: ipython
 
                    import random
+                   import numpy as np
                    l = [random.randint(1,1000) for num in range(1, 1000)]
                    # first try using a list as input
                    %timeit bs_numba(l)
                    # try using a NumPy array
+                   l = [random.randint(1,1000) for num in range(1, 1000)]
                    l_arr = np.asarray(l)
                    %timeit bs_numba(l_arr)
 
