@@ -45,7 +45,7 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
    Consider the following pure Python code which integrates a function:
 
    .. math:: 
-       \int^{b}_{a}(x^2-x)dx = 0
+       \int^{b}_{a}(x^2-x)dx
 
 
    .. literalinclude:: example/integrate_python.py 
