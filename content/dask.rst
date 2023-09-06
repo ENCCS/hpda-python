@@ -615,67 +615,30 @@ Exercises
 
    .. solution:: Testing different schedulers
 
-      Using ``threads`` scheduler is limited by the GIL on Python code, so no multi-core speedup on pure Python functions
+      Comparing profiling from mt_1, mt_2 and mt_4: Using ``threads`` scheduler is limited by the GIL on pure Python code. 
+      In our case, although it is not a pure Python function, it is still limited by GIL, therefore no multi-core speedup
 
-      Except for ``threads``, the other two schedulers copy data between processes and this can introduce performance penalties,
-      particularly when the data being transferred between processes is large.
+      Comparing profiling from mt_1, mp_1 and dis_1: Except for ``threads``, the other two schedulers copy data between processes 
+      and this can introduce performance penalties, particularly when the data being transferred between processes is large.
 
-      Creating and destroying processes takes more time, i.e. ``processes`` have more overhead than ``threads``
+      Comparing profiling from serial, mt_1, mp_1 and dis_1: Creating and destroying threads and processes have overheads,
+      ``processes`` have even more overhead than ``threads``
 
-      Running multiple processes is only effective when there is enough computational work to do i.e. CPU-bound tasks. 
-      In this very example, most of the time is actually spent on transferring the data rather than computing the mean
+      Comparing profiling from mp_1, mp_2 and mp_4: Running multiple processes is only effective when there is enough computational 
+      work to do i.e. CPU-bound tasks. In this very example, most of the time is actually spent on transferring the data 
+      rather than computing the mean
 
-      Using ``distributed`` scheduler has advantages over ``processes``, this is related to better handling of data copying
-
-
-
-
-
-.. challenge:: Climate simulation data using Xarray and Dask
-
-   This exercise is working with NetCDF files using Xarray. The files contain 
-   monthly global 2m air temperature from a Last Millennium (850 -1850 CE) simulation. 
-   Xarray is chosen due to its ability to seamlessly integrate with Dask 
-   to support parallel computations on datasets.
+      Comparing profiling from ``processes`` and ``distributed``: Using ``distributed`` scheduler has advantages over ``processes``, 
+      this is related to better handling of data copying, i.e. ``processes`` scheduler copies data for every task, while 
+      ``distributed`` scheduler copies data for each worker.
 
 
-   We will first read data with Dask and Xarray. See 
-   https://xarray.pydata.org/en/stable/dask.html#reading-and-writing-data for more details.
 
-   .. code-block:: ipython
-
-      import dask
-      import xarray as xr
-      import matplotlib.pyplot as plt
-      %matplotlib inline
-      ds=xr.open_mfdataset('/ceph/hpc/home/euqiamgl/airdata/tas*.nc', parallel=True,use_cftime=True)
-
-
-   ``open_mfdataset()`` is for reading multiple files and will chunk each file into a single Dask array by default. 
-   One could supply the chunks keyword argument to control the size of the resulting Dask arrays. 
-   Passing the keyword argument ``parallel=True`` to open_mfdataset() will speed up the reading of 
-   large multi-file datasets by executing those read tasks in parallel using ``dask.delayed``.
-
-
-   .. code-block:: ipython
-
-      ds
-      ds.tas
-      #dsnew = ds.chunk({"time": 1,"lat": 80,"lon":80})   # you can further rechunk the data
-      #dask.visualize(ds.tas) # do not visualize, the graph is too big
-      ds['tas'] = ds['tas'] - 273.15     # convert from Kelvin to degree Celsius
-      mean_tas=ds.tas.mean("time")  # lazy compuation
-      mean_tas.plot(cmap=plt.cm.RdBu_r,vmin=-50,vmax=50) # plotting triggers computation
-      tas_ann=ds.tas.groupby('time.year').mean() # lazy compuation
-      tas_sto=tas_ann.sel(lon=18.07, lat=59.33,method='nearest')  # slicing is lazy as well  
-      plt.plot(tas_sto.year,tas_sto)  # plotting trigers computation
-
-
-.. challenge:: SVD with large skinny matrix
+.. challenge:: SVD with large skinny matrix using ``distributed`` scheduler
 
    We can use dask to compute SVD of a large matrix which does not fit into the memory of a 
    normal laptop/desktop. While it is computing, you should switch to the Dask dashboard and 
-   watch column "Workers" and "Graph". 
+   watch column "Workers" and "Graph", so you must run this using ``distributed`` scheduler
 
    .. code-block:: python
 
@@ -790,6 +753,45 @@ Exercises
      What if you have a larger textfile? You can for example concatenate all texts into 
      a single file: ``cat data/*.txt > data/all.txt``.
 
+
+.. challenge:: Climate simulation data using Xarray and Dask
+
+   This exercise is working with NetCDF files using Xarray. The files contain 
+   monthly global 2m air temperature from a Last Millennium (850 -1850 CE) simulation. 
+   Xarray is chosen due to its ability to seamlessly integrate with Dask 
+   to support parallel computations on datasets.
+
+
+   We will first read data with Dask and Xarray. See 
+   https://xarray.pydata.org/en/stable/dask.html#reading-and-writing-data for more details.
+
+   .. code-block:: ipython
+
+      import dask
+      import xarray as xr
+      import matplotlib.pyplot as plt
+      %matplotlib inline
+      ds=xr.open_mfdataset('./airdata/tas*.nc', parallel=True,use_cftime=True)
+
+
+   ``open_mfdataset()`` is for reading multiple files and will chunk each file into a single Dask array by default. 
+   One could supply the chunks keyword argument to control the size of the resulting Dask arrays. 
+   Passing the keyword argument ``parallel=True`` to open_mfdataset() will speed up the reading of 
+   large multi-file datasets by executing those read tasks in parallel using ``dask.delayed``.
+
+
+   .. code-block:: ipython
+
+      ds
+      ds.tas
+      #dsnew = ds.chunk({"time": 1,"lat": 80,"lon":80})   # you can further rechunk the data
+      #dask.visualize(ds.tas) # do not visualize, the graph is too big
+      ds['tas'] = ds['tas'] - 273.15     # convert from Kelvin to degree Celsius
+      mean_tas=ds.tas.mean("time")  # lazy compuation
+      mean_tas.plot(cmap=plt.cm.RdBu_r,vmin=-50,vmax=50) # plotting triggers computation
+      tas_ann=ds.tas.groupby('time.year').mean() # lazy compuation
+      tas_sto=tas_ann.sel(lon=18.07, lat=59.33,method='nearest')  # slicing is lazy as well  
+      plt.plot(tas_sto.year,tas_sto)  # plotting trigers computation
 
 
 
