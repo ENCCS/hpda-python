@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Instructor’s guide" href="../guide/" />
+    <link rel="prev" title="Optional: more on Pandas" href="../pandas-extra/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> HPDA-Python
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Python software stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance/">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU computing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#karolina">Karolina</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-jobs">Running jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-jupyter">Running Jupyter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#meluxina">MeluXina</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-installation">Local installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Setup</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/setup.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h1>
+<p>This lesson requires Python3 and a number of Python libraries:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>numpy
+scipy
+pandas
+matplotlib
+dask
+ipython
+ipyparallel
+mpi4py
+</pre></div>
+</div>
+<section id="karolina">
+<h2>Karolina<a class="headerlink" href="#karolina" title="Permalink to this headline"></a></h2>
+<p>Thanks to <a class="reference external" href="https://www.it4i.cz/en">IT4I</a>, we will have an allocation on the Karolina supercomputer for the whole
+duration of the workshop. Here are instructions for accessing Karolina, setting up the Python environment and
+running jobs.</p>
+<ul class="simple">
+<li><p>instructions for getting an account</p></li>
+<li><p>login instructions</p></li>
+</ul>
+<p>Software on Karolina is available through a module system.
+First load the Anaconda module to get access to the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package manager:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ml add Anaconda3/2021.11
+</pre></div>
+</div>
+<p>To be able to create conda environments in your home directory you need to initialize it.
+The following command adds the necessary configuration to your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda init bash
+</pre></div>
+</div>
+<p>You now need to either log in to Karolina again or start a new shell session by typing <code class="docutils literal notranslate"><span class="pre">bash</span></code>.</p>
+<p>Now download the environment.yml file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget FIXME <span class="o">(</span>add env file to lesson repo<span class="o">)</span>
+</pre></div>
+</div>
+<p>and create a new environment with all required dependencies by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
+</pre></div>
+</div>
+<p>The installation will take a few minutes.</p>
+<p>Now activate the environment by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate hpda
+</pre></div>
+</div>
+<section id="running-jobs">
+<h3>Running jobs<a class="headerlink" href="#running-jobs" title="Permalink to this headline"></a></h3>
+<p>Resources can be allocated both through batch jobs (submitting a script to the scheduler)
+and interactively. To allocate one interactive node for 1 hour on 1 node in the CPU partition
+and express queue:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>qsub -A DD-22-28 -q qexp -l <span class="nv">walltime</span><span class="o">=</span><span class="m">01</span>:00:00 -I
+</pre></div>
+</div>
+</section>
+<section id="running-jupyter">
+<h3>Running Jupyter<a class="headerlink" href="#running-jupyter" title="Permalink to this headline"></a></h3>
+<p>The following procedure starts a Jupyter-Lab server on a compute node, creates an SSH tunnel from
+your local machine to the compute node, and then connects to the remote Jupyter-Lab server from your
+browser.</p>
+<p>First make sure to:</p>
+<ul class="simple">
+<li><p>Allocate an interactive compute node for a sufficiently long time</p></li>
+<li><p>Switch to the hpda conda environment.</p></li>
+</ul>
+<p>After allocating an interactive node your terminal session will be connected to that node.
+Find out the name of your compute node. Your terminal prompt should show it but you can also run the
+<code class="docutils literal notranslate"><span class="pre">hostname</span></code> command. Look only at the node name (e.g. <code class="docutils literal notranslate"><span class="pre">cn012</span></code>) and disregard the <code class="docutils literal notranslate"><span class="pre">.karolina.it4i.cz</span></code> part.</p>
+<p>Now start Jupyter-Lab on the compute node and specify both a port number (between 8000 and 9000) and the IP, which
+should be the name of the compute node. For example (replace port number and IP):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter-lab --no-browser --port<span class="o">=</span><span class="m">8123</span> --ip<span class="o">=</span>cn012
+</pre></div>
+</div>
+<p>Now create an SSH tunnel <strong>from a new terminal on your local machine</strong> to the correct port and IP:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ssh -TN -f YourUsername@login2.karolina.it4i.cz -L localhost:8123:cn012:8123
+</pre></div>
+</div>
+<p>Go back to the terminal running Jupyter-Lab on the compute node, and copy-paste the URL starting with
+<code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> which contains a long token into your local browser. If that does not work, try replacing
+<code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> with <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p>
+<p>If everything is working as it should, you should now be able to create a new Jupyter notebook in your browser
+which is connected to a Karolina compute node and the <code class="docutils literal notranslate"><span class="pre">hpda</span></code> conda environment.
+=======</p>
+<blockquote>
+<div><p>xarray</p>
+</div></blockquote>
+</section>
+</section>
+<section id="meluxina">
+<h2>MeluXina<a class="headerlink" href="#meluxina" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p>instructions for getting an account</p></li>
+<li><p>login instructions</p></li>
+</ul>
+<p>Software on MeluXina is available through a module system. The modules are however
+only available on compute nodes, so to load modules you first have to allocate resources
+through the SLURM job scheduler. To allocate resources you will need the project ID, which
+you can see by typing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sacctmgr show user <span class="nv">$USER</span> withassoc <span class="nv">format</span><span class="o">=</span>user,account,defaultaccount
+</pre></div>
+</div>
+<p>Resources can be allocated both through batch jobs (submitting a script to the scheduler)
+and interactively. To allocate one interactive node for 1 hour on 1 node in the CPU partition:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>salloc -A pNNNNNN -t <span class="m">01</span>:00:00 -q dev --res cpudev -p cpu -N <span class="m">1</span>
+</pre></div>
+</div>
+<p>Once your interactive allocation starts, the prompt will change and you will be on a compute
+node. To see available modules you can now type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module avail
+</pre></div>
+</div>
+</section>
+<section id="local-installation">
+<h2>Local installation<a class="headerlink" href="#local-installation" title="Permalink to this headline"></a></h2>
+<p>If you already have a preferred way to manage Python versions and
+libraries, you can stick to that. If not, we recommend that you
+install Python3 and all libraries using
+<a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a>,
+a free minimal installer for the package, dependency and environment manager
+<a class="reference external" href="https://docs.conda.io/en/latest/index.html">conda</a>.</p>
+<p>Please follow the installation instructions on
+<a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a> to install Miniconda3.</p>
+<p>Make sure that both Python and conda are correctly installed:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python --version
+<span class="c1"># should give something like Python 3.9.7</span>
+conda --version
+<span class="c1"># should give something like conda 4.10.2</span>
+</pre></div>
+</div>
+<p>With conda installed, download the environment.yml file above and install the required dependencies by running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda env create -f environment.yml
+</pre></div>
+</div>
+<p>This will create a new environment <code class="docutils literal notranslate"><span class="pre">hpda</span></code> which you need to activate by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate hpda
+</pre></div>
+</div>
+<p>Now open a Jupyter-Lab instance in your browser:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter-lab
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../pandas-extra/" class="btn btn-neutral float-left" title="Optional: more on Pandas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../guide/" class="btn btn-neutral float-right" title="Instructor’s guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

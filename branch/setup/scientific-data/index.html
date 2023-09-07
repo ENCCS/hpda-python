@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scientific data &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Python software stack" href="../stack/" />
+    <link rel="prev" title="Motivation" href="../motivation/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> HPDA-Python
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scientific data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#types-of-scientific-data">Types of scientific data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bit-and-byte">bit and byte</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#numerical-data">Numerical data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text-data">Text Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-and-storage-format">Data and storage format</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tabular-data">Tabular Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gridded-data">Gridded Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#metadata">Metadata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csv-comma-separated-values">CSV (comma-separated values)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hdf5-hierarchical-data-format-version-5">HDF5 (Hierarchical Data Format version 5)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#netcdf4-network-common-data-form-version-4">NetCDF4 (Network Common Data Form version 4)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#xarray">Xarray</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sharing-data">Sharing data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pros-and-cons-of-sharing-data-from-wikipedia">Pros and cons of sharing data (from Wikipedia)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fair-principles">FAIR principles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#services-for-sharing-and-collaborating-on-research-data">Services for sharing and collaborating on research data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Python software stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance/">Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU computing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Scientific data</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/scientific-data.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scientific-data">
+<span id="id1"></span><h1>Scientific data<a class="headerlink" href="#scientific-data" title="Permalink to this headline"></a></h1>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Get an overview of different formats for scientific data</p></li>
+<li><p>Understand performance pitfalls when working with big data</p></li>
+<li><p>Learn how to work with the HDF5 and NetCDF formats</p></li>
+<li><p>Discuss the pros and cons of open science</p></li>
+<li><p>Learn how to mint a DOI for your project</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 min teaching/type-along</p></li>
+<li><p>20 min exercises</p></li>
+</ul>
+</div>
+<section id="types-of-scientific-data">
+<h2>Types of scientific data<a class="headerlink" href="#types-of-scientific-data" title="Permalink to this headline"></a></h2>
+<section id="bit-and-byte">
+<h3>bit and byte<a class="headerlink" href="#bit-and-byte" title="Permalink to this headline"></a></h3>
+<p>The smallest building block of storage in the computer is a <strong>bit</strong>,
+which stores either a 0 or 1.
+Normally a number of 8 bits are combined in a group to make a <strong>byte</strong>.
+One byte (8 bits) can represent/hold at most <span class="math notranslate nohighlight">\(2^8\)</span> distint values.
+Organising bytes in different ways could further represent
+different types of information, i.e. data.</p>
+</section>
+<section id="numerical-data">
+<h3>Numerical data<a class="headerlink" href="#numerical-data" title="Permalink to this headline"></a></h3>
+<p>Different numerial data types (integer and floating-point) can be encoded as bytes.
+The more bytes we use for each value, the more range or precision we get,
+however the more memory it takes. For example, integers stored with 1 byte (8 bits)
+have a range from [-128, 127], while with 2 bytes (16 bits), the ranges becomes  [-32768, 32767].
+Integers are whole numbers and can be represented precisely given enough bytes.
+However, for floating-point numbers the decimal fractions simply
+can not be represented exactly as binary (base 2) fractions in most cases
+which is known as the representation error. Arithmetic operations will
+further propagate this error. That is why in scienctific computing,
+numerical algorithms have to be carefully chosen and
+floating-point numbers are usally allocated with 8 bytes
+to make sure the inaccuracy is under control and does not lead to unsteady solutions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In climate community, it is common practice to use single precision in some part of the model to achieve better performance at a small cost to the accuracy.</p>
+</div>
+</section>
+<section id="text-data">
+<h3>Text Data<a class="headerlink" href="#text-data" title="Permalink to this headline"></a></h3>
+<p>When it comes to text data, the simplest character encoding
+is ASCII (American Standard Code for Information Interchange) and was the most
+common character encodings until 2008 when UTF-8 took over.
+The orignal ASCII uses only 7 bits for representing each character/letter and
+therefore encodes only 128 specified characters. Later  it became common
+to use an 8-bit byte to store each character in memory, providing an extended ASCII.
+As computer becomes more powerful and  there is need for including more characters
+from other languages like Chinese, Greek, Arabic, etc. UTF-8  becomes
+the most common encoding nowadays and it uses minimum one byte up to four bytes per character.</p>
+</section>
+<section id="data-and-storage-format">
+<h3>Data and storage format<a class="headerlink" href="#data-and-storage-format" title="Permalink to this headline"></a></h3>
+<p>In real applications, the scientific data is more complex and usually contains both numerical and text data.
+Here we list a few of the data and file storage formats commonly used:</p>
+<section id="tabular-data">
+<h4>Tabular Data<a class="headerlink" href="#tabular-data" title="Permalink to this headline"></a></h4>
+<p>A very common type of data is the so-called “tabular data”. The data is structured
+typically into rows and columns. Each column usually have a name and a specific data type
+while each row is a distinct sample which provides data according to each column including missing value.
+The simplest and most common way to save tablular data is via the so-called CSV (comma-separated values) file.</p>
+</section>
+<section id="gridded-data">
+<h4>Gridded Data<a class="headerlink" href="#gridded-data" title="Permalink to this headline"></a></h4>
+<p>Gridded data is another very common type, and usually the numerical data is saved
+in a multi-dimentional rectangular grid. Most probably it is saved in one of the following formats:</p>
+<ul class="simple">
+<li><p>Hierarchical Data Format (HDF5) - Container for many arrays</p></li>
+<li><p>Network Common Data Form (NetCDF) - Container for many arrays which conform to the NetCDF data model</p></li>
+<li><p>Zarr - New cloud-optimized format for array storage</p></li>
+</ul>
+</section>
+<section id="metadata">
+<h4>Metadata<a class="headerlink" href="#metadata" title="Permalink to this headline"></a></h4>
+<p>Metadata consists of the information about the data.
+Different types of data may have different metadata conventions.</p>
+<p>In Earth and Environmental science, there are widespread robust practices around metadata.
+For NetCDF files, metadata can be embedded directly into the data files.
+The most common metadata convention is Climate and Forecast (CF) Conventions, commonly used with NetCDF data</p>
+<p>When it comes to data storage, there are many types of data storage format used
+in scietific computing and data analysis. There isn’t one data storage format that
+works in all cases, choose a file format that best suits you.</p>
+</section>
+<section id="csv-comma-separated-values">
+<h4>CSV (comma-separated values)<a class="headerlink" href="#csv-comma-separated-values" title="Permalink to this headline"></a></h4>
+<div class="admonition-key-features admonition">
+<p class="admonition-title">Key features</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> Text format</p></li>
+<li><p><strong>Packages needed:</strong> numpy, pandas</p></li>
+<li><p><strong>Space efficiency:</strong> Bad</p></li>
+<li><p><strong>Good for sharing/archival:</strong> Yes</p></li>
+<li><dl class="simple">
+<dt>Tidy data:</dt><dd><ul>
+<li><p>Speed: Bad</p></li>
+<li><p>Ease of use: Great</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Array data:</dt><dd><ul>
+<li><p>Speed: Bad</p></li>
+<li><p>Ease of use: Ok for one or two dimensional data. Bad for anything higher.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Best use cases:</strong> Sharing data. Small data. Data that needs to be human-readable.</p></li>
+</ul>
+</div>
+<p>CSV is by far the most popular file format, as it is human-readable and easily shareable.
+However, it is not the best format to use when you’re working with big data.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When working with floating point numbers, you should be careful to save the data
+with enough decimal places so that you won’t lose precision.</p>
+</div>
+<ol class="arabic simple">
+<li><p>You may lose data precision simply because you do not save the data with enough decimals</p></li>
+<li><p>CSV writing routines in Pandas and numpy try to avoid problems such as these
+by writing the floating point numbers with enough precision, but even they are not infallible.</p></li>
+<li><p>Storage of these high-precision CSV files is usually very inefficient storage-wise.</p></li>
+<li><p>Binary files, where floating point numbers are represented in their native binary format, do not suffer from such problems.</p></li>
+</ol>
+</section>
+<section id="hdf5-hierarchical-data-format-version-5">
+<h4>HDF5 (Hierarchical Data Format version 5)<a class="headerlink" href="#hdf5-hierarchical-data-format-version-5" title="Permalink to this headline"></a></h4>
+<div class="admonition-key-features admonition">
+<p class="admonition-title">Key features</p>
+<ul class="simple">
+<li><p><strong>Type:</strong> Binary format</p></li>
+<li><p><strong>Packages needed:</strong> pandas, PyTables, h5py</p></li>
+<li><p><strong>Space efficiency:</strong> Good for numeric data.</p></li>
+<li><p><strong>Good for sharing/archival:</strong> Yes, if datasets are named well.</p></li>
+<li><dl class="simple">
+<dt>Tidy data:</dt><dd><ul>
+<li><p>Speed: Ok</p></li>
+<li><p>Ease of use: Good</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Array data:</dt><dd><ul>
+<li><p>Speed: Great</p></li>
+<li><p>Ease of use: Good</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Best use cases:</strong> Working with big datasets in array data format.</p></li>
+</ul>
+</div>
+<p>HDF5 is a high performance storage format for storing large amounts of data in multiple datasets in a single file.
+It is especially popular in fields where you need to store big multidimensional arrays such as physical sciences.</p>
+</section>
+<section id="netcdf4-network-common-data-form-version-4">
+<h4>NetCDF4 (Network Common Data Form version 4)<a class="headerlink" href="#netcdf4-network-common-data-form-version-4" title="Permalink to this headline"></a></h4>
+<div class="admonition-xarray callout admonition" id="callout-0">
+<p class="admonition-title">xarray</p>
+<p>A great NetCDF4 interface is provided by the
+<a class="reference external" href="https://xarray.pydata.org/en/stable/getting-started-guide/quick-overview.html#read-write-netcdf-files">xarray</a> package.</p>
+</div>
+<div class="admonition-key-features admonition">
+<p class="admonition-title">Key features</p>
+<ul class="simple">
+<li><p><strong>Type</strong>: Binary format</p></li>
+<li><p><strong>Packages needed:</strong> pandas, netCDF4/h5netcdf, xarray</p></li>
+<li><p><strong>Space efficiency:</strong> Good for numeric data.</p></li>
+<li><p><strong>Good for sharing/archival:</strong> Yes.</p></li>
+<li><dl class="simple">
+<dt>Tidy data:</dt><dd><ul>
+<li><p>Speed: Ok</p></li>
+<li><p>Ease of use: Good</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Array data:</dt><dd><ul>
+<li><p>Speed: Good</p></li>
+<li><p>Ease of use: Great</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Best use cases:</strong> Working with big datasets in array data format. Especially useful if the dataset contains spatial or temporal dimensions. Archiving or sharing those datasets.</p></li>
+</ul>
+</div>
+<p>NetCDF4 is a data format that uses HDF5 as its file format, but it has standardized structure of datasets and metadata related to these datasets.
+This makes it possible to be read from various different programs.</p>
+<p>NetCDF4 is by far the most common format for storing large data from big simulations in physical sciences.</p>
+<p>The advantage of NetCDF4 compared to HDF5 is that one can easily add other metadata e.g. spatial dimensions (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>) or timestamps (<code class="docutils literal notranslate"><span class="pre">t</span></code>) that tell where the grid-points are situated.
+As the format is standardized, many programs can use this metadata for visualization and further analysis.</p>
+</section>
+<section id="xarray">
+<h4>Xarray<a class="headerlink" href="#xarray" title="Permalink to this headline"></a></h4>
+<p><a class="reference external" href="https://docs.xarray.dev/en/stable/">Xarray</a> is a Python package that builds on NumPy but adds <em>labels</em> to
+multi-dimensional arrays. It also borrows heavily from the Pandas package for labelled tabular data and
+integrates tightly with dask for parallel computing. NumPy, Pandas and Dask will be covered in later episodes.</p>
+<p>Xarray is particularly tailored to working with NetCDF files. It reads and writes to NetCDF files using the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">open_dataset()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">open_dataarray()</span></code> functions and the <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_netcdf()</span></code> method. Explore these in the
+exercise below!</p>
+<div class="admonition-use-xarray-to-work-with-netcdf-files exercise important admonition" id="exercise-0">
+<p class="admonition-title">Use Xarray to work with NetCDF files</p>
+<p>This exercise is derived from <a class="reference external" href="https://xarray-contrib.github.io/xarray-tutorial/scipy-tutorial/01_datastructures_and_io.html#NetCDF">this tutorial</a>,
+which is distributed under an Apache-2.0 License.</p>
+<p>First create an Xarray dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="n">ds1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">data_vars</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>
+    <span class="p">},</span>
+    <span class="n">coords</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
+        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">ds2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+    <span class="n">data_vars</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+        <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="p">((</span><span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)),</span>
+    <span class="p">},</span>
+    <span class="n">coords</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>
+        <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Then write the datasets to disk using <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_netcdf()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds1</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;ds1.nc&quot;</span><span class="p">)</span>
+<span class="n">ds2</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;ds2.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can read an individual file from disk by:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s2">&quot;ds1.nc&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But you can also read both at once into an aggregated dataset object using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">open_mfdataset()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="s1">&#39;ds*.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Tasks:</p>
+<ul class="simple">
+<li><p>Explore the hierarchical structure of the <code class="docutils literal notranslate"><span class="pre">ds1</span></code> and <code class="docutils literal notranslate"><span class="pre">ds2</span></code> datasets in a Jupyter notebook by typing the
+variable names in a code cell and execute. Click the disk-looking objects on the right to expand the fields.</p></li>
+<li><p>Explore the <code class="docutils literal notranslate"><span class="pre">ds</span></code> dataset and compare its dimensions to the <code class="docutils literal notranslate"><span class="pre">ds1</span></code> and <code class="docutils literal notranslate"><span class="pre">ds2</span></code> datasets. Have the two
+datasets been merged?</p></li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+<section id="sharing-data">
+<h2>Sharing data<a class="headerlink" href="#sharing-data" title="Permalink to this headline"></a></h2>
+<p>The Open Science movement encourages researchers
+to share research output beyond the contents of a
+published academic article (and possibly supplementary information).</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/Open_Science_Principles.png"><img alt="../_images/Open_Science_Principles.png" src="../_images/Open_Science_Principles.png" style="width: 632.0px; height: 288.0px;" /></a>
+</figure>
+<section id="pros-and-cons-of-sharing-data-from-wikipedia">
+<h3>Pros and cons of sharing data (<a class="reference external" href="https://en.wikipedia.org/wiki/Open_science">from Wikipedia</a>)<a class="headerlink" href="#pros-and-cons-of-sharing-data-from-wikipedia" title="Permalink to this headline"></a></h3>
+<p>In favor:</p>
+<ul class="simple">
+<li><p>Open access publication of research reports and data allows for rigorous peer-review</p></li>
+<li><p>Science is publicly funded so all results of the research should be publicly available</p></li>
+<li><p>Open Science will make science more reproducible and transparent</p></li>
+<li><p>Open Science has more impact</p></li>
+<li><p>Open Science will help answer uniquely complex questions</p></li>
+</ul>
+<p>Against:</p>
+<ul class="simple">
+<li><p>Too much unsorted information overwhelms scientists</p></li>
+<li><p>Potential misuse</p></li>
+<li><p>The public will misunderstand science data</p></li>
+<li><p>Increasing the scale of science will make verification of any discovery more difficult</p></li>
+<li><p>Low-quality science</p></li>
+</ul>
+</section>
+<section id="fair-principles">
+<h3>FAIR principles<a class="headerlink" href="#fair-principles" title="Permalink to this headline"></a></h3>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/8-fair-principles.jpg"><img alt="../_images/8-fair-principles.jpg" src="../_images/8-fair-principles.jpg" style="width: 526.1999999999999px; height: 391.34999999999997px;" /></a>
+</figure>
+<p>(This image was created by <a class="reference external" href="http://www.scriberia.co.uk">Scriberia</a> for <a class="reference external" href="https://the-turing-way.netlify.com">The
+Turing Way</a> community and is used under a
+CC-BY licence. The image was obtained from
+<a class="reference external" href="https://zenodo.org/record/3332808">https://zenodo.org/record/3332808</a>)</p>
+<p>“FAIR” is the current buzzword for data management. You may be asked
+about it in, for example, making data management plans for grants:</p>
+<ul class="simple">
+<li><p>Findable</p>
+<ul>
+<li><p>Will anyone else know that your data exists?</p></li>
+<li><p>Solutions: put it in a standard repository, or at least a
+description of the data. Get a digital object identifier (DOI).</p></li>
+</ul>
+</li>
+<li><p>Accessible</p>
+<ul>
+<li><p>Once someone knows that the data exists, can they get it?</p></li>
+<li><p>Usually solved by being in a repository, but for non-open data,
+may require more procedures.</p></li>
+</ul>
+</li>
+<li><p>Interoperable</p>
+<ul>
+<li><p>Is your data in a format that can be used by others, like csv
+instead of PDF?</p></li>
+<li><p>Or better than csv. Example: <a class="reference external" href="https://5stardata.info/en/">5-star open data</a></p></li>
+</ul>
+</li>
+<li><p>Reusable</p>
+<ul>
+<li><p>Is there a license allowing others to re-use?</p></li>
+</ul>
+</li>
+</ul>
+<p>Even though this is usually referred to as “open data”, it means
+considering and making good decisions, even if non-open.</p>
+<p>FAIR principles are usually discussed in the context of data,
+but they apply also for research software.</p>
+<p>Note that FAIR principles do not require data/software to be open.</p>
+<div class="admonition-discuss-open-science discussion attention admonition" id="discussion-0">
+<p class="admonition-title">Discuss open science</p>
+<ul class="simple">
+<li><p>Do you share any other research outputs besides published articles and possibly source code?</p></li>
+<li><p>Discuss pros and cons of sharing research data.</p></li>
+</ul>
+</div>
+</section>
+<section id="services-for-sharing-and-collaborating-on-research-data">
+<h3>Services for sharing and collaborating on research data<a class="headerlink" href="#services-for-sharing-and-collaborating-on-research-data" title="Permalink to this headline"></a></h3>
+<p>To find a research data repository for your data, you can search on the
+<a class="reference external" href="https://www.re3data.org/">Registry of Research Data Repositories re3data</a>
+platform and filter by country, content type, discipline, etc.</p>
+<p><strong>International:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://zenodo.org/">Zenodo</a>: A general-purpose open access repository
+created by OpenAIRE and CERN. Integration with GitHub, allows
+researchers to upload files up to 50 GB.</p></li>
+<li><p><a class="reference external" href="https://figshare.com/">Figshare</a>: Online digital repository where researchers
+can preserve and share their research outputs (figures, datasets, images and videos).
+Users can make all of their research outputs available in a citable,
+shareable and discoverable manner.</p></li>
+<li><p><a class="reference external" href="https://eudat.eu">EUDAT</a>: European platform for researchers and practitioners from any research discipline to preserve, find, access, and process data in a trusted environment.</p></li>
+<li><p><a class="reference external" href="https://datadryad.org/">Dryad</a>: A general-purpose home for a wide diversity of datatypes,
+governed by a nonprofit membership organization.
+A curated resource that makes the data underlying scientific publications discoverable,
+freely reusable, and citable.</p></li>
+<li><p><a class="reference external" href="https://osf.io/">The Open Science Framework</a>: Gives free accounts for collaboration
+around files and other research artifacts. Each account can have up to 5 GB of files
+without any problem, and it remains private until you make it public.</p></li>
+</ul>
+<p><strong>Sweden:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://www.icos-sweden.se/">ICOS for climate data</a></p></li>
+<li><p><a class="reference external" href="https://bolin.su.se/data/">Bolin center climate / geodata</a></p></li>
+<li><p><a class="reference external" href="https://nbis.se/infrastructure">NBIS for life science, sequence –omics data</a></p></li>
+</ul>
+<div class="admonition-optional-get-a-doi-by-connecting-your-repository-to-zenodo exercise important admonition" id="exercise-1">
+<p class="admonition-title">(Optional) Get a DOI by connecting your repository to Zenodo</p>
+<p>Digital object identifiers (DOI) are the backbone of the academic
+reference and metrics system. In this exercise we will see how to
+make a GitHub repository citable by archiving it on the
+<a class="reference external" href="http://about.zenodo.org/">Zenodo</a> archiving service. Zenodo is a
+general-purpose open access repository created by OpenAIRE and CERN.</p>
+<ol class="arabic simple">
+<li><p>Sign in to Zenodo using your GitHub account. For this exercise, use the
+sandbox service: <a class="reference external" href="https://sandbox.zenodo.org/login/">https://sandbox.zenodo.org/login/</a>. This is a test version of the real Zenodo platform.</p></li>
+<li><p>Go to <a class="reference external" href="https://sandbox.zenodo.org/account/settings/github/">https://sandbox.zenodo.org/account/settings/github/</a>.</p></li>
+<li><p>Find the repository you wish to publish, and flip the switch to ON.</p></li>
+<li><p>Go to GitHub and create a <strong>release</strong>  by clicking the <cite>Create a new release</cite> on the
+right-hand side (a release is based on a Git tag, but is a higher-level GitHub feature).</p></li>
+<li><p>Creating a new release will trigger Zenodo into archiving your repository,
+and a DOI badge will be displayed next to your repository after a minute
+or two. You can include it in your GitHub README file: click the
+DOI badge and copy the relevant format (Markdown, RST, HTML).</p></li>
+</ol>
+</div>
+</section>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://fair-software.eu/">Five recommendations for fair software</a></p></li>
+<li><p><a class="reference external" href="https://github.com/alan-turing-institute/the-turing-way/">The Turing way</a></p></li>
+</ul>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>1</p></li>
+<li><p>2</p></li>
+<li><p>Consider sharing other research outputs than articles.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../motivation/" class="btn btn-neutral float-left" title="Motivation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../stack/" class="btn btn-neutral float-right" title="Python software stack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
