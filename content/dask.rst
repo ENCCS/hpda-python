@@ -765,8 +765,9 @@ Exercises
    We will first read data with Dask and Xarray. See 
    https://xarray.pydata.org/en/stable/dask.html#reading-and-writing-data for more details.
 
-   Note that depending on where you launched the Jupyter-lab, you may need to change the path to 
-   the data folder.
+   Note that the NetCDF files are here https://github.com/ENCCS/hpda-python/tree/main/content/data ,
+   you need to download them to your laptop first, then depending on where you put the files, 
+   you may need to adapt the path to the data folder in the Python code.
 
    .. code-block:: ipython
 
