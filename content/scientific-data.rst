@@ -327,6 +327,8 @@ platform and filter by country, content type, discipline, etc.
 - `ICOS for climate data <http://www.icos-sweden.se/>`__
 - `Bolin center climate / geodata <https://bolin.su.se/data/>`__
 - `NBIS for life science, sequence –omics data <https://nbis.se/infrastructure>`__
+- `DataGURU for environmental and climate data <https://dataguru.lu.se/>`__
+
 
 Exercises
 ---------
