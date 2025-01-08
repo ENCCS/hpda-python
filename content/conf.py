@@ -21,7 +21,7 @@ project = "HPDA-Python"
 copyright = "2022, ENCCS and individual contributors."
 author = "ENCCS and individual contributors."
 github_user = "ENCCS"
-github_repo_name = "HPDA-Python"
+github_repo_name = ""  # auto-detected from dirname if blank
 github_version = "main"
 conf_py_path = "/content/"  # with leading and trailing slash
 
@@ -44,7 +44,15 @@ extensions = [
 # jupyter_execute_notebooks = "off"
 # jupyter_execute_notebooks = "auto"   # *only* execute if at least one output is missing.
 # jupyter_execute_notebooks = "force"
-jupyter_execute_notebooks = "cache"
+nb_execution_mode = "cache"
+
+# https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
+myst_enable_extensions = [
+    "colon_fence",
+]
+
+# Settings for sphinx-copybutton
+copybutton_exclude = ".linenos, .gp"
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']
@@ -73,7 +81,7 @@ html_favicon = "img/favicon.ico"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 html_css_files = ["overrides.css"]
 
 # HTML context:
@@ -84,7 +92,7 @@ html_context = {
     "github_user": github_user,
     # Auto-detect directory name.  This can break, but
     # useful as a default.
-    "github_repo": github_repo_name or basename(dirname(realpath(__file__))),
+    "github_repo": github_repo_name or basename(dirname(dirname(realpath(__file__)))),
     "github_version": github_version,
     "conf_py_path": conf_py_path,
 }
@@ -120,17 +128,27 @@ class TypealongDirective(_BaseCRDirective):
     extra_classes = ["toggle-shown", "dropdown"]
 
 
-DIRECTIVES = [SignatureDirective, ParametersDirective, TypealongDirective]
+DIRECTIVES: list[type[_BaseCRDirective]] = [
+    SignatureDirective,
+    ParametersDirective,
+    TypealongDirective,
+]
 
 
 def setup(app):
     for obj in DIRECTIVES:
-        app.add_directive(obj.get_cssname(), obj)
+        app.add_directive(obj.cssname(), obj)
+
 
 import os
-if os.environ.get('GITHUB_REF', '') == 'refs/heads/main':
+
+if os.environ.get("GITHUB_REF", "") == "refs/heads/main":
     html_js_files = [
-        ('https://plausible.io/js/script.js', {"data-domain": "enccs.github.io/hpda-python", "defer": "\
-defer"}),
+        (
+            "https://plausible.io/js/script.js",
+            {
+                "data-domain": "enccs.github.io/hpda-python",
+                "defer": "defer",
+            },
+        ),
     ]
-        
