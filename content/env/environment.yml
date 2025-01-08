@@ -1,8 +1,6 @@
 name: pyhpda
 channels:
   - conda-forge
-  - defaults
-  - bioconda
 dependencies:
   - numpy
   - scipy
@@ -15,13 +13,13 @@ dependencies:
   - netcdf4 
   - matplotlib
   - dask
+  - mpi4py
   - graphviz
   - python-graphviz
   - ipywidgets
   - widgetsnbextension 
   - dask-jobqueue
   - dask-labextension   
-  - snakemake-minimal
   - xarray
   - jupyter
   - jupyterlab
