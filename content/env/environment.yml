@@ -14,6 +14,7 @@ dependencies:
   - matplotlib
   - dask
   - mpi4py
+  - scalene
   - graphviz
   - python-graphviz
   - ipywidgets
