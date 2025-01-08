@@ -62,13 +62,12 @@ and distributed computing.
    performance-boosting
    dask
 
-   
-
 
 .. toctree::
    :maxdepth: 1
    :caption: Optional material
 
+   setup-eurohpc
    pandas-extra
    GPU-computing
 
