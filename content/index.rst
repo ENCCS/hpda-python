@@ -70,6 +70,7 @@ and distributed computing.
    setup-eurohpc
    pandas-extra
    GPU-computing
+   parallel-computing_opt
 
 
 .. toctree::
