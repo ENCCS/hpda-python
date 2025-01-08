@@ -22,13 +22,13 @@ Make sure that conda is correctly installed:
 .. code-block:: console
 
    $ conda --version
-   $ # should give something like conda 24.11.2
+   conda 24.11.2
 
 With conda installed, install the required dependencies by running:
 
 .. code-block:: console
 
-   $ conda env create -f https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/env/environment.yml
+   $ conda env create --yes -f https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/env/environment.yml
 
 This will create a new environment ``pyhpda`` which you need to activate by:
 
@@ -42,6 +42,13 @@ This will create a new environment ``pyhpda`` which you need to activate by:
 .. .. code-block:: console
 ..
 ..    $ conda install -c conda-forge mpi4py
+
+Ensure that the Python version is fairly recent:
+
+.. code-block:: console
+
+   $ python --version
+   Python 3.12.8
 
 Finally, open Jupyter-Lab in your browser:
 
