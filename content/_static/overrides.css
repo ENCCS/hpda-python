@@ -26,7 +26,7 @@
     background: #DDDDDD;
 }
 .rst-content .instructor-note > .admonition-title {
-    background: #BBBBBB;
+    background: #595959;
 }
 .rst-content .instructor-note > .admonition-title::before {
     content: "";
@@ -37,7 +37,7 @@
     background: #EEEEBB;
 }
 .rst-content .callout > .admonition-title {
-    background: #BBCC33;
+    background: #595959;
 }
 
 /* questions */
@@ -45,15 +45,15 @@
     background: rgba(253, 219, 199, 0.3);
 }
 .rst-content .questions > .admonition-title {
-    background: rgba(204, 51, 17, 0.5);
+    background: #993360;
 }
 
 /* discussion */
 .rst-content .discussion {
-    background: rgba(231, 212, 232 0.3);
+    background: rgba(231, 212, 232, 0.3);
 }
 .rst-content .discussion > .admonition-title {
-    background: rgba(194, 165, 207, 0.5);
+    background: #714884;
 }
 
 /* signature */
@@ -61,7 +61,7 @@
     background: rgba(217, 240, 211, 0.3);
 }
 .rst-content .signature > .admonition-title {
-    background: rgba(172, 211, 158, 0.5);
+    background: #21634b;
 }
 .rst-content .signature > .admonition-title::before {
     content: "\01F527";
@@ -72,7 +72,7 @@
     background: rgba(217, 240, 211, 0.0);
 }
 .rst-content .parameters > .admonition-title {
-    background: rgba(172, 211, 158, 0.5);
+    background: #21634b;
 }
 .rst-content .parameters > .admonition-title::before {
     content: "\01F4BB";
@@ -83,7 +83,7 @@
     background: rgba(221, 221, 221, 0.3);
 }
 .rst-content .typealong > .admonition-title {
-    background: rgba(187, 187, 187, 1.0);
+    background: rgba(89, 89, 89, 1.0);
 }
 .rst-content .typealong > .admonition-title::before {
     content: "\02328";

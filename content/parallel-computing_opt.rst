@@ -1,5 +1,10 @@
-   # on some HPC systems you might need 'srun -n 4' instead of 'mpirun -np 4'
-   # on Vega, add this module for MPI libraries: ml add foss/2020b  
+More on parallel computing
+==========================
+
+.. note::
+
+   on some HPC systems you might need ``srun -n 4`` instead of ``mpirun -np 4``
+   on Vega, add this module for MPI libraries: ``ml add foss/2020b``
 
 .. callout:: MPI libraries
 
