@@ -1,5 +1,5 @@
-EuroHPC systems
----------------
+Installation in EuroHPC systems
+-------------------------------
 
 .. warning::
 

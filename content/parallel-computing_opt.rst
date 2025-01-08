@@ -1,3 +1,6 @@
+More on parallel computing
+==========================
+
 .. note::
 
    on some HPC systems you might need ``srun -n 4`` instead of ``mpirun -np 4``
