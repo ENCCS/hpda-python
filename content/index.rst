@@ -134,7 +134,7 @@ educational material, in particular:
 - `Python in High Performance Computing <https://github.com/csc-training/hpc-python>`__
 - `Code examples from High Performance Python <https://github.com/mynameisfiber/high_performance_python_2e>`__
 - `HPC Carpentry's Introduction to High-Performance Computing in Python <http://www.hpc-carpentry.org/hpc-python/>`__
-- `Python Data Science Handbook <https://jakevdp.github.io/PythonDataScienceHandbook/index.html/>`__
+- `Python Data Science Handbook <https://jakevdp.github.io/PythonDataScienceHandbook/index.html>`__
 - `An Introduction to Earth and Environmental Data Science <https://earth-env-data-science.github.io/>`__
 - `Parallel and GPU Programming in Python <https://github.com/vcodreanu/SURFsara-PTC-Python-Parallel-and-GPU-Programming/tree/master/gpu_programming/>`__
 - `Python in HPC <https://git.ichec.ie/training/studentresources/hpc-python/march-2021/>`__
@@ -147,7 +147,7 @@ educational material, in particular:
 - `Scipy Lecture Notes <https://scipy-lectures.org/>`__
 - `Machine Learning and Data Science Notebooks <https://sebastianraschka.com/notebooks/ml-notebooks/>`__
 - `Elegant SciPy <https://github.com/elegant-scipy/notebooks/>`__
-- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html/>`__
+- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html>`__
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
