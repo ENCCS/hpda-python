@@ -27,7 +27,7 @@ which stores either a 0 or 1.
 Normally a number of 8 bits are combined in a group to make a **byte**. 
 One byte (8 bits) can represent/hold at most :math:`2^8` distinct values.
 Organising bytes in different ways can represent 
-different types of information, i.e. data.
+different types of data.
 
 
 
@@ -35,7 +35,7 @@ Numerical Data
 ^^^^^^^^^^^^^^
 
 Different numerical data types (e.g. integer and floating-point numbers) 
-can be represented by bytes. 
+require different binary representation. 
 The more bytes we use for each value, the larger is the range or precision we get, 
 but more bytes require more memory. 
 
@@ -69,48 +69,164 @@ therefore encodes only 128 specified characters. Later it became common
 to use an 8-bit byte to store each character in memory, providing an extended ASCII. 
 
 As computers became more powerful and the need for including more characters 
-from other languages like Chinese, Greek and Arabic became more pressing, UTF-8 became
+from other alphabets, UTF-8 became
 the most common encoding. UTF-8 uses a minimum of one byte and up to four bytes per character. 
+
+Metadata
+^^^^^^^^
+
+Metadata consists of various information about the data, ranging from units to date/time, various 
+forms of identification, etc. While most scientific data is either numerical or text, the 
+associated metadata is tightly coupled to the field and different types of data may have 
+different metadata conventions. 
+In scientific use cases, such as simulation and experimental results, metadata are usually bundled
+together with the data they refer to.
+
+
+
+
+When it comes to data storage, there are many types of storage formats used 
+in scientific computing and data analysis. There isn't one data storage format that 
+works in all cases, so choose a file format that best suits your data.
 
 
 Data and storage format
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-In real scientific applications, data is complex and structured and usually contains both numerical and text data. 
-Here we list a few of the data and file storage formats commonly used.
+The expression "Data format" can refer to two different concepts:
 
-Tabular Data
-~~~~~~~~~~~~
+- The data structure, i.e. the topology of data in memory (e.g. a table, or 
+  multi-dimensional tensor, a grid...)
+- The file format, i.e. how the data is saved on disk.
+
+
+
+Tabular data structure
+~~~~~~~~~~~~~~~~~~~~~~
 
 A very common type of data is "tabular data". Tabular data is structured 
 into rows and columns. Each column usually has a name and a specific data type 
 while each row is a distinct sample which provides data according to each column (including missing values).
-The simplest and most common way to save tabular data is via the so-called CSV (comma-separated values) file.
+The simplest way to save tabular data is using the so-called *CSV* (comma-separated values) file.
 
-Gridded Data
-~~~~~~~~~~~~
+Gridded data structure
+~~~~~~~~~~~~~~~~~~~~~~
 
 Gridded data is another very common data type in which numerical data is normally saved 
-in a multi-dimensional rectangular grid. Most probably it is saved in one of the following formats:
+in a multi-dimensional grid (array). Common field-agnostic array formats include:
 
-- Hierarchical Data Format (HDF5) - Container for many arrays
-- Network Common Data Form (NetCDF) - Container for many arrays which conform to the NetCDF data model
-- Zarr - New cloud-optimized format for array storage
+- Hierarchical Data Format (HDF5) - Container for arrays with associated metadata
+- Network Common Data Form (NetCDF) - Nowadays based on HDF5, with a simpler API
+- Zarr - Cloud-optimised storage format that support parallel I/O and chunked arrays
 
-Metadata
-~~~~~~~~
 
-Metadata consists of various information about the data. 
-Different types of data may have different metadata conventions. 
+An overview of common data formats
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In Earth and Environmental science, there are widespread robust practices around metadata. 
-For NetCDF files, metadata can be embedded directly into the data files. 
-The most common metadata convention is Climate and Forecast (CF) Conventions, 
-commonly used with NetCDF data.
+.. list-table::
+   :header-rows: 1
 
-When it comes to data storage, there are many types of storage formats used 
-in scientific computing and data analysis. There isn't one data storage format that 
-works in all cases, so choose a file format that best suits your data.
+   * - | Name:
+     - | Human
+       | readable:
+     - | Space
+       | efficiency:
+     - | Arbitrary
+       | data:
+     - | Tidy
+       | data:
+     - | Array
+       | data:
+     - | Long term
+       | storage/sharing:
+
+   * - :ref:`Pickle <pickle>`
+     - ❌
+     - 🟨
+     - ✅
+     - 🟨
+     - 🟨
+     - ❌
+
+   * - :ref:`CSV <csv>`
+     - ✅
+     - ❌
+     - ❌
+     - ✅
+     - 🟨
+     - ✅
+
+   * - :ref:`Feather <feather>`
+     - ❌
+     - ✅
+     - ❌
+     - ✅
+     - ❌
+     - ❌
+
+   * - :ref:`Parquet <parquet>`
+     - ❌
+     - ✅
+     - 🟨
+     - ✅
+     - 🟨
+     - ✅
+
+   * - :ref:`npy <npy>`
+     - ❌
+     - 🟨
+     - ❌
+     - ❌
+     - ✅
+     - ❌
+
+   * - :ref:`HDF5 <hdf5>`
+     - ❌
+     - ✅
+     - ❌
+     - ❌
+     - ✅
+     - ✅
+
+   * - :ref:`NetCDF4 <netcdf4>`
+     - ❌
+     - ✅
+     - ❌
+     - ❌
+     - ✅
+     - ✅
+
+   * - :ref:`JSON <json>`
+     - ✅
+     - ❌
+     - 🟨
+     - ❌
+     - ❌
+     - ✅
+
+   * - :ref:`Excel <excel>`
+     - ❌
+     - ❌
+     - ❌
+     - 🟨
+     - ❌
+     - 🟨
+
+   * - :ref:`Graph formats <graph>`
+     - 🟨
+     - 🟨
+     - ❌
+     - ❌
+     - ❌
+     - ✅
+
+.. important::
+
+    - ✅ : Good
+    - 🟨 : Ok / depends on a case
+    - ❌ : Bad
+
+
 
 
 CSV (comma-separated values)
