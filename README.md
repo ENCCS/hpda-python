@@ -4,4 +4,4 @@ Teaching material for ENCCS workshop
 
 ## Credit and license
 
-- https://enccs.github.io/HPDA-Python/#credits
+- <https://enccs.github.io/hpda-python/#credits>
