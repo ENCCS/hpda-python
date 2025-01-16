@@ -381,8 +381,8 @@ FAIR principles
    :scale: 15 %
    :align: center
 
-(This image was created by `Scriberia <http://www.scriberia.co.uk>`__ for `The
-Turing Way <https://the-turing-way.netlify.com>`__ community and is used under a
+(This image was created by `Scriberia <https://www.scriberia.com>`__ for `The
+Turing Way <https://book.the-turing-way.org/>`__ community and is used under a
 CC-BY licence. The image was obtained from 
 https://zenodo.org/record/3332808)
 
@@ -453,9 +453,9 @@ platform and filter by country, content type, discipline, etc.
 
 **Sweden:**
 
-- `ICOS for climate data <http://www.icos-sweden.se/>`__
+- `ICOS for climate data <https://www.icos-sweden.se/>`__
 - `Bolin center climate / geodata <https://bolin.su.se/data/>`__
-- `NBIS for life science, sequence –omics data <https://nbis.se/infrastructure>`__
+- `NBIS for life science, sequence –omics data <https://nbis.se/>`__
 - `DataGURU for environmental and climate data <https://dataguru.lu.se/>`__
 
 
@@ -529,7 +529,7 @@ Exercises
    Digital object identifiers (DOI) are the backbone of the academic
    reference and metrics system. In this exercise you will see how to
    make a GitHub repository citable by archiving it on the
-   `Zenodo <http://about.zenodo.org/>`__ archiving service. Zenodo is a
+   `Zenodo <https://about.zenodo.org/>`__ archiving service. Zenodo is a
    general-purpose open access repository created by OpenAIRE and CERN.
    
    For this exercise you need to have a GitHub account and at least one public 
@@ -554,7 +554,7 @@ See also
 --------
 
 - `Five recommendations for fair software <https://fair-software.eu/>`__
-- `The Turing way <https://github.com/alan-turing-institute/the-turing-way/>`__
+- `The Turing way <https://github.com/the-turing-way/the-turing-way/>`__
 
 
 .. keypoints::
