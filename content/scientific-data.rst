@@ -220,13 +220,27 @@ An overview of common data formats
      - ❌
      - ✅
 
-.. important::
+.. important:: Legend
 
     - ✅ : Good
     - 🟨 : Ok / depends on a case
     - ❌ : Bad
 
+Some of these formats (e.g. JSON and CSV) are saved as text files (ASCII), thus they are 
+human-readable. This makes them easier to visually check them (e.g. for format errors) and 
+are supported out of the box by many tools. However, they tend to be slower during I/O and
+are not optimal for storage of floating point numbers, as they either require much larger 
+disk space or have to sacrifice precision to curb size. 
 
+Most storage-intensive data is saved in binary formats, which usually require specific libraries
+(and possibly specific versions) to be read and cannot be inspected visually. However, they tend to
+have much better performance during I/O and to save space when storing floating point numbers at full
+precision. Moreover, embedding metadata is easier.
+
+Most of the formats in the table are application- and language-agnostic. However, a couple are 
+Python-native: `Pickle <https://docs.python.org/3/library/pickle.html>`__, which is used to serialise
+any Python object, and `npy <https://numpy.org/devdocs/reference/generated/numpy.lib.format.html>`__,
+which is used to serialise Numpy arrays. Several Numpy arrays can be bundled in a single *npz* file.
 
 
 CSV (comma-separated values)
@@ -246,8 +260,8 @@ CSV (comma-separated values)
        - Ease of use: Ok for one or two dimensional data. Bad for anything higher.
    - **Best use cases:** Sharing data. Small data. Data that needs to be human-readable. 
 
-CSV is by far the most popular file format, as it is human-readable and easily shareable.
-However, it is not the best format to use when you're working with big data.
+CSV is a very popular file format, as it is human-readable and easily shareable.
+However, it is not the best format to use when working with big (numerical) data.
 
 .. important::
 
@@ -267,7 +281,7 @@ HDF5 (Hierarchical Data Format version 5)
 .. admonition:: Key features
 
    - **Type:** Binary format
-   - **Packages needed:** Pandas, PyTables, h5py
+   - **Packages needed:** Pandas, PyTables, h5py, pyvista for meshes, domain-specific...
    - **Space efficiency:** Good for numeric data.
    - **Good for sharing/archival:** Yes, if datasets are named well.
    - Tidy data:
@@ -300,14 +314,13 @@ NetCDF4 (Network Common Data Form version 4)
    - **Best use cases:** Working with big datasets in array data format. Especially useful if the dataset 
      contains spatial or temporal dimensions. Archiving or sharing those datasets.
 
-NetCDF4 is a data format that uses HDF5 as its file format, but it has standardized structure of 
-datasets and metadata related to these datasets. This makes it possible to be read from various different programs.
+NetCDF4 is a data format built on top of HDF5, but exposes a simpler API with a more standardised structure.
+NetCDF4 is one of the most used formats for storing large data from big simulations in physical sciences.
 
-NetCDF4 is by far the most common format for storing large data from big simulations in physical sciences.
-
-The advantage of NetCDF4 compared to HDF5 is that one can easily add additional metadata, e.g. spatial 
-dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
-As the format is standardized, many programs can use this metadata for visualization and further analysis.
+..  
+   The advantage of NetCDF4 compared to HDF5 is that one can easily add additional metadata, e.g. spatial 
+   dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
+   As the format is standardized, many programs can use this metadata for visualization and further analysis.
 
 There's more
 ~~~~~~~~~~~~
