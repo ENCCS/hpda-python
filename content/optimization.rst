@@ -1,8 +1,7 @@
 .. _performance:
 
-
-Profiling and Optimizing
-========================
+Benchmarking, profiling and optimizing
+======================================
 
 .. objectives::
 
@@ -15,59 +14,151 @@ Profiling and Optimizing
    - 30 min exercises
 
 
-Once your code is working reliably, you can start thinking of optimizing it.
 
-.. warning::
+.. keypoints::
 
-   Always measure the code before you start optimization. Don't base your optimization 
-   on theoretical consideration, otherwise you'll have surprises. 
+   - Once your code is working reliably, you can start thinking of optimizing it.
+
+   - Always measure the code before you start optimization. Don't base your optimization 
+     on assumptions, otherwise you'll have surprises. 
 
 
-Profilers 
----------
+Benchmarking
+------------
 
+Benchmarking is a method of doing performance analysis for either the end-to-end execution of a whole
+program or a part of a program.
 
 time
 ^^^^
 
-One of the easy way to profile the program is to use the time function:
+One of the easy way to benchmark is to use the time function:
 
 .. code-block:: python
+   :emphasize-lines: 1, 8, 12-13
 
    import time
+
+
+   def some_function():
+      ...
+
    # start the timer
-   start_time=time.time()
-   # here are the code you would like to profile
-   a = np.arange(1000)
-   a = a ** 2
-   # stop the timer
-   end_time=time.time()
+   start_time = time.time()
+   # here are the code you would like to measure
+   result = some_function()
+   # stop the 
+   end_time = time.time()
    print("Runtime: {:.4f} seconds".format(end_time - start_time))
-   # Runtime: 0.0001 seconds
 
 
-Timeit
+The IPython "magic" command
+:py:meth:`%time <ipython:IPython.core.magics.execution.ExecutionMagics.time>`
+can also be used to quickly print the same with less effort as follows:
+
+.. code-block:: ipython
+
+   %time some_function()
+
+
+timeit
 ^^^^^^
 
 If you're using a Jupyter notebook, the best choice will be to use 
-`%timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
+:py:mod:`timeit` module or the 
+IPython "magic" command
+:py:meth:`%timeit <ipython:IPython.core.magics.execution.ExecutionMagics.timeit>`
+to repeatedly time a small piece of code:
 
 .. code-block:: ipython
+   :emphasize-lines: 5
 
    import numpy as np
 
    a = np.arange(1000)
 
    %timeit a ** 2
-   # 1.4 µs ± 25.1 ns per loop 
 
-One can also use the cell magic ``%%timeit`` to benchmark a full cell.
+We will shortly see in an
+One can also use the cell magic 
+:py:meth:`%timeit <ipython:IPython.core.magics.execution.ExecutionMagics.timeit>`
+to benchmark a full cell containing a block of code.
 
-.. note::
+.. exercise::
 
-   For long running calls, using ``%time`` instead of ``%timeit``; it is
-   less precise but faster
+   Start with the following code::
 
+      import numpy as np
+
+
+      a = np.arange(1000)
+   
+      def square_sum(array):
+         return (a ** 2).sum()
+   
+   #. Run ``%time square_sum(a)`` a couple of times. Do you get the same result?
+   #. Run ``%timeit square_sum(a)`` a couple of times. Do you get the same result?
+
+
+.. solution::
+
+   1. Run ``%time square_sum(a)`` a couple of times.
+
+   .. code-block:: ipython
+
+      In [1]: import numpy as np
+         ...: 
+         ...: 
+         ...: a = np.arange(1000)
+         ...: 
+         ...: def square_sum(array):
+         ...:    return (a ** 2).sum()
+         ...: 
+
+      In [2]: %time square_sum(a)
+      CPU times: user 184 μs, sys: 5 μs, total: 189 μs
+      Wall time: 155 μs
+      Out[2]: np.int64(332833500)
+
+      In [3]: %time square_sum(a)
+      CPU times: user 74 μs, sys: 0 ns, total: 74 μs
+      Wall time: 77.7 μs
+      Out[3]: np.int64(332833500)
+
+   We get a rough estimate of how long it takes to execute a function for a given
+   input value. While useful, a few sample timings of the function ``square_sum()``,
+   does not represent a reproducible benchmark.
+   Subsequent measurements can result in different runtimes, due to the state of the
+   computer such as:
+
+   - what background processes are running,
+   - hyperthreading, 
+   - memory and cache usage,
+   - CPU's temperature,
+
+   and many more factors, also collectively known as *system jitter*.
+   
+   2. Run ``%timeit square_sum(a)`` a couple of times.
+
+   .. code-block:: ipython
+
+      In [4]: %timeit square_sum(a)
+      1.62 μs +/- 55.4 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+      In [5]: %timeit square_sum(a)
+      1.6 μs +/- 46.6 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+   By making several measurements, we manage to reduce jitter and the measurement is more
+   reliable
+
+   .. note::
+
+      For long running calls, using ``%time`` instead of ``%timeit``; it is
+      less precise but faster
+
+
+Profiling
+---------
 
 cProfile
 ^^^^^^^^

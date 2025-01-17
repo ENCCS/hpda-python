@@ -139,8 +139,8 @@ Several examples and formulations are inspired by other open source educational 
 - `Scipy Lecture Notes <https://scipy-lectures.org/>`__
 - `Machine Learning and Data Science Notebooks <https://sebastianraschka.com/notebooks/ml-notebooks/>`__
 - `Elegant SciPy <https://github.com/elegant-scipy/notebooks/>`__
-- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html>`__
-
+- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html/>`__
+- `Python performance workshop <https://enccs.github.io/python-perf/>`__
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
