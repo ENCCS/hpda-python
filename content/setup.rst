@@ -145,7 +145,7 @@ Login to LUMI cluster via terminal and then the commands below to check and acti
    /project/project_465001310/miniconda3/envs/pyhpda/bin/python
 
 
-Login to LUMI cluster via `web-interface <https://www.lumi.csc.fi/public/>`_ and then select ``Jupyter`` (not ``Jupyter for courses``) icon for an interactive session
+Login to LUMI cluster via `web-interface <https://www.lumi.csc.fi/public/>`_ and then select ``Jupyter`` (not ``Jupyter for courses``) icon for an interactive session, and provide the following values in the form to launch the jupyter lab app.
 
 - Project: `project_465001310`
 - Partition: `interactive`
