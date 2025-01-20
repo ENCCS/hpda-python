@@ -110,3 +110,28 @@ Some useful commands are listed below:
 - Submit the job: ``sbatch submit.sh``
 - Monitor your job: ``squeue --me``
 - Kill job: ``scancel <JOB_ID>``
+
+
+Using ``pyhpda`` programming environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We have installed the ``pyhpda`` programming environment on LUMI. You can follow instructions below to activate it.
+
+Login to LUMI cluster via terminal and then the commands below to check and activate the ``pyhpda`` environment.
+
+.. code-block:: console
+
+   $ /projappl/project_465001310/miniconda3/bin/conda init
+   $ source ~/.bashrc
+   $ which conda
+   
+   # output
+   /project/project_465001310/miniconda3/condabin/conda
+
+   $ conda activate pyhpda
+   $ which python
+   
+   # output
+   /project/project_465001310/miniconda3/envs/pyhpda/bin/python
+
+
