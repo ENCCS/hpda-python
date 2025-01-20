@@ -476,8 +476,8 @@ Exercises
 
       ds1 = xr.Dataset(
           data_vars={
-              "a": (("x", "y"), np.random.randn(4, 2)),
-              "b": (("z", "x"), np.random.randn(6, 4)),
+              "a": (["x", "y"], np.random.randn(4, 2)),
+              "b": (["z", "x"], np.random.randn(6, 4)),
           },
           coords={
               "x": np.arange(4),
@@ -487,8 +487,8 @@ Exercises
       )
       ds2 = xr.Dataset(
           data_vars={
-              "a": (("x", "y"), np.random.randn(7, 3)),
-              "b": (("z", "x"), np.random.randn(2, 7)),
+              "a": (["x", "y"], np.random.randn(7, 3)),
+              "b": (["z", "x"], np.random.randn(2, 7)),
           },
           coords={
               "x": np.arange(6, 13),
