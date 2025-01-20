@@ -159,12 +159,90 @@ to benchmark a full cell containing a block of code.
 
 Profiling
 ---------
+Profilers are applications which attach to the execution of the program, which in our case is done 
+by the CPython interpreter and analyze the time taken for different portions of the code.
+Profilers help to identify performance bottlenecks in the code by showing
 
+- wall-time (*or start to end time that the user observes),
+- CPU and GPU time, and
+- memory usage patterns
+
+in **function/method/line of code** level granularity.
+
+Deterministic profilers vs. sampling profilers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+
+   *Deterministic profilers* are also called *tracing profilers*.
+
+**Deterministic profilers** record every function call and event in the program,
+logging the exact sequence and duration of events.
+
+   👍 **Pros:**
+      - Provides detailed information on the program's execution.
+      - Deterministic: Captures exact call sequences and timings.
+   👎 **Cons:**
+      - Higher overhead, slowing down the program.
+      - Can generate larger amount of data.
+
+**Sampling profilers** periodically samples the program's state (where it is
+and how much memory is used), providing a statistical view of where time is
+spent.
+
+   👍 **Pros:**
+      - Lower overhead, as it doesn't track every event.
+      - Scales better with larger programs.
+
+   👎 **Cons:**
+      - Less precise, potentially missing infrequent or short calls.
+      - Provides an approximation rather than exact timing.
+
+
+.. discussion::
+
+   *Analogy*: Imagine we want to optimize the Stockholm Länstrafik (SL) metro system
+   We wish to detect bottlenecks in the system to improve the service and for this we have
+   asked few passengers to help us by tracking their journey.
+
+   - **Deterministic**:
+      We follow every train and passenger, recording every stop
+      and delay. When passengers enter and exit the train, we record the exact time
+      and location.
+   - **Sampling**:
+      Every 5 minutes the phone notifies the passenger to note
+      down their current location. We then use this information to estimate
+      the most crowded stations and trains.
+
+In addition to the above distinctions, some profilers can also 
+
+.. callout:: Examples of some profilers
+   :class: dropdown
+   
+   CPU profilers:
+
+   - `cProfile and profile <https://docs.python.org/3/library/profile.html>`__
+   - `line_profiler <https://kernprof.readthedocs.io/>`__
+   - `py-spy <https://github.com/benfred/py-spy>`__
+
+   Memory profilers:
+
+   - `tracemalloc <https://docs.python.org/3/library/tracemalloc.html>`__
+   - `memray <https://bloomberg.github.io/memray/index.html>`__
+
+   Both CPU and memory:
+
+   - `Scalene <https://github.com/plasma-umass/scalene>`__ (see optional course material on :ref:`scalene`)
+
+In the following sections, we will use :ref:`cProfile` and :ref:`line-profiler` to profile a Python program.
+cProfile is a deterministic (tracing) profiler built-in to the Python standard library
+and gives timings in function-level granularity.
+Line profiler is also deterministic and it provides timings in line-of-code granularity for few selected
+functions.
+
+.. _cProfile:
 cProfile
 ^^^^^^^^
-
-For more complex code, one can use the `built-in python profilers 
-<https://docs.python.org/3/library/profile.html>`_, ``cProfile`` or ``profile``.
 
 As a demo, let us consider the following code which simulates a random walk in one dimension
 (we can save it as ``walk.py`` or download from :download:`here <example/walk.py>`):
@@ -190,14 +268,14 @@ to a file with the ``-o`` flag and view it with `profile pstats module
 <https://docs.python.org/3/library/profile.html#module-pstats>`__
 or profile visualisation tools like 
 `Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
-or `profile-viewer <https://pypi.org/project/profile-viewer/>`__.
+or `tuna <https://pypi.org/project/tuna/>`__.
 
 .. note::
 
    Similar functionality is available in interactive IPython or Jupyter sessions with the 
    magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
 
-
+.. _line-profiler:
 Line-profiler
 ^^^^^^^^^^^^^
 
@@ -274,11 +352,14 @@ line-by-line breakdown of where time is being spent. For this information, we ca
       which is called thousands of times! Moving the module import to the top level saves 
       considerable time.
 
-
 Performance optimization 
 ------------------------
 
 Once we have identified the bottlenecks, we need to make the corresponding code go faster.
+The specific optimization can vary widely based on the computational load
+(how big or small the data is, and how frequently a function is executed)
+and particular problem at hand. Nevertheless, we present some common methods which can be
+handy to know.
 
 
 Algorithm optimization
