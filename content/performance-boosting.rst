@@ -1,6 +1,7 @@
 .. _boosting:
 
-Performance boosting
+
+Performance Boosting
 ====================
 
 .. objectives::
@@ -9,8 +10,8 @@ Performance boosting
 
 .. instructor-note::
 
-   - 20 min teaching/type-along
-   - 20 min exercises
+   - 30 min teaching/type-along
+   - 30 min exercises
 
 After benchmarking and optimizing your code, you can start thinking of accelerating 
 it further with libraries like Cython and Numba to pre-compile performance-critical functions.
@@ -26,7 +27,7 @@ are among the popular choices and both of them have good support for NumPy array
 
 
 Cython
-^^^^^^
+------
 
 Cython is a superset of Python that additionally supports calling C functions and 
 declaring C types on variables and class attributes. Under Cython, source code gets 
@@ -203,9 +204,8 @@ code.
 .. figure:: img/cython_annotate_2.png
 
 
-
 Numba
-^^^^^
+-----
 
 An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with `Numba <https://numba.pydata.org/>`__. 
 Numba allows you to write a pure Python function which can be JIT compiled to native machine instructions, 
@@ -578,7 +578,6 @@ Exercises
       In principle, such cases where typing does not allow optimizations could happen to Cython codes as well, 
       so one should always optimize where and when needed. 
 
-  
 
 .. keypoints::
 

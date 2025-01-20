@@ -1,6 +1,7 @@
 .. _scientific-data:
 
-Scientific data
+
+Scientific Data
 ===============
 
 .. objectives::
@@ -14,10 +15,12 @@ Scientific data
 .. instructor-note::
 
    - 30 min teaching/type-along
-   - 20 min exercises
+   - 30 min exercises
+
 
 Types of scientific data 
 ------------------------
+
 
 Bit and Byte
 ^^^^^^^^^^^^
@@ -28,7 +31,6 @@ Normally a number of 8 bits are combined in a group to make a **byte**.
 One byte (8 bits) can represent/hold at most :math:`2^8` distinct values.
 Organising bytes in different ways can represent 
 different types of data.
-
 
 
 Numerical Data
@@ -58,6 +60,7 @@ to make sure the inaccuracy is under control and does not lead to unsteady solut
 
    Have you used single precision in your modeling? Did you observe higher performance?
 
+
 Text Data
 ^^^^^^^^^
 
@@ -72,6 +75,7 @@ As computers became more powerful and the need for including more characters
 from other alphabets, UTF-8 became
 the most common encoding. UTF-8 uses a minimum of one byte and up to four bytes per character. 
 
+
 Metadata
 ^^^^^^^^
 
@@ -81,9 +85,6 @@ associated metadata is tightly coupled to the field and different types of data 
 different metadata conventions. 
 In scientific use cases, such as simulation and experimental results, metadata are usually bundled
 together with the data they refer to.
-
-
-
 
 When it comes to data storage, there are many types of storage formats used 
 in scientific computing and data analysis. There isn't one data storage format that 
@@ -100,7 +101,6 @@ The expression "Data format" can refer to two different concepts:
 - The file format, i.e. how the data is saved on disk.
 
 
-
 Tabular data structure
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -108,6 +108,7 @@ A very common type of data is "tabular data". Tabular data is structured
 into rows and columns. Each column usually has a name and a specific data type 
 while each row is a distinct sample which provides data according to each column (including missing values).
 The simplest way to save tabular data is using the so-called *CSV* (comma-separated values) file.
+
 
 Gridded data structure
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -275,6 +276,7 @@ However, it is not the best format to use when working with big (numerical) data
    4. Binary files, where floating point numbers are represented in their native binary format, 
       do not suffer from these problems.
 
+
 HDF5 (Hierarchical Data Format version 5)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -322,6 +324,7 @@ NetCDF4 is one of the most used formats for storing large data from big simulati
    dimensions (``x``, ``y``, ``z``) or timestamps (``t``) that tell where the grid-points are situated.
    As the format is standardized, many programs can use this metadata for visualization and further analysis.
 
+
 There's more
 ~~~~~~~~~~~~
 
@@ -331,6 +334,7 @@ There's more
   columnar storage format for use in data analysis systems
 - `npy <https://numpy.org/doc/stable/reference/routines.io.html>`__: numpy array format for 
   saving and loading numpy arrays.
+
 
 Xarray
 ~~~~~~
@@ -353,6 +357,7 @@ published academic article (and possibly supplementary information).
 .. figure:: img/Open_Science_Principles.png
    :scale: 80 %
    :align: center
+
 
 Pros and cons of sharing data (`from Wikipedia <https://en.wikipedia.org/wiki/Open_science>`__)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -424,7 +429,6 @@ Note that FAIR principles do not require data/software to be open.
    - Do you share any other research outputs besides published articles and possibly source code?
    - Is there any particular reason which stops you from sharing research data?
 
- 
 
 Services for sharing and collaborating on research data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -523,7 +527,6 @@ Exercises
    - Explore ``ds3`` and ``ds4`` datasets, and compare them with ``ds1``. What are the differences?
 
 
-
 .. exercise:: Get a DOI by connecting your repository to Zenodo
 
    Digital object identifiers (DOI) are the backbone of the academic
@@ -555,7 +558,6 @@ See also
 
 - `Five recommendations for fair software <https://fair-software.eu/>`__
 - `The Turing way <https://github.com/the-turing-way/the-turing-way/>`__
-
 
 .. keypoints::
 

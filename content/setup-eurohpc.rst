@@ -1,4 +1,4 @@
-Installation in EuroHPC systems
+Installation in EuroHPC Systems
 -------------------------------
 
 .. warning::
@@ -128,6 +128,7 @@ linked with the system's MPI libraries.
       
          $ ml add mpi4py/3.1.1-gompi-2020b      
 
+
 Running jobs
 ^^^^^^^^^^^^
 
@@ -169,6 +170,7 @@ The second column of the output contains the project ID.
       .. code-block:: console
       
          $ qsub -A DD-22-28 -q qexp -l walltime=01:00:00 -I
+
 
 Running Jupyter
 ^^^^^^^^^^^^^^^

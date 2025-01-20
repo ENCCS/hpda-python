@@ -21,13 +21,11 @@ processing on single workstations the focus shifts to profiling and optimising, 
 and distributed computing.
 
 
-
 .. prereq::
 
    - Basic experience with Python
    - Basic experience in working in a Linux-like terminal
    - Some prior experience in working with large or small datasets
-
 
 
 .. csv-table::
@@ -41,7 +39,6 @@ and distributed computing.
    90 min ; :doc:`optimization`
    90 min ; :doc:`performance-boosting`
    90 min ; :doc:`dask`
-
 
 
 .. toctree::
@@ -80,8 +77,8 @@ and distributed computing.
    guide
 
 
-
 .. _learner-personas:
+
 
 Who is the course for?
 ----------------------
@@ -89,8 +86,6 @@ Who is the course for?
 This material is for all researchers and engineers who work with large or small 
 datasets and who want to learn powerful tools and best practices for writing more 
 performant, parallelised, robust and reproducible data analysis pipelines.
-
-
 
 
 About the course
@@ -107,14 +102,11 @@ Instructors who wish to teach this lesson can refer to the :doc:`guide` for
 practical advice.
 
 
-
-
 See also
 --------
 
 Each lesson episode has a "See also" section at the end which lists 
 recommended further learning material.
-
 
 
 Credits
@@ -148,6 +140,7 @@ educational material, in particular:
 - `Machine Learning and Data Science Notebooks <https://sebastianraschka.com/notebooks/ml-notebooks/>`__
 - `Elegant SciPy <https://github.com/elegant-scipy/notebooks/>`__
 - `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html>`__
+
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -183,7 +176,6 @@ With the understanding that:
 - No warranties are given. The license may not give you all of the permissions
   necessary for your intended use. For example, other rights such as
   publicity, privacy, or moral rights may limit how you use the material.
-
 
 
 Software

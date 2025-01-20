@@ -1,4 +1,4 @@
-Installation and HPC access
+Installation and LUMI Access
 ===========================
 
 
@@ -10,7 +10,7 @@ Local installation
 ------------------
 
 
-Install Miniforge 
+Install miniforge 
 ^^^^^^^^^^^^^^^^^
 
 
@@ -113,7 +113,6 @@ You can also submit your job with a batch script ``submit.sh``:
    #SBATCH --time=1:00:00
 
    srun <some_command> 
-
 
 Some useful commands are listed below:
 

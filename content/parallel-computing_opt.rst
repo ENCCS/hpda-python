@@ -1,5 +1,5 @@
-More on parallel computing
-==========================
+Parallel Computing (II)
+=======================
 
 .. note::
 
@@ -18,7 +18,6 @@ More on parallel computing
    .. code-block:: console
 
       $ ml add foss/2021b
-
 
 
 Parallel workflows with Snakemake
@@ -212,7 +211,6 @@ use the :meth:`apply_sync` function to run the :meth:`mpi_example` function on t
 
 In an exercise below you can practice using ipyparallel for running an interactive MPI job in Jupyter 
 for the word-count project.
-
 
 
 .. exercise:: Measure Snakemake parallelisation efficiency

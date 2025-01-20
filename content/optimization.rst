@@ -1,6 +1,7 @@
 .. _performance:
 
-Profiling and optimizing
+
+Profiling and Optimizing
 ========================
 
 .. objectives::
@@ -10,12 +11,11 @@ Profiling and optimizing
 
 .. instructor-note::
 
-   - 20 min teaching/type-along
-   - 20 min exercises
+   - 30 min teaching/type-along
+   - 30 min exercises
 
 
 Once your code is working reliably, you can start thinking of optimizing it.
-
 
 .. warning::
 
@@ -25,6 +25,7 @@ Once your code is working reliably, you can start thinking of optimizing it.
 
 Profilers 
 ---------
+
 
 time
 ^^^^
@@ -85,7 +86,6 @@ We can profile it with ``cProfile``:
 
    $  python -m cProfile -s time walk.py
 
-
 The ``-s`` switch sorts the results by ``time``. Other options include 
 e.g. function name, cumulative time, etc. However, this will print a lot of 
 output which is difficult to read. 
@@ -93,7 +93,6 @@ output which is difficult to read.
 .. code-block:: console
 
    $ python -m cProfile -o walk.prof walk.py
-
 
 It's also possible to write the profile 
 to a file with the ``-o`` flag and view it with `profile pstats module 
@@ -184,10 +183,12 @@ line-by-line breakdown of where time is being spent. For this information, we ca
       which is called thousands of times! Moving the module import to the top level saves 
       considerable time.
 
+
 Performance optimization 
 ------------------------
 
 Once we have identified the bottlenecks, we need to make the corresponding code go faster.
+
 
 Algorithm optimization
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -202,7 +203,7 @@ most often, you can avoid inverting a matrix and use a less costly
 (and more numerically stable) operation. However, it can be as simple as 
 moving computation or memory allocation outside a loop, and this happens very often as well.
 
-Singular Value Decomposition
+Singular value decomposition
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `Singular Value Decomposition <https://en.wikipedia.org/wiki/Singular_value_decomposition>`_ (SVD)
@@ -245,7 +246,6 @@ The `Fibonacci sequence <https://en.wikipedia.org/wiki/Fibonacci_sequence>`_ is 
 
           F[0] &= 0 \text{ , } F[1] =1 \\
           F[n] &= F[n-1] + F[n-2] \text{ for } n > 1
-
 
 
 The most straightforward version of the Fibonacci sequence is the one using recursion. 
@@ -291,6 +291,7 @@ iterative version or the cached version.
 CPU usage optimization
 ^^^^^^^^^^^^^^^^^^^^^^
 
+
 Vectorization
 ~~~~~~~~~~~~~
 
@@ -302,7 +303,6 @@ In practice, a vectorised operation means reframing the code in a manner that
 completely avoids a loop and instead uses e.g. slicing to apply the operation
 on the whole array (slice) at one go. For example, the following code for 
 calculating the difference of neighbouring elements in an array:
-
 
 Consider the following code:
 
@@ -318,8 +318,7 @@ Consider the following code:
 
    # 564 µs ± 25.2 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-How can the ``for`` loop be vectorized? We need to use clever indexing to get rid of the 
-loop:
+How can the ``for`` loop be vectorized? We need to use clever indexing to get rid of the loop:
 
 .. code-block:: ipython
 
@@ -409,6 +408,7 @@ Adding the decorator in a function, Numba will figure out the rest for you:
 
 We will learn more about Numba in the next episode.
 
+
 Memory usage optimization
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -468,8 +468,6 @@ NumPy expands the arrays such that the operation becomes viable.
                  
 
          .. figure:: img/bc_2d_2.svg 
-
-
 
 
 Cache effects
@@ -560,10 +558,6 @@ Numexpr
   +,-,\*,/,\*\*, sin, cos, tan, exp, log, sqrt
 - Speedups in comparison to NumPy are typically between 0.95 and 4
 - Works best on arrays that do not fit in CPU cache
-
-
-
-
 
 
 .. keypoints::
