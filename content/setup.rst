@@ -154,7 +154,6 @@ Login to LUMI cluster via `web-interface <https://www.lumi.csc.fi/public/>`_ and
 - Working directory: `/projappl/project_465001310`
 - Python: `Custom`
 - Path to python: `/project/project_465001310/miniconda3/envs/pyhpda/bin/python`
-- Virtual environment path: `/project/project_465001310/miniconda3/envs/pyhpda/`
 - ``check`` for `Enable system installed packages on venv creation`
 - ``check`` for `Enable packages under ~/.local/lib on venv start`
 - Click the ``Launch`` button, wait for minutes until your requested session was created.
