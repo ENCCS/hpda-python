@@ -10,6 +10,10 @@ Local installation
 ------------------
 
 
+Install Miniforge 
+^^^^^^^^^^^^^^^^^
+
+
 If you already have a preferred way to manage Python versions and libraries, you can stick to that. If not, we recommend that you install Python3 and all libraries using `Miniforge <https://conda-forge.org/download/>`__, a free minimal installer for the package, dependency and environment manager `conda <https://docs.conda.io/en/latest/index.html>`__.
 
 Please follow the installation instructions on https://conda-forge.org/download/ to install Miniforge.
@@ -20,6 +24,11 @@ Make sure that conda is correctly installed:
 
    $ conda --version
    conda 24.11.2
+
+
+Install python programming environment on personal computer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 With conda installed, install the required dependencies by running:
 
@@ -52,10 +61,11 @@ Finally, open Jupyter-Lab in your browser:
 .. code-block:: console
 
    $ jupyter-lab
-   
+
+
 
 LUMI
-------------
+----
 
 
 Login to LUMI cluster
@@ -113,7 +123,7 @@ Some useful commands are listed below:
 
 
 Using ``pyhpda`` programming environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We have installed the ``pyhpda`` programming environment on LUMI. You can follow instructions below to activate it.
 
@@ -125,13 +135,28 @@ Login to LUMI cluster via terminal and then the commands below to check and acti
    $ source ~/.bashrc
    $ which conda
    
-   # output
+   # you should get output as shown below
    /project/project_465001310/miniconda3/condabin/conda
 
    $ conda activate pyhpda
    $ which python
    
-   # output
+   # you should get output as shown below
    /project/project_465001310/miniconda3/envs/pyhpda/bin/python
 
+
+Login to LUMI cluster via `web-interface <https://www.lumi.csc.fi/public/>`_ and then select ``Jupyter`` (not ``Jupyter for courses``) icon for an interactive session
+
+- Project: `project_465001310`
+- Partition: `interactive`
+- Number of CPU cores: `2`
+- Time: `4:00:00`
+- Working directory: `/projappl/project_465001310`
+- Python: `Custom`
+- Path to python: `/project/project_465001310/miniconda3/envs/pyhpda/bin/python`
+- Virtual environment path: `/project/project_465001310/miniconda3/envs/pyhpda/`
+- ``check`` for `Enable system installed packages on venv creation`
+- ``check`` for `Enable packages under ~/.local/lib on venv start`
+- Click the ``Launch`` button, wait for minutes until your requested session was created.
+- Click the ``Connect to Jupyter`` button, and then select the Python kernel ``Python 3 (venv)`` for the created Jupyter notebooks.
 
