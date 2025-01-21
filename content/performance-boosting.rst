@@ -35,16 +35,12 @@ Cons:
 These prons and cons of Python come from the intrinsic interpretion of Python code compared with the compilation of C code.
 
 .. figure:: img/c-python-compilation.png
-   :align: center
-   :scale: 100 %
-
-.. figure:: img/c-python-compilation.png
 
 
 Pre-compiling Python
 --------------------
 
-Pre-compiling Python refers to the process of converting Python source code (files with `.py` extension) into bytecode (files with `.pyc` extension) before execution.
+Pre-compiling Python refers to the process of converting Python source code (files with ``.py`` extension) into bytecode (files with ``.pyc`` extension) before execution.
 Bytecode is an intermediate, platform-independent representation of your Python code that the Python interpreter can execute more quickly than raw source code.
 
 `Cython <https://cython.org/>`_ and `Numba <https://numba.pydata.org/>`_ 
@@ -58,9 +54,8 @@ Cython is a superset of Python that additionally supports calling C functions an
 Under Cython, source code gets translated into optimized C/C++ code and compiled as Python extension modules. 
 
 Developers can run the ``cython`` command-line utility to produce a ``.c`` file from a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library which can then be directly imported in a Python program.
-There is, however, also an easy  way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic command. Herein, we restrict the discussion to the Jupyter-way.
+There is, however, also an easy way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic command. Herein, we restrict the discussion to the Jupyter-way.
 A full overview of Cython capabilities refers to the `documentation <https://cython.readthedocs.io/en/latest/>`_.
-
 
 .. demo:: Demo: Cython
 
@@ -70,7 +65,6 @@ A full overview of Cython capabilities refers to the `documentation <https://cyt
        \int^{b}_{a}(x^2-x)dx
 
    .. literalinclude:: example/integrate_python.py 
-
 
 We generate a dataframe and apply the :meth:`apply_integrate_f` function on its columns, timing the execution:
 
@@ -85,14 +79,13 @@ We generate a dataframe and apply the :meth:`apply_integrate_f` function on its 
    %timeit apply_integrate_f(df['a'], df['b'], df['N'])
    # 321 ms ± 10.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-
 In order to use Cython, we need to import the Cython extension:
 
 .. code-block:: ipython
 
    %load_ext cython
 
-As a first cythonization step we add the cython magic command with the 
+As a first cythonization step, we add the cython magic command with the 
 ``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
 The yellow coloring in the output shows us the amount of pure Python:
 
@@ -119,17 +112,15 @@ Now we can start adding data type annotation to the input variables:
 
    # this will not work
    #%timeit apply_integrate_f_cython_dtype0(df['a'], df['b'], df['N'])
-   # but rather 
+   
+   # this command works (see the description below)
    %timeit apply_integrate_f_cython_dtype0(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
    # 41.4 ms ± 1.27 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
-
 .. warning::
 
-   You can not pass a Series directly since the Cython definition is specific to an array. 
-   Instead using the ``Series.to_numpy()`` to get the underlying NumPy array
-   which works nicely with Cython.
-
+   You can not pass a Series directly since Cython definition is specific to an array. 
+   Instead we should use ``Series.to_numpy()`` to get the underlying NumPy array which works nicely with Cython.
 
    .. note:: 
 
@@ -162,10 +153,10 @@ Now we can start adding data type annotation to the input variables:
 	 np.complex128; cnp.complex128_t; double complex
 
 
-   Differeces between cimport and import statements
+   Differeces between ``import`` (for Python) and ``cimport`` (for Cython) statements
 
-      - **cimport** gives access to C functions or attributes 
       - **import** gives access to Python functions or attributes
+      - **cimport** gives access to C functions or attributes 
       - it is common to use the following, and Cython will internally handle this ambiguity
 
       .. code-block:: ipython
@@ -174,15 +165,14 @@ Now we can start adding data type annotation to the input variables:
          cimport numpy as np # access to NumPy C API
 
 
-Next step, we can start adding type annotation to the functions.
+Next step, we can start adding type annotation to functions.
 There are three ways of declaring functions: 
 
 - ``def`` - Python style:
 
 Called by Python or Cython code, and both input/output are Python objects.
-Declaring the types of arguments and local types (thus return values) can allow Cython 
-to generate optimized code which speeds up the execution. Once the types are declared, 
-a ``TypeError`` will be raised if the function is passed with the wrong types.
+Declaring the types of arguments and local types (thus return values) can allow Cython to generate optimized code which speeds up the execution.
+Once the types are declared, a ``TypeError`` will be raised if the function is passed with the wrong types.
 
 - ``cdef`` - C style:
 
@@ -194,10 +184,8 @@ since you are actually writing in C.
 
 - ``cpdef`` - Python/C mixed:
 
-``cpdef`` function combines both ``def`` and ``cdef``. Cython will generate a ``cdef`` 
-function for C types and a ``def`` function for Python types. In terms of performance, 
-``cpdef`` functions may be as fast as those using ``cdef`` and might be as slow as 
-``def`` declared functions.  
+``cpdef`` function combines both ``def`` and ``cdef``. Cython will generate a ``cdef`` function for C types and a ``def`` function for Python types.
+In terms of performance, ``cpdef`` functions may be as fast as those using ``cdef`` and might be as slow as ``def`` declared functions.  
 
 .. literalinclude:: example/integrate_cython_dtype1.py 
    :emphasize-lines: 6,9,16
