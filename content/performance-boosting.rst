@@ -579,6 +579,14 @@ Exercises
       so one should always optimize where and when needed. 
 
 
+See also
+--------
+
+- `Precompiling
+  <https://rules-python.readthedocs.io/en/0.35.0/precompiling.html>`_
+- `Cython and Numba <https://neurohackweek.github.io/cython-tutorial/>`_
+
+
 .. keypoints::
 
    - To squeeze the last drop of performance out of your Python code you can 
