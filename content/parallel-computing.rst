@@ -367,28 +367,6 @@ Examples
                  message = comm.recv(source=sender, tag=0)
                  print(message)      
 
-   .. tab:: isend/irecv
-
-      .. code-block:: python
-         :emphasize-lines: 10,15
-
-         from mpi4py import MPI
-
-         comm = MPI.COMM_WORLD
-         rank = comm.Get_rank()
-         n_ranks = comm.Get_size()
-
-         if rank != 0:
-             # All ranks other than 0 should send a message
-             message = "Hello World, I'm rank {:d}".format(rank)
-             req = comm.isend(message, dest=0, tag=0)
-             req.wait()
-         else:
-             # Rank 0 will receive each message and print them
-             for sender in range(1, n_ranks):
-                 req = comm.irecv(source=sender, tag=0)
-                 message = req.wait()
-                 print(message)          
    .. tab:: broadcast
 
       .. code-block:: python
