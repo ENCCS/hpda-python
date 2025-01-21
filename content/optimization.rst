@@ -342,9 +342,10 @@ line-by-line breakdown of where time is being spent. For this information, we ca
 
    - Based on the output, can you spot a mistake which is affecting performance?
 
-   .. solution:: Line-profiling output
+   .. callout:: Line-profiling output
+      :class: dropdown
 
-      .. code-block:: console
+      ::
 
          Wrote profile results to walk.py.lprof
          Timer unit: 1e-06 s
@@ -389,7 +390,8 @@ Exercise 2
 
 .. exercise::
 
-   Start by copying in the script :ref:`walk.py <walk-py-script>` .
+   Start by copying in the script :ref:`walk.py <walk-py-script>` into Jupyter or
+   :download:`download it <examples/walk.py>` and execute ``%run walk.py``
 
    #. Use ``%timeit`` magic command in Jupyter
       to benchmark the functions ``walk(1_000_000)`` and ``walk_vec(1_000_000)``.
@@ -401,12 +403,106 @@ Exercise 2
       
       to apply line-profiler on ``walk_vec`` function. What is the bottleneck?
    #. Modify the following lines to use to change how the ``steps`` array is initialized.
+      Execute it to re-initialize ``walk_vec``.
       Redo the above benchmark and profiling. Does it improve the performance?
 
       .. literalinclude:: example/walk.py
          :pyobject: walk_vec
          :emphasize-lines: 3-6
 
+.. solution::
+
+   #. Benchmarking ``walk`` and ``walk_vec``
+
+      .. code-block:: ipython
+
+         In [1]: %run walk.py
+
+         In [2]: %timeit walk(1_000_000)
+         246 ms ± 2.59 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+         In [3]: %timeit walk_vec(1_000_000)
+         397 ms ± 6.38 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      
+      Shows ``walk_vec``, although use vectorised operations, is slower.
+      Although it is not directly obvious why.
+
+   #. Profiling ``walk_vec``
+
+      .. code-block:: ipython
+         
+         In [4]: %load_ext line_profiler
+
+         In [5]: %lprun -f walk_vec walk_vec(1_000_000)
+      
+      illustrates how creating the ``steps`` array consumes more than 99% of the total time::
+         
+         Timer unit: 1e-09 s
+
+         Total time: 1.14911 s
+         File: /home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py
+         Function: walk_vec at line 36
+
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+            36                                           def walk_vec(n: int, dx: float = 1.0):
+            37                                               """The vectorized version of :func:`walk` using numpy functions."""
+            38         1       3374.0   3374.0      0.0      import random
+            39         1 1145604166.0    1e+09     99.7      steps = np.array(random.sample([1, -1], k=n, counts=[10 * n, 10 * n]))
+            40                                           
+            41                                               # steps = np.random.choice([1, -1], size=n)
+            42                                           
+            43         1    1085779.0    1e+06      0.1      dx_steps = dx * steps
+            44                                           
+            45                                               # set initial condition to zero
+            46         1       3666.0   3666.0      0.0      dx_steps[0] = 0
+            47                                               # use cumulative sum to replicate time evolution of position x
+            48         1    2408374.0    2e+06      0.2      xs = np.cumsum(dx_steps)
+            49                                           
+            50         1        507.0    507.0      0.0      return xs
+
+      This is because `random.sample` is part of the standard library and produces a list.
+
+   #. After modifying ``walk_vec`` function, we see it is much faster.
+
+      .. code-block:: ipython
+
+         In [7]: %ed walk.py
+         Editing... done. Executing edited code...
+
+         In [8]: %timeit walk(1_000_000)
+         259 ms ± 14.5 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+         In [9]: %timeit walk_vec(1_000_000)
+         6.49 ms ± 90.4 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+         In [10]: %lprun -f walk_vec walk_vec(1_000_000)
+
+      Line-profiler output::
+
+         Timer unit: 1e-09 s
+
+         Total time: 0.0078706 s
+         File: /home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py
+         Function: walk_vec at line 36
+
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+            36                                           def walk_vec(n: int, dx: float = 1.0):
+            37                                               """The vectorized version of :func:`walk` using numpy functions."""
+            38                                               # import random
+            39                                               # steps = np.array(random.sample([1, -1], k=n, counts=[10 * n, 10 * n]))
+            40                                           
+            41         1    4323251.0    4e+06     54.9      steps = np.random.choice([1, -1], size=n)
+            42                                           
+            43         1    1142060.0    1e+06     14.5      dx_steps = dx * steps
+            44                                           
+            45                                               # set initial condition to zero
+            46         1       2907.0   2907.0      0.0      dx_steps[0] = 0
+            47                                               # use cumulative sum to replicate time evolution of position x
+            48         1    2401730.0    2e+06     30.5      xs = np.cumsum(dx_steps)
+            49                                           
+            50         1        649.0    649.0      0.0      return xs
 
 Performance optimization 
 ------------------------
