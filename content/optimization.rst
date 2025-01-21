@@ -84,6 +84,9 @@ One can also use the cell magic
 :py:meth:`%timeit <ipython:IPython.core.magics.execution.ExecutionMagics.timeit>`
 to benchmark a full cell containing a block of code.
 
+Exercise 1
+----------
+
 .. exercise::
 
    Start with the following code::
@@ -275,6 +278,7 @@ cProfile
 As a demo, let us consider the following code which simulates a random walk in one dimension
 (we can save it as ``walk.py`` or download from :download:`here <example/walk.py>`):
 
+.. _walk-py-script:
 .. literalinclude:: example/walk.py
 
 We can profile it with ``cProfile``:
@@ -379,6 +383,30 @@ line-by-line breakdown of where time is being spent. For this information, we ca
       The mistake is that the ``random`` module is loaded inside the :meth:`step` function
       which is called thousands of times! Moving the module import to the top level saves 
       considerable time.
+
+Exercise 2
+----------
+
+.. exercise::
+
+   Start by copying in the script :ref:`walk.py <walk-py-script>` .
+
+   #. Use ``%timeit`` magic command in Jupyter
+      to benchmark the functions ``walk(1_000_000)`` and ``walk_vec(1_000_000)``.
+      Which is faster?
+   #. Use::
+
+         %load_ext line_profiler
+         %lprun -f walk_vec walk_vec(1_000_000)
+      
+      to apply line-profiler on ``walk_vec`` function. What is the bottleneck?
+   #. Modify the following lines to use to change how the ``steps`` array is initialized.
+      Redo the above benchmark and profiling. Does it improve the performance?
+
+      .. literalinclude:: example/walk.py
+         :pyobject: walk_vec
+         :emphasize-lines: 3-6
+
 
 Performance optimization 
 ------------------------

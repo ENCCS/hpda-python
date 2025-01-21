@@ -1,5 +1,5 @@
-More on benchmarking, profiling and optimizing
-==============================================
+Benchmarking, profiling and optimizing (II)
+===========================================
 
 Profiling
 ---------
@@ -127,6 +127,6 @@ Running
 
    $ scalene walk.py
 
-gives
+opens up the following web app:
 
 .. figure:: example/scalene_web.png
