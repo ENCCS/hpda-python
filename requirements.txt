@@ -176,6 +176,7 @@ sphinx==7.4.7
     #   myst-parser
     #   sphinx-autobuild
     #   sphinx-copybutton
+    #   sphinx-hoverxref
     #   sphinx-lesson
     #   sphinx-rtd-theme
     #   sphinx-rtd-theme-ext-color-contrast
@@ -186,6 +187,8 @@ sphinx-autobuild==2024.10.3
     # via sphinx-lesson
 sphinx-copybutton==0.5.2
     # via sphinx-lesson
+sphinx-hoverxref==1.4.2
+    # via -r requirements.in
 sphinx-lesson==0.8.19
     # via -r requirements.in
 sphinx-minipres==0.2.1
@@ -209,7 +212,9 @@ sphinxcontrib-devhelp==2.0.0
 sphinxcontrib-htmlhelp==2.1.0
     # via sphinx
 sphinxcontrib-jquery==4.1
-    # via sphinx-rtd-theme
+    # via
+    #   sphinx-hoverxref
+    #   sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-qthelp==2.0.0
