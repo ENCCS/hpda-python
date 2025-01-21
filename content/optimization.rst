@@ -580,16 +580,16 @@ iterative version or the cached version.
 
    .. tab:: Recursion
 
-	  .. code-block:: ipython
+	  .. code-block:: python
 
 	     def fib_rec(n):
 	         if n < 2:
 		     return n
-		 return fib_rec(n-2) + fib_rec(n-1)
+		 return fib_rec(n - 2) + fib_rec(n - 1)
 
    .. tab:: Iteration
 
-	  .. code-block:: ipython
+	  .. code-block:: python
 
 	     def fib_iter(n):
 		 a, b = 0, 1
@@ -599,17 +599,17 @@ iterative version or the cached version.
 
    .. tab:: Cached version
 
-	  .. code-block:: ipython
+      .. code-block:: python
 
-	     def fib_cached(n, cache={}):
-		 if n < 2:
-		     return n
-		 try:
-		     val = cache[n]
-		 except KeyError:
-		     val = fib_cached(n-2) + fib_cached(n-1)
-		     cache[n] = val
-		 return val
+            """Using a least recently used (LRU) cache."""
+            from functools import lru_cache
+
+            @lru_cache
+            def fib_cached(n):
+                if n < 2:
+                   return n
+ 
+                return fib_cached(n - 2) + fib_cached(n - 1)
 
 
 CPU usage optimization
