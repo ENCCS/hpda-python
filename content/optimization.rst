@@ -54,7 +54,7 @@ One of the easy way to benchmark is to use the time function:
 
 The IPython "magic" command
 :py:meth:`%time <ipython:IPython.core.magics.execution.ExecutionMagics.time>`
-can also be used to quickly print the same with less effort as follows:
+can also be used to make a similar benchmark with less effort as follows:
 
 .. code-block:: ipython
 
@@ -98,7 +98,14 @@ to benchmark a full cell containing a block of code.
    
    #. Run ``%time square_sum(a)`` a couple of times. Do you get the same result?
    #. Run ``%timeit square_sum(a)`` a couple of times. Do you get the same result?
+   #. (optional) execute the following benchmark and 
+      compare it with output of question number 1.
 
+   .. code-block:: ipython
+
+      from urllib.request import urlopen
+      
+      %time urlopen("https://raw.githubusercontent.com/ENCCS/hpda-python/refs/heads/main/content/data/tas1840.nc")
 
 .. solution::
 
@@ -143,10 +150,10 @@ to benchmark a full cell containing a block of code.
    .. code-block:: ipython
 
       In [4]: %timeit square_sum(a)
-      1.62 μs +/- 55.4 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+      1.62 μs ± 55.4 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
       In [5]: %timeit square_sum(a)
-      1.6 μs +/- 46.6 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+      1.6 μs ± 46.6 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
    By making several measurements, we manage to reduce jitter and the measurement is more
    reliable
@@ -155,6 +162,27 @@ to benchmark a full cell containing a block of code.
 
       For long running calls, using ``%time`` instead of ``%timeit``; it is
       less precise but faster
+   
+   3. (optional) Comparing benchmarks of ``%time square_sum(a)`` and 
+      ``%time urlopen(...)``.
+
+   .. code-block:: ipython
+
+      In [6]: from urllib.request import urlopen
+
+      In [7]: %time urlopen("https://raw.githubusercontent.com/ENCCS/hpda-python/refs/heads/main/content/data/tas1840.nc")
+      CPU times: user 4.66 ms, sys: 974 μs, total: 5.63 ms
+      Wall time: 21.4 ms
+      Out[7]: <http.client.HTTPResponse at 0x78ea989eed40>
+
+   In (1) we see that the *CPU time* and *Wall time* is comparable which indicates that the
+   operation is CPU bound.
+
+   However in (3) we clearly see that **CPU time is lower 
+   than wall-time**, from which we can deduce that it is not a CPU-bound operation.
+   In this particular case, the operation was I/O bound.
+   Some common I/O bound operations are network related, or due to
+   latency in filesystems or use of inefficient file storage formats.
 
 
 Profiling
