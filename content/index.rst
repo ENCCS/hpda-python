@@ -118,12 +118,12 @@ The lesson file structure and browsing layout is inspired by and derived from
 <http://opensource.org/licenses/mit-license.html>`__. We have copied and adapted
 most of their license text.
 
-Several examples and formulations are inspired by other open source 
-educational material, in particular:
+Several examples and formulations are inspired by other open source educational material, in particular:
 
 - `Python for Scientific Computing <https://aaltoscicomp.github.io/python-for-scicomp/>`__
 - `Data analysis workflows with R and Python <https://aaltoscicomp.github.io/data-analysis-workflows-course/>`__
 - `Python in High Performance Computing <https://github.com/csc-training/hpc-python>`__
+- `Using Python in an HPC environment <https://uppmax.github.io/HPC-python>`_
 - `Code examples from High Performance Python <https://github.com/mynameisfiber/high_performance_python_2e>`__
 - `HPC Carpentry's Introduction to High-Performance Computing in Python <http://www.hpc-carpentry.org/hpc-python/>`__
 - `Python Data Science Handbook <https://jakevdp.github.io/PythonDataScienceHandbook/index.html>`__
