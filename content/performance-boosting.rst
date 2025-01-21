@@ -155,8 +155,8 @@ Now we can start adding data type annotation to the input variables:
 
    Differeces between ``import`` (for Python) and ``cimport`` (for Cython) statements
 
-      - **import** gives access to Python functions or attributes
-      - **cimport** gives access to C functions or attributes 
+      - ``import`` gives access to Python functions or attributes
+      - ``cimport`` gives access to C functions or attributes 
       - it is common to use the following, and Cython will internally handle this ambiguity
 
       .. code-block:: ipython
@@ -170,9 +170,9 @@ There are three ways of declaring functions:
 
 - ``def`` - Python style:
 
-Called by Python or Cython code, and both input/output are Python objects.
-Declaring the types of arguments and local types (thus return values) can allow Cython to generate optimized code which speeds up the execution.
-Once the types are declared, a ``TypeError`` will be raised if the function is passed with the wrong types.
+   - Called by Python or Cython code, and both input/output are Python objects.
+   - Declaring argument types and local types (thus return values) can allow Cython to generate optimized code which speeds up the execution.
+   - Once types are declared, a ``TypeError`` will be raised if the function is passed with the wrong types.
 
 - ``cdef`` - C style:
 
