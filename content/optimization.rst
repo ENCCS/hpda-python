@@ -1,8 +1,7 @@
 .. _performance:
 
-
-Profiling and Optimizing
-========================
+Benchmarking, profiling and optimizing
+======================================
 
 .. objectives::
 
@@ -15,69 +14,271 @@ Profiling and Optimizing
    - 30 min exercises
 
 
-Once your code is working reliably, you can start thinking of optimizing it.
 
-.. warning::
+.. keypoints::
 
-   Always measure the code before you start optimization. Don't base your optimization 
-   on theoretical consideration, otherwise you'll have surprises. 
+   - Once your code is working reliably, you can start thinking of optimizing it.
+
+   - Always measure the code before you start optimization. Don't base your optimization 
+     on assumptions, otherwise you'll have surprises. 
 
 
-Profilers 
----------
+Benchmarking
+------------
 
+Benchmarking is a method of doing performance analysis for either the end-to-end execution of a whole
+program or a part of a program.
 
 time
 ^^^^
 
-One of the easy way to profile the program is to use the time function:
+One of the easy way to benchmark is to use the time function:
 
 .. code-block:: python
+   :emphasize-lines: 1, 8, 12-13
 
    import time
+
+
+   def some_function():
+      ...
+
    # start the timer
-   start_time=time.time()
-   # here are the code you would like to profile
-   a = np.arange(1000)
-   a = a ** 2
-   # stop the timer
-   end_time=time.time()
+   start_time = time.time()
+   # here are the code you would like to measure
+   result = some_function()
+   # stop the 
+   end_time = time.time()
    print("Runtime: {:.4f} seconds".format(end_time - start_time))
-   # Runtime: 0.0001 seconds
 
 
-Timeit
+The IPython "magic" command
+:py:meth:`%time <ipython:IPython.core.magics.execution.ExecutionMagics.time>`
+can also be used to make a similar benchmark with less effort as follows:
+
+.. code-block:: ipython
+
+   %time some_function()
+
+
+timeit
 ^^^^^^
 
 If you're using a Jupyter notebook, the best choice will be to use 
-`%timeit <https://docs.python.org/library/timeit.html>`__ to time a small piece of code:
+:py:mod:`timeit` module or the 
+IPython "magic" command
+:py:meth:`%timeit <ipython:IPython.core.magics.execution.ExecutionMagics.timeit>`
+to repeatedly time a small piece of code:
 
 .. code-block:: ipython
+   :emphasize-lines: 5
 
    import numpy as np
 
    a = np.arange(1000)
 
    %timeit a ** 2
-   # 1.4 µs ± 25.1 ns per loop 
 
-One can also use the cell magic ``%%timeit`` to benchmark a full cell.
+We will shortly see in an
+One can also use the cell magic 
+:py:meth:`%timeit <ipython:IPython.core.magics.execution.ExecutionMagics.timeit>`
+to benchmark a full cell containing a block of code.
+
+Exercise 1
+----------
+
+.. exercise::
+
+   Start with the following code::
+
+      import numpy as np
+
+
+      a = np.arange(1000)
+   
+      def square_sum(array):
+         return (a ** 2).sum()
+   
+   #. Run ``%time square_sum(a)`` a couple of times. Do you get the same result?
+   #. Run ``%timeit square_sum(a)`` a couple of times. Do you get the same result?
+   #. (optional) execute the following benchmark and 
+      compare it with output of question number 1.
+
+   .. code-block:: ipython
+
+      from urllib.request import urlopen
+      
+      %time urlopen("https://raw.githubusercontent.com/ENCCS/hpda-python/refs/heads/main/content/data/tas1840.nc")
+
+.. solution::
+
+   1. Run ``%time square_sum(a)`` a couple of times.
+
+   .. code-block:: ipython
+
+      In [1]: import numpy as np
+         ...: 
+         ...: 
+         ...: a = np.arange(1000)
+         ...: 
+         ...: def square_sum(array):
+         ...:    return (a ** 2).sum()
+         ...: 
+
+      In [2]: %time square_sum(a)
+      CPU times: user 184 μs, sys: 5 μs, total: 189 μs
+      Wall time: 155 μs
+      Out[2]: np.int64(332833500)
+
+      In [3]: %time square_sum(a)
+      CPU times: user 74 μs, sys: 0 ns, total: 74 μs
+      Wall time: 77.7 μs
+      Out[3]: np.int64(332833500)
+
+   We get a rough estimate of how long it takes to execute a function for a given
+   input value. While useful, a few sample timings of the function ``square_sum()``,
+   does not represent a reproducible benchmark.
+   Subsequent measurements can result in different runtimes, due to the state of the
+   computer such as:
+
+   - what background processes are running,
+   - hyperthreading, 
+   - memory and cache usage,
+   - CPU's temperature,
+
+   and many more factors, also collectively known as *system jitter*.
+   
+   2. Run ``%timeit square_sum(a)`` a couple of times.
+
+   .. code-block:: ipython
+
+      In [4]: %timeit square_sum(a)
+      1.62 μs ± 55.4 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+      In [5]: %timeit square_sum(a)
+      1.6 μs ± 46.6 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+
+   By making several measurements, we manage to reduce jitter and the measurement is more
+   reliable
+
+   .. note::
+
+      For long running calls, using ``%time`` instead of ``%timeit``; it is
+      less precise but faster
+   
+   3. (optional) Comparing benchmarks of ``%time square_sum(a)`` and 
+      ``%time urlopen(...)``.
+
+   .. code-block:: ipython
+
+      In [6]: from urllib.request import urlopen
+
+      In [7]: %time urlopen("https://raw.githubusercontent.com/ENCCS/hpda-python/refs/heads/main/content/data/tas1840.nc")
+      CPU times: user 4.66 ms, sys: 974 μs, total: 5.63 ms
+      Wall time: 21.4 ms
+      Out[7]: <http.client.HTTPResponse at 0x78ea989eed40>
+
+   In (1) we see that the *CPU time* and *Wall time* is comparable which indicates that the
+   operation is CPU bound.
+
+   However in (3) we clearly see that **CPU time is lower 
+   than wall-time**, from which we can deduce that it is not a CPU-bound operation.
+   In this particular case, the operation was I/O bound.
+   Some common I/O bound operations are network related, or due to
+   latency in filesystems or use of inefficient file storage formats.
+
+
+Profiling
+---------
+Profilers are applications which attach to the execution of the program, which in our case is done 
+by the CPython interpreter and analyze the time taken for different portions of the code.
+Profilers help to identify performance bottlenecks in the code by showing
+
+- wall-time (*or start to end time that the user observes),
+- CPU and GPU time, and
+- memory usage patterns
+
+in **function/method/line of code** level granularity.
+
+Deterministic profilers vs. sampling profilers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
 
-   For long running calls, using ``%time`` instead of ``%timeit``; it is
-   less precise but faster
+   *Deterministic profilers* are also called *tracing profilers*.
+
+**Deterministic profilers** record every function call and event in the program,
+logging the exact sequence and duration of events.
+
+   👍 **Pros:**
+      - Provides detailed information on the program's execution.
+      - Deterministic: Captures exact call sequences and timings.
+   👎 **Cons:**
+      - Higher overhead, slowing down the program.
+      - Can generate larger amount of data.
+
+**Sampling profilers** periodically samples the program's state (where it is
+and how much memory is used), providing a statistical view of where time is
+spent.
+
+   👍 **Pros:**
+      - Lower overhead, as it doesn't track every event.
+      - Scales better with larger programs.
+
+   👎 **Cons:**
+      - Less precise, potentially missing infrequent or short calls.
+      - Provides an approximation rather than exact timing.
 
 
+.. discussion::
+
+   *Analogy*: Imagine we want to optimize the Stockholm Länstrafik (SL) metro system
+   We wish to detect bottlenecks in the system to improve the service and for this we have
+   asked few passengers to help us by tracking their journey.
+
+   - **Deterministic**:
+      We follow every train and passenger, recording every stop
+      and delay. When passengers enter and exit the train, we record the exact time
+      and location.
+   - **Sampling**:
+      Every 5 minutes the phone notifies the passenger to note
+      down their current location. We then use this information to estimate
+      the most crowded stations and trains.
+
+In addition to the above distinctions, some profilers can also 
+
+.. callout:: Examples of some profilers
+   :class: dropdown
+   
+   CPU profilers:
+
+   - `cProfile and profile <https://docs.python.org/3/library/profile.html>`__
+   - `line_profiler <https://kernprof.readthedocs.io/>`__
+   - `py-spy <https://github.com/benfred/py-spy>`__
+
+   Memory profilers:
+
+   - `tracemalloc <https://docs.python.org/3/library/tracemalloc.html>`__
+   - `memray <https://bloomberg.github.io/memray/index.html>`__
+
+   Both CPU and memory:
+
+   - `Scalene <https://github.com/plasma-umass/scalene>`__ (see optional course material on :ref:`scalene`)
+
+In the following sections, we will use :ref:`cProfile` and :ref:`line-profiler` to profile a Python program.
+cProfile is a deterministic (tracing) profiler built-in to the Python standard library
+and gives timings in function-level granularity.
+Line profiler is also deterministic and it provides timings in line-of-code granularity for few selected
+functions.
+
+.. _cProfile:
 cProfile
 ^^^^^^^^
-
-For more complex code, one can use the `built-in python profilers 
-<https://docs.python.org/3/library/profile.html>`_, ``cProfile`` or ``profile``.
 
 As a demo, let us consider the following code which simulates a random walk in one dimension
 (we can save it as ``walk.py`` or download from :download:`here <example/walk.py>`):
 
+.. _walk-py-script:
 .. literalinclude:: example/walk.py
 
 We can profile it with ``cProfile``:
@@ -99,14 +300,14 @@ to a file with the ``-o`` flag and view it with `profile pstats module
 <https://docs.python.org/3/library/profile.html#module-pstats>`__
 or profile visualisation tools like 
 `Snakeviz <https://jiffyclub.github.io/snakeviz/>`__ 
-or `profile-viewer <https://pypi.org/project/profile-viewer/>`__.
+or `tuna <https://pypi.org/project/tuna/>`__.
 
 .. note::
 
    Similar functionality is available in interactive IPython or Jupyter sessions with the 
    magic command `%%prun <https://ipython.readthedocs.io/en/stable/interactive/magics.html>`__.
 
-
+.. _line-profiler:
 Line-profiler
 ^^^^^^^^^^^^^
 
@@ -141,9 +342,10 @@ line-by-line breakdown of where time is being spent. For this information, we ca
 
    - Based on the output, can you spot a mistake which is affecting performance?
 
-   .. solution:: Line-profiling output
+   .. callout:: Line-profiling output
+      :class: dropdown
 
-      .. code-block:: console
+      ::
 
          Wrote profile results to walk.py.lprof
          Timer unit: 1e-06 s
@@ -183,11 +385,133 @@ line-by-line breakdown of where time is being spent. For this information, we ca
       which is called thousands of times! Moving the module import to the top level saves 
       considerable time.
 
+Exercise 2
+----------
+
+.. exercise::
+
+   Start by copying in the script :ref:`walk.py <walk-py-script>` into Jupyter or
+   :download:`download it <examples/walk.py>` and execute ``%run walk.py``
+
+   #. Use ``%timeit`` magic command in Jupyter
+      to benchmark the functions ``walk(1_000_000)`` and ``walk_vec(1_000_000)``.
+      Which is faster?
+   #. Use::
+
+         %load_ext line_profiler
+         %lprun -f walk_vec walk_vec(1_000_000)
+      
+      to apply line-profiler on ``walk_vec`` function. What is the bottleneck?
+   #. Modify the following lines to use to change how the ``steps`` array is initialized.
+      Execute it to re-initialize ``walk_vec``.
+      Redo the above benchmark and profiling. Does it improve the performance?
+
+      .. literalinclude:: example/walk.py
+         :pyobject: walk_vec
+         :emphasize-lines: 3-6
+
+.. solution::
+
+   #. Benchmarking ``walk`` and ``walk_vec``
+
+      .. code-block:: ipython
+
+         In [1]: %run walk.py
+
+         In [2]: %timeit walk(1_000_000)
+         246 ms ± 2.59 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+         In [3]: %timeit walk_vec(1_000_000)
+         397 ms ± 6.38 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+      
+      Shows ``walk_vec``, although use vectorised operations, is slower.
+      Although it is not directly obvious why.
+
+   #. Profiling ``walk_vec``
+
+      .. code-block:: ipython
+         
+         In [4]: %load_ext line_profiler
+
+         In [5]: %lprun -f walk_vec walk_vec(1_000_000)
+      
+      illustrates how creating the ``steps`` array consumes more than 99% of the total time::
+         
+         Timer unit: 1e-09 s
+
+         Total time: 1.14911 s
+         File: /home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py
+         Function: walk_vec at line 36
+
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+            36                                           def walk_vec(n: int, dx: float = 1.0):
+            37                                               """The vectorized version of :func:`walk` using numpy functions."""
+            38         1       3374.0   3374.0      0.0      import random
+            39         1 1145604166.0    1e+09     99.7      steps = np.array(random.sample([1, -1], k=n, counts=[10 * n, 10 * n]))
+            40                                           
+            41                                               # steps = np.random.choice([1, -1], size=n)
+            42                                           
+            43         1    1085779.0    1e+06      0.1      dx_steps = dx * steps
+            44                                           
+            45                                               # set initial condition to zero
+            46         1       3666.0   3666.0      0.0      dx_steps[0] = 0
+            47                                               # use cumulative sum to replicate time evolution of position x
+            48         1    2408374.0    2e+06      0.2      xs = np.cumsum(dx_steps)
+            49                                           
+            50         1        507.0    507.0      0.0      return xs
+
+      This is because `random.sample` is part of the standard library and produces a list.
+
+   #. After modifying ``walk_vec`` function, we see it is much faster.
+
+      .. code-block:: ipython
+
+         In [7]: %ed walk.py
+         Editing... done. Executing edited code...
+
+         In [8]: %timeit walk(1_000_000)
+         259 ms ± 14.5 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+         In [9]: %timeit walk_vec(1_000_000)
+         6.49 ms ± 90.4 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+
+         In [10]: %lprun -f walk_vec walk_vec(1_000_000)
+
+      Line-profiler output::
+
+         Timer unit: 1e-09 s
+
+         Total time: 0.0078706 s
+         File: /home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py
+         Function: walk_vec at line 36
+
+         Line #      Hits         Time  Per Hit   % Time  Line Contents
+         ==============================================================
+            36                                           def walk_vec(n: int, dx: float = 1.0):
+            37                                               """The vectorized version of :func:`walk` using numpy functions."""
+            38                                               # import random
+            39                                               # steps = np.array(random.sample([1, -1], k=n, counts=[10 * n, 10 * n]))
+            40                                           
+            41         1    4323251.0    4e+06     54.9      steps = np.random.choice([1, -1], size=n)
+            42                                           
+            43         1    1142060.0    1e+06     14.5      dx_steps = dx * steps
+            44                                           
+            45                                               # set initial condition to zero
+            46         1       2907.0   2907.0      0.0      dx_steps[0] = 0
+            47                                               # use cumulative sum to replicate time evolution of position x
+            48         1    2401730.0    2e+06     30.5      xs = np.cumsum(dx_steps)
+            49                                           
+            50         1        649.0    649.0      0.0      return xs
 
 Performance optimization 
 ------------------------
 
 Once we have identified the bottlenecks, we need to make the corresponding code go faster.
+The specific optimization can vary widely based on the computational load
+(how big or small the data is, and how frequently a function is executed)
+and particular problem at hand. Nevertheless, we present some common methods which can be
+handy to know.
 
 
 Algorithm optimization

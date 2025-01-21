@@ -37,6 +37,7 @@ extensions = [
     # remove once sphinx_rtd_theme updated for contrast and accessibility:
     "sphinx_rtd_theme_ext_color_contrast",
     "sphinx.ext.todo",
+    "IPython.sphinxext.ipython_console_highlighting",
 ]
 
 # Settings for myst_nb:
@@ -101,16 +102,31 @@ html_context = {
 # :py:mod:`multiprocessing` to link straight to the Python docs of that module.
 # List all available references:
 #   python -msphinx.ext.intersphinx https://docs.python.org/3/objects.inv
-# extensions.append('sphinx.ext.intersphinx')
-# intersphinx_mapping = {
-#    #'python': ('https://docs.python.org/3', None),
+extensions.append('sphinx.ext.intersphinx')
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
 #    #'sphinx': ('https://www.sphinx-doc.org/', None),
-#    #'numpy': ('https://numpy.org/doc/stable/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
 #    #'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
 #    #'pandas': ('https://pandas.pydata.org/docs/', None),
 #    #'matplotlib': ('https://matplotlib.org/', None),
 #    'seaborn': ('https://seaborn.pydata.org/', None),
-# }
+    'ipython': ('https://ipython.readthedocs.io/en/stable/', None),
+}
+
+# sphinx-hoverxref
+extensions.append("hoverxref.extension")
+hoverxref_auto_ref = True
+hoverxref_domains = ["py"]
+hoverxref_role_types = {
+    'hoverxref': 'modal',
+    'ref': 'modal',  # for hoverxref_auto_ref config
+    'func': 'modal',
+    'meth': 'modal',
+    'mod': 'tooltip',  # for Python Sphinx Domain
+    'class': 'tooltip',  # for Python Sphinx Domain
+}
+
 
 # add few new directives
 from sphinx_lesson.directives import _BaseCRDirective

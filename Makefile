@@ -22,3 +22,12 @@ help:
 # Live reload site documents for local development
 livehtml:
 	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+INTERSPHINX_TARGETS := \
+	intersphinx-python \
+	intersphinx-numpy \
+	intersphinx-ipython
+
+.PHONY: $(INTERSPHINX_TARGETS)
+$(INTERSPHINX_TARGETS): intersphinx-%:
+	cd content && python3 ls_intersphinx_targets.py $(subst intersphinx-,,$@) | less

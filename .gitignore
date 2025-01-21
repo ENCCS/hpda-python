@@ -3,7 +3,9 @@
 /venv*
 .jupyter_cache
 jupyter_execute
+__pycache__
 
 # pixi environments
 .pixi
 *.egg-info
+_ipython-input*-profile

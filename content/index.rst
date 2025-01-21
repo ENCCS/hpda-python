@@ -68,6 +68,7 @@ and distributed computing.
    pandas-extra
    GPU-computing
    parallel-computing_opt
+   optimization_opt
 
 
 .. toctree::
@@ -136,11 +137,11 @@ Several examples and formulations are inspired by other open source educational 
 - `Python for Data Analysis <https://github.com/wesm/pydata-book/>`__
 - `GTC2017-numba <https://github.com/ContinuumIO/gtc2017-numba/>`__
 - `IPython Cookbook <https://ipython-books.github.io/>`__
-- `Scipy Lecture Notes <https://scipy-lectures.org/>`__
+- `Scientific Python Lectures <https://lectures.scientific-python.org/>`__ (*previously known as, Scipy Lecture Notes*)
 - `Machine Learning and Data Science Notebooks <https://sebastianraschka.com/notebooks/ml-notebooks/>`__
 - `Elegant SciPy <https://github.com/elegant-scipy/notebooks/>`__
-- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html>`__
-
+- `A Comprehensive Guide to NumPy Data Types <https://axil.github.io/a-comprehensive-guide-to-numpy-data-types.html/>`__
+- `Python performance workshop <https://enccs.github.io/python-perf/>`__
 
 Instructional Material
 ^^^^^^^^^^^^^^^^^^^^^^
