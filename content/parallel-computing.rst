@@ -429,10 +429,6 @@ Examples
          recvbuf = comm.scatter(sendbuf, root=0)
          print(f"rank {rank} received message: {recvbuf}")
 
-   MPI excels for problems which can be divided up into some sort of subdomains and 
-   communication is required between the subdomains between e.g. timesteps or iterations.
-   The word-count problem is simpler than that and MPI is somewhat overkill, but in an exercise 
-   below you will learn to use point-to-point communication to parallelize it.
 
 In addition to the lower-case methods :meth:`send`, :meth:`recv`, :meth:`broadcast` etc., there 
 are also *upper-case* methods :meth:`Send`, :meth:`Recv`, :meth:`Broadcast`. These work with 
