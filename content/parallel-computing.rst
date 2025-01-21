@@ -116,9 +116,9 @@ by the GIL, so they typically support actual multihreading during the execution.
 It might be a good idea to use multiple threads during calculations 
 like matrix operations or frequency analysis.
 
-Depending on configuration, NumPy will often use multiple threads by default, 
-but we can use the environment variable ``OMP_NUM_THREADS`` to set the number 
-of threads manually in a Unix-like enviroment:
+Depending on the configuration, NumPy will often use multiple threads by default, 
+and one can use the environment variable ``OMP_NUM_THREADS`` to set the number 
+of threads manually by executing the following command in a terminal:
 
 .. code-block:: console
 
