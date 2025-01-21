@@ -23,9 +23,7 @@ Parallel Computing
 The performance of a single CPU core has stagnated over the last ten years
 and most of the speed-up in modern CPUs is coming from using multiple
 CPU cores, i.e. parallel processing. Parallel processing is normally based
-either on multiple threads or multiple processes. 
-
-There are two main models of parallel computing:
+either on multiple threads or multiple processes: 
 
 - **Shared memory parallelism (multithreading):** 
  
