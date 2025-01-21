@@ -13,32 +13,53 @@ Performance Boosting
    - 30 min teaching/type-along
    - 30 min exercises
 
-After benchmarking and optimizing your code, you can start thinking of accelerating 
-it further with libraries like Cython and Numba to pre-compile performance-critical functions.
+
+Python: An interpreted language
+-------------------------------
+
+Python is an interpreted language, meaning the Python interpreter reads and executes your code line by line, directly translating it into actions without generating a separate executable file in advance.
+
+Pros:
+
+- dynamic typing (no need to explicitly declare variable types)
+- rapid prototyping (no write, compile, execute cycle)
+- cross-platform (assuming interpreters exist for each platform)
+- automatic memory management (no need to preallocate or deallocate memory as Python uses ``reference counting`` and ``garbage collection`` to handle memory allocation)
+
+Cons:
+
+- less secure and debuggable (code is exposed and vulnerable to modification or attack by malicious users or hackers)
+- slower execution (python interpreter translates source code line-by-line into intermediate code during runtime, which adds an extra layer of overhead and complexity)
+- resource-intensive (interpreted languages consume more memory and CPU power than compiled languages)
+
+These prons and cons of Python come from the intrinsic interpretion of Python code compared with the compilation of C code.
+
+.. figure:: img/c-python-compilation.png
+   :align: center
+   :scale: 100 %
+
+.. figure:: img/c-python-compilation.png
 
 
 Pre-compiling Python
 --------------------
 
-For many (or most) use cases, using NumPy or Pandas is sufficient. However, in some computationally heavy applications, 
-it is possible to improve the performance by pre-compiling expensive functions.
-`Cython <https://cython.org/>`__ and `Numba <https://numba.pydata.org/>`__ 
+Pre-compiling Python refers to the process of converting Python source code (files with `.py` extension) into bytecode (files with `.pyc` extension) before execution.
+Bytecode is an intermediate, platform-independent representation of your Python code that the Python interpreter can execute more quickly than raw source code.
+
+`Cython <https://cython.org/>`_ and `Numba <https://numba.pydata.org/>`_ 
 are among the popular choices and both of them have good support for NumPy arrays. 
 
 
 Cython
 ------
 
-Cython is a superset of Python that additionally supports calling C functions and 
-declaring C types on variables and class attributes. Under Cython, source code gets 
-translated into optimized C/C++ code and compiled as Python extension modules. 
+Cython is a superset of Python that additionally supports calling C functions and  declaring C types on variables and class attributes.
+Under Cython, source code gets translated into optimized C/C++ code and compiled as Python extension modules. 
 
-Developers can run the ``cython`` command-line utility to produce a ``.c`` file from 
-a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library 
-which can then be directly imported in a Python program. There is, however, also an easy 
-way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic 
-command. We will restrict the discussion here to the Jupyter-way. For a full overview 
-of the capabilities refer to the `documentation <https://cython.readthedocs.io/en/latest/>`__.
+Developers can run the ``cython`` command-line utility to produce a ``.c`` file from a ``.py`` file which needs to be compiled with a C compiler to an ``.so`` library which can then be directly imported in a Python program.
+There is, however, also an easy  way to use Cython directly from Jupyter notebooks through the ``%%cython`` magic command. Herein, we restrict the discussion to the Jupyter-way.
+A full overview of Cython capabilities refers to the `documentation <https://cython.readthedocs.io/en/latest/>`_.
 
 
 .. demo:: Demo: Cython
@@ -47,7 +68,6 @@ of the capabilities refer to the `documentation <https://cython.readthedocs.io/e
 
    .. math:: 
        \int^{b}_{a}(x^2-x)dx
-
 
    .. literalinclude:: example/integrate_python.py 
 
