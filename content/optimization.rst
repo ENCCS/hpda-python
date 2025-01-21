@@ -580,16 +580,16 @@ iterative version or the cached version.
 
    .. tab:: Recursion
 
-	  .. code-block:: ipython
+	  .. code-block:: python
 
 	     def fib_rec(n):
 	         if n < 2:
 		     return n
-		 return fib_rec(n-2) + fib_rec(n-1)
+		 return fib_rec(n - 2) + fib_rec(n - 1)
 
    .. tab:: Iteration
 
-	  .. code-block:: ipython
+	  .. code-block:: python
 
 	     def fib_iter(n):
 		 a, b = 0, 1
@@ -599,17 +599,17 @@ iterative version or the cached version.
 
    .. tab:: Cached version
 
-	  .. code-block:: ipython
+      .. code-block:: python
 
-	     def fib_cached(n, cache={}):
-		 if n < 2:
-		     return n
-		 try:
-		     val = cache[n]
-		 except KeyError:
-		     val = fib_cached(n-2) + fib_cached(n-1)
-		     cache[n] = val
-		 return val
+            """Using a least recently used (LRU) cache."""
+            from functools import lru_cache
+
+            @lru_cache
+            def fib_cached(n):
+                if n < 2:
+                   return n
+ 
+                return fib_cached(n - 2) + fib_cached(n - 1)
 
 
 CPU usage optimization
@@ -673,7 +673,7 @@ If we pass an array we get an error
    
 .. code-block:: python
 
-   x = np.ones(10000, dtype=np.int8)
+   x = np.ones(10_000, dtype=np.int8)
    f(x,x)
    
    # Traceback (most recent call last):
@@ -697,8 +697,8 @@ NumPy array or a tuple of NumPy arrays:
 
 .. code-block:: ipython
 
-   import numpy as np
    import math
+   import numpy as np
 
    def f(x, y):
        return math.pow(x,3.0) + 4*math.sin(y) 
@@ -706,7 +706,7 @@ NumPy array or a tuple of NumPy arrays:
    f_numpy = np.vectorize(f)
 
    # benchmark
-   x = np.ones(10000, dtype=np.int8)
+   x = np.ones(10_000, dtype=np.int8)
    %timeit f_numpy(x,x)
    # 4.84 ms ± 75.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
@@ -716,8 +716,9 @@ Adding the decorator in a function, Numba will figure out the rest for you:
 
 .. code-block:: ipython
 
-   import numba
    import math
+   import numba
+   import numpy as np
 
    def f(x, y):
        return math.pow(x,3.0) + 4*math.sin(y) 
@@ -725,7 +726,7 @@ Adding the decorator in a function, Numba will figure out the rest for you:
    f_numba = numba.vectorize(f)
 
    # benchmark
-   x = np.ones(10000, dtype=np.int8)
+   x = np.ones(10_000, dtype=np.int8)
    %timeit f_numba(x,x)
 
    # 89.2 µs ± 1.74 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
@@ -803,7 +804,7 @@ other things that **smaller strides are faster**:
 
 .. code-block:: python
 
-   c = np.zeros((10000, 10000), order='C')
+   c = np.zeros((10_000, 10_000), order='C')
 
    %timeit c.sum(axis=0)
    # 1 loops, best of 3: 3.89 s per loop
@@ -852,7 +853,7 @@ Temporary arrays
 .. code-block:: python
 
    import numpy as np
-   M = 10000
+   M = 10_000
    X = np.random.random((M, 3))
    D = np.sqrt(((X[:, np.newaxis, :] - X) ** 2).sum(axis=-1))
 
@@ -864,14 +865,17 @@ Numexpr
   also into suboptimal performance
     
     - Effectively, one carries out multiple *for* loops in the NumPy C-code
+    - Memory gets allocated for intermediate results
 
 - Numexpr package provides fast evaluation of array expressions
 
 .. code-block:: ipython
 
+   import numpy as np
    import numexpr as ne
-   x = np.random.random((10000000, 1))
-   y = np.random.random((10000000, 1))
+
+   x = np.random.random((10_000_000, 1))
+   y = np.random.random((10_000_000, 1))
    %timeit y = ((.25*x + .75)*x - 1.5)*x - 2
    %timeit y = ne.evaluate("((.25*x + .75)*x - 1.5)*x - 2")
 
