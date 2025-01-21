@@ -1,6 +1,7 @@
 .. _parallel-computing:
 
-Parallel computing
+
+Parallel Computing
 ==================
 
 .. questions::
@@ -41,7 +42,6 @@ There are two main models of parallel computing:
   - Processes have more overhead than threads (creating and destroying processes takes more time)
   - Running multiple processes is *only effective for compute-bound tasks*
 
-
 .. note::
 
    **"Embarrassingly" parallel**: If you can run multiple instances of a program and do not need to synchronize/communicate with other instances, 
@@ -60,14 +60,12 @@ There are two main models of parallel computing:
    In the next episode we will look at `Dask <https://dask.org/>`__, an array model extension and task scheduler, 
    which combines multiprocessing with (embarrassingly) parallel workflows and "lazy" execution.
 
-
 In the Python world, it is common to see the word `concurrency` denoting any type of simultaneous 
 processing, including *threads*, *tasks* and *processes*. 
   - Concurrent tasks can be executed in any order but with the same final results
   - Concurrent tasks can be but need not to be executed in parallel
   - ``concurrent.futures`` module provides implementation of thread and process-based executors for managing resources pools for running concurrent tasks
   - Concurrency is difficult: Race condition and Deadlock may arise in concurrent programs
-
 
 .. warning::
 
@@ -77,8 +75,9 @@ processing, including *threads*, *tasks* and *processes*.
    on code parallelisation. For an entertaining take on this, see 
    `Raymond Hettinger's PyCon2016 presentation <https://www.youtube.com/watch?v=Bv25Dwe84g0>`__.
 
-The Global Interpreter Lock
----------------------------
+
+The Global Interpreter Lock (GIL)
+---------------------------------
 
 The designers of the Python language made the choice
 that **only one thread in a process can run actual Python code**
@@ -105,6 +104,7 @@ However, multithreading is still relevant in two situations:
 
 - External libraries written in non-Python languages can take advantage of multithreading 
 - Multithreading can be useful for running *multiple I/O-bound tasks simultaneously*.
+
 
 Multithreaded libraries
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -164,7 +164,6 @@ The speedup gained from multithreading I/O bound problems can be understood from
 Further details on threading in Python can be found in the **See also** section below.
 
 
-
 Multiprocessing
 ---------------
 
@@ -174,12 +173,10 @@ similar to the ``threading`` module. It effectively side-steps the GIL by using
 process. One of the simplest ways to use ``multiprocessing`` is via ``Pool`` objects and 
 the parallel :meth:`Pool.map` function, similarly to what we saw for multithreading above. 
 
-
 .. note:: 
 
    ``concurrent.futures.ProcessPoolExecutor`` is actually a wrapper for 
    ``multiprocessing.Pool`` to unify the threading and process interfaces.
-
 
 
 Multiple arguments
@@ -241,7 +238,6 @@ function, and there are other options as well, see below:
          print(list(res))
    
 
-
 .. callout:: Interactive environments
 
    Functionality within multiprocessing requires that the ``__main__`` module be 
@@ -272,7 +268,6 @@ The idea behind MPI is that:
 - Tasks communicate and share data by sending messages.
 - Many higher-level functions exist to distribute information to other tasks
   and gather information from other tasks.
-
 
 ``mpi4py`` provides Python bindings for the Message Passing Interface (MPI) standard.
 This is how a hello world MPI program looks like in Python:
@@ -347,7 +342,7 @@ In any case, it is good to have a mental model of different communication patter
 
 
 Examples
-~~~~~~~~
+^^^^^^^^
 
 .. tabs::
  
@@ -467,7 +462,6 @@ are also *upper-case* methods :meth:`Send`, :meth:`Recv`, :meth:`Broadcast`. The
 Upper-case methods are faster and are strongly recommended for large numeric data.
 
 
-
 Exercises
 ---------
 
@@ -488,7 +482,6 @@ Exercises
 
       $ export OMP_NUM_THREADS=4
       $ python omp_test.py
-
 
 .. exercise:: I/O-bound vs CPU-bound
 
@@ -532,8 +525,6 @@ Exercises
 
             .. literalinclude:: exercise/race_dup.py
                :language: python
-
-
 
 
 .. exercise:: Compute numerical integrals
@@ -745,6 +736,7 @@ Exercises
 
 .. _See also:
 
+
 See also
 --------
 
@@ -760,9 +752,6 @@ See also
 - `ipyparallel documentation <https://ipyparallel.readthedocs.io/en/latest/>`__
 - `IPython Parallel in 2021 <https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a>`__
 - `ipyparallel tutorial <https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial>`__
-
-
-
 
 .. keypoints::
 

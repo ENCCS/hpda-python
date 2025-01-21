@@ -1,5 +1,6 @@
 .. _motivation:
 
+
 Motivation
 ==========
 
@@ -97,11 +98,11 @@ Specifically, the lesson covers:
 - How to measure performance and boost performance of time consuming Python functions
 - Various methods to parallelise Python code
 
-The lesson does not cover the following:
+The lesson does not cover the following episodes but the lesson materials are provided:
 
 - Visualisation techniques
 - Machine learning 
-- GPU related
+- GPU programming
 
 .. keypoints::
 

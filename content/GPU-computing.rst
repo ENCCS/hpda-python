@@ -1,6 +1,7 @@
 .. _GPU-computing:
 
-GPU computing
+
+GPU Computing
 =============
 
 .. questions::
@@ -22,9 +23,8 @@ GPU computing
    - 40 min exercises
 
 
-GPU Intro
+Introduction to GPU programming
 ---------
-
 
 
 Moore's law
@@ -61,7 +61,6 @@ with the term *accelerator*. GPU provides much higher instruction throughput
 and memory bandwidth than CPU within a similar price and power envelope.
 
 
-
 How do GPUs differ from CPUs?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -76,7 +75,6 @@ data processing is beneficial for highly parallel computations; the GPU can
 hide memory access latencies with computation, instead of relying on large data caches 
 and complex flow control to avoid long memory access latencies, 
 both of which are expensive in terms of transistors.
-
 
 
 .. figure:: img/gpu_vs_cpu.png
@@ -160,6 +158,7 @@ This workshop will focus on Numba only.
 Numba for GPUs
 --------------
 
+
 Terminology
 ^^^^^^^^^^^
 
@@ -198,8 +197,6 @@ NumPy arrays are transferred between the CPU and the GPU automatically.
 
    - Newer GPU devices from NVIDIA support device-side kernel launching; 
      this feature is called dynamic parallelism but Numba does not support it currently
-
-
 
 
 ufunc (gufunc) decorator
@@ -349,7 +346,8 @@ Alough it is simple to use ufuncs(gfuncs) to run on GPU, the performance is the 
 In addition, not all functions can be written as ufuncs in practice. To have much more flexibility, 
 one needs to write a kernel on GPU or device function, which requires more understanding of the GPU programming. 
 
-GPU Programming Model
+
+GPU programming model
 ^^^^^^^^^^^^^^^^^^^^^
 
 Accelerators are a separate main circuit board with the processor, memory, power management, etc., 
@@ -362,6 +360,7 @@ simultaneously on thousands of cores and does not do much of the data management
 The device code is executed by doing calls to functions (kernels) written specifically 
 to take advantage of the GPU. The kernel calls are asynchronous, the control is returned 
 to the host after a kernel calls. All kernels are executed sequentially. 
+
 
 GPU Autopsy. Volta GPU
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -470,7 +469,6 @@ For 1D, it is numba.cuda.threadIdx.x + numba.cuda.blockIdx.x * numba.cuda.blockD
    use the GPU computational resources efficiently.
 
 
-
 It is important to notice that the total number of threads in a grid is a multiple of the block size. 
 This is not necessary the case for the problem that we are solving: the length of the vectors 
 can be non-divisible by selected block size. So we either need to make sure that the threads 
@@ -509,12 +507,12 @@ values like 128, 256 or 512 are frequently used
   - it must be large than the number of available (single precision, double precision or integer operation) cores in a SM to fully occupy the SM
 
 
-
-Data and Memory management
+Data and memory management
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 With many cores trying to access the memory simultaneously and with little cache available, 
 the accelerator can run out of memory very quickly. This makes the data and memory management an essential task on the GPU.
+
 
 Data transfer
 ~~~~~~~~~~~~~
@@ -563,7 +561,6 @@ CUDA JIT decorator
 
 CUDA Kernel and device functions are created with the ``numba.cuda.jit`` decorator on Nvidia GPUs.
 We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thread positions.
-
 
 
 .. demo:: Demo: CUDA kernel
@@ -668,9 +665,6 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
             :language: ipython
 
 
-
-
-
 .. note:: 
    
    ``numba.cuda.synchronize()`` is used after the kernel launch to make sure the profiling is correct.
@@ -678,8 +672,6 @@ We will use Numba function ``numba.cuda.grid(ndim)`` to calculate the global thr
    There are times when the gufunc kernel uses too many of a GPU's resources, which can cause the kernel launch to fail. 
    The user can explicitly control the maximum size of the thread block by setting the ``max_blocksize`` attribute on the compiled gufunc object.
    e.g. matmul_numba_gpu.max_blocksize = 32
-
-
 
 
 Optimization
@@ -834,8 +826,6 @@ Exercises
             # go to the directory where job.sh and sbatch_matmul_sm.py are
             $ cd /path/to/somewhere  
             $ sbatch job.sh sbatch_matmul_sm.py
-
-
 
 
 .. exercise:: Discrete Laplace Operator

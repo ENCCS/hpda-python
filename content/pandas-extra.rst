@@ -1,7 +1,8 @@
 .. _pandas-extra:
 
-Optional: more on Pandas 
-========================
+
+Pandas (II)
+===========
 
 .. objectives::
 
@@ -43,6 +44,7 @@ method (also implemented as a top level function :func:`~pandas.pivot`):
    entries, cannot reshape`` if the index/column pair is not unique. In this
    case, consider using :func:`~pandas.pivot_table` which is a generalization
    of pivot that can handle duplicate values for one index/column pair.
+
 
 Stacking and unstacking
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -174,6 +176,7 @@ Each row in this new dataframe respresents the average values for the months (1=
 	def standardize(x):
 	    return (x - x.mean())/x.std()
 	anomaly = df.groupby(df.index.month).transform(standardize)
+
 
 Transformation
 ~~~~~~~~~~~~~~

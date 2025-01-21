@@ -1,6 +1,7 @@
 .. _dask:
 
-Dask for scalable analytics
+
+Dask for Scalable Analytics
 ===========================
 
 .. objectives::
@@ -13,6 +14,7 @@ Dask for scalable analytics
 
    - 40 min teaching/type-along
    - 40 min exercises
+
 
 Overview
 --------
@@ -30,6 +32,7 @@ and Dask is a tool that helps us easily extend our familiar data analysis
 tools to work with big data. In addition, Dask can also speeds up 
 our analysis by using multiple CPU cores which makes our work run 
 faster on laptop, HPC and cloud platforms.
+
 
 What is Dask?
 -------------
@@ -49,7 +52,8 @@ Dask is composed of two parts:
    by schedulers on a single machine or a cluster. From the 
    `Dask documentation <https://docs.dask.org/en/stable/>`__.
 
-Dask Clusters
+
+Dask clusters
 -------------
 
 Dask needs computing resources in order to perform parallel computations. 
@@ -145,8 +149,6 @@ http://localhost:8787/status and can be always queried from commond line by:
    # or 
    client.dashboard_link
 
-
-
 When everything finishes, you can shut down the connected scheduler and workers 
 by calling the :meth:`shutdown` method:
 
@@ -155,9 +157,7 @@ by calling the :meth:`shutdown` method:
    client.shutdown()
 
 
-
-
-Dask Collections
+Dask collections
 ----------------
 
 Dask provides dynamic parallel task scheduling and 
@@ -168,7 +168,7 @@ three main high-level collections:
   - ``dask.bag``: Parallel Python Lists 
 
 
-Dask Arrays
+Dask arrays
 ^^^^^^^^^^^
 
 A Dask array looks and feels a lot like a NumPy array. 
@@ -254,7 +254,8 @@ We can visualize the symbolic operations by calling :meth:`visualize`:
 You can find additional details and examples here 
 https://examples.dask.org/array.html.
 
-Dask Dataframe
+
+Dask dataframe
 ^^^^^^^^^^^^^^
 
 Dask dataframes split a dataframe into partitions along an index and can be used 
@@ -308,7 +309,7 @@ You can find additional details and examples here
 https://examples.dask.org/dataframe.html.
 
 
-Dask Bag
+Dask bag
 ^^^^^^^^
 
 A Dask bag enables processing data that can be represented as a sequence of arbitrary 
@@ -375,8 +376,7 @@ specifically the step where we count words in a text.
    both parallelisation and the ability to utilize RAM on multiple machines.
 
 
-
-Dask Delayed
+Dask delayed
 ^^^^^^^^^^^^
 
 Sometimes problems don't fit into one of the collections like 
@@ -450,7 +450,6 @@ to make them lazy and tasks into a graph which we will run later on parallel har
       # To set it as a context manager
       with dask.config.set(scheduler='threads'):
 	  x.compute()
-
 
 
 Comparison to Spark
@@ -796,7 +795,6 @@ Exercises
       tas_ann=ds.tas.groupby('time.year').mean() # lazy compuation
       tas_sto=tas_ann.sel(lon=18.07, lat=59.33,method='nearest')  # slicing is lazy as well  
       plt.plot(tas_sto.year,tas_sto)  # plotting trigers computation
-
 
 
 .. keypoints::

@@ -1,6 +1,7 @@
 .. _stack:
 
-Efficient array computing
+
+Efficient Array Computing
 =========================
 
 .. objectives::
@@ -12,13 +13,14 @@ Efficient array computing
 .. instructor-note::
 
    - 30 min teaching/type-along
-   - 20 min exercises
+   - 30 min exercises
 
 
 This episode is partly based on material from this 
 `repository on HPC-Python from CSC <https://github.com/csc-training/hpc-python>`__ and 
 this `Python for Scientific Computing lesson <https://aaltoscicomp.github.io/python-for-scicomp/>`__, 
 distributed under MIT and CC-BY-4.0 licenses, respectively.
+
 
 Why can Python be slow?
 -----------------------
@@ -43,6 +45,7 @@ Python is an interpreted language, and many features that make development
 rapid with Python are a result of that, with the price of reduced performance
 in many cases.
 
+
 Dynamic typing
 ^^^^^^^^^^^^^^
 
@@ -54,6 +57,7 @@ in recent years been a lot of progress in just-in-time (JIT)
 compilation techniques that allow programs to be optimized at runtime, the
 inherent, dynamic nature of the Python programming language remains one
 of its main performance bottlenecks.
+
 
 Flexible data structures
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -83,6 +87,7 @@ In particular, by using homogeneous
 data structures, NumPy *vectorizes* mathematical operations where fast pre-compiled code 
 can be applied to a sequence of data instead of using traditional ``for`` loops.
 
+
 Arrays
 ^^^^^^
 
@@ -95,11 +100,9 @@ Some differences between the two are:
 - ndarray operations are fast when vectorized  
 - ndarrays are slower for certain operations, e.g. appending elements 
 
-
 .. figure:: img/list-vs-array.svg
    :align: center
    :scale: 100 %
-
 
 
 Data types
@@ -119,6 +122,7 @@ unsigned integers (``uint``) floating point (``float``) and complex (``complex``
    z = np.arange(3, dtype=np.uint8)
    # convert array to floats
    z.astype(float)
+
 
 Creating NumPy arrays
 ^^^^^^^^^^^^^^^^^^^^^
@@ -199,8 +203,7 @@ Similar arrays as an existing array:
    d = np.full_like(a, 9.1)
 
 
-
-Array Operations and Manipulations
+Array operations and manipulations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 All the familiar arithmetic operators in NumPy are applied elementwise:
@@ -240,7 +243,7 @@ All the familiar arithmetic operators in NumPy are applied elementwise:
       .. figure:: img/np_add_2d.svg 
 
 
-Array Indexing
+Array indexing
 ^^^^^^^^^^^^^^
 
 Basic indexing is similar to Python lists.
@@ -292,7 +295,7 @@ Note that advanced indexing creates copies of arrays.
       .. figure:: img/np_ind2d_boolean.svg 
 
 
-Array Aggregation
+Array aggregation
 ^^^^^^^^^^^^^^^^^
 
 Apart from aggregating values, one can also aggregate across rows or columns by using the ``axis`` parameter:
@@ -311,7 +314,7 @@ Apart from aggregating values, one can also aggregate across rows or columns by 
 .. figure:: img/np_min_2d_ax1.svg 
 
 
-Array Reshaping
+Array reshaping
 ^^^^^^^^^^^^^^^
 
 Sometimes, you need to change the dimension of an array. 
@@ -390,6 +393,7 @@ Random numbers
     rnd.choice(numpy.arange(4), 10)
     # array([0, 1, 1, 2, 1, 1, 2, 0, 2, 3])
 
+
 Polynomials
 ^^^^^^^^^^^
 
@@ -437,7 +441,6 @@ Linear algebra
     - naive C:                 1.50 s
     - numpy.dot:               0.04 s
     - library call from C:     0.04 s
-
 
 
 Pandas
@@ -585,6 +588,7 @@ Unlike a NumPy array, a dataframe can combine multiple data types, such as
 numbers and text, but the data in each column is of the same type. So we say a
 column is of type ``int64`` or of type ``object``.
 
+
 Indexing
 ^^^^^^^^
 
@@ -630,6 +634,7 @@ Dataframes also support boolean indexing:
    titanic[titanic["Age"] > 70]
    # ".str" creates a string object from a column
    titanic[titanic.index.str.contains("Margaret")]
+
 
 Missing/invalid data
 ^^^^^^^^^^^^^^^^^^^^
@@ -699,10 +704,7 @@ Scipy
 on top of NumPy. It contains a lot of interfaces to battle-tested numerical routines 
 written in Fortran or C, as well as Python implementations of many common algorithms.
 
-What's in SciPy?
-^^^^^^^^^^^^^^^^
-
-Briefly, it contains functionality for
+Briefly, SciPy contains functionality for
 
 - Special functions (Bessel, Gamma, etc.)
 - Numerical integration
@@ -919,8 +921,6 @@ Exercises
       3. Existing family sizes: ``titanic["SibSp"].unique()``
       4. Names of members of largest family(ies): ``titanic[titanic["SibSp"] == 8].index``
       5. ``titanic.hist("SibSp", lambda x: "Poor" if titanic["Fare"].loc[x] < titanic["Fare"].mean() else "Rich", rwidth=0.9)``
-   
-
 
 
 See also
@@ -941,6 +941,4 @@ See also
    - Pandas dataframes are a good data structure for tabular data
    - Dataframes allow both simple and advanced analysis in very compact form
    - SciPy contains a lot of interfaces to battle-tested numerical routines 
-
-
 
