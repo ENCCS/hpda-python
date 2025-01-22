@@ -1,10 +1,13 @@
 %%cython
+
 cimport cython
 cimport numpy as np
 import numpy as np
 
+
 cdef double f_cython_dtype(double x):
     return x * (x - 1)
+
 
 cpdef double integrate_f_cython_dtype(double a, double b, int N):
     cdef int i
@@ -54,8 +57,5 @@ cpdef double[:] apply_integrate_f_cython_dtype3(double[:] col_a,
     return res
 
 
-
-
-
-
 %timeit apply_integrate_f_cython_dtype(np.asarray(df['a']),np.asarray(df['b']),np.asarray(df['N'],dtype=np.int32))
+
