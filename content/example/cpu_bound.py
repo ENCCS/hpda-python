@@ -14,9 +14,9 @@ n=1000000
 func_cpu_bound(n)
 
 %%time
-with ThreadPoolExecutor(max_worker=4) as pool:
+with ThreadPoolExecutor(max_workers=4) as pool:
     pool.map(func_cpu_bound, [n,n,n,n])
 
 %%time
-with ProcessPoolExecutor(max_worker=4) as pool:
+with ProcessPoolExecutor(max_workers=4) as pool:
     pool.map(func_cpu_bound, [n,n,n,n])
