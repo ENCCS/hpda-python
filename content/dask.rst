@@ -362,6 +362,8 @@ preprocessing log files, JSON records, or other user defined Python objects.
 We will content ourselves with implementing a dask version of the word-count problem, 
 specifically the step where we count words in a text. 
 
+.. _word-count-problem:
+
 .. demo:: Demo: Dask version of word-count
 
    If you have not already cloned or downloaded ``word-count-hpda`` repository,
@@ -441,6 +443,137 @@ specifically the step where we count words in a text.
    analysing a very large text file (all tweets in a year? a genome?). Dask provides 
    both parallelisation and the ability to utilize RAM on multiple machines.
 
+Exercise set 1
+--------------
+
+Choose an exercise with the data structure that you are most interested in:
+:ref:`ex-dask-array`, :ref:`ex-dask-df` or :ref:`ex-dask-bag`.
+
+.. _ex-dask-array:
+
+1.1. using dask.array
+^^^^^^^^^^^^^^^^^^^^^
+
+.. challenge:: Chunk size
+
+   The following example calculate the mean value of a random generated array. 
+   Run the example and see the performance improvement by using dask.
+
+   .. tabs::
+
+      .. tab:: NumPy
+
+         .. literalinclude:: example/chunk_np.py
+            :language: python
+
+      .. tab:: Dask
+
+         .. literalinclude:: example/chunk_dask.py
+            :language: python
+
+
+   But what happens if we use different chunk sizes?
+   Try out with different chunk sizes:
+   
+   - What happens if the dask chunks=(20000,20000)
+   
+   - What happens if the dask chunks=(250,250)
+
+
+   .. solution:: Choice of chunk size
+
+      The choice is problem dependent, but here are a few things to consider:
+
+      Each chunk of data should be small enough so that it fits comforably in each worker's available memory. 
+      Chunk sizes between 10MB-1GB are common, depending on the availability of RAM. Dask will likely 
+      manipulate as many chunks in parallel on one machine as you have cores on that machine. 
+      So if you have a machine with 10 cores and you choose chunks in the 1GB range, Dask is likely to use at least 
+      10 GB of memory. Additionally, there should be enough chunks available so that each worker always has something to work on.
+
+      On the otherhand, you also want to avoid chunk sizes that are too small as we see in the exercise.
+      Every task comes with some overhead which is somewhere between 200us and 1ms. Very large graphs 
+      with millions of tasks will lead to overhead being in the range from minutes to hours which is not recommended.
+
+
+.. _ex-dask-df:
+
+1.2. using dask.dataframe
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. exercise:: Benchmarking DataFrame.apply()
+
+   Recall the
+   :ref:`word count <word-count-problem>`
+   project that we encountered earlier and the :func:`scipy.optimize.curve_fit` function. 
+   The :download:`results.csv <data/results.csv>` file contains word counts of the 10 
+   most frequent words in different texts, and we want to fit a power law to the 
+   individual distributions in each row.
+
+   Here are our fitting functions:
+
+   .. code-block:: python
+
+      from scipy.optimize import curve_fit
+
+      def powerlaw(x, A, s):
+          return A * np.power(x, s)
+
+      def fit_powerlaw(row):
+          X = np.arange(row.shape[0]) + 1.0
+          params, cov = curve_fit(f=powerlaw, xdata=X, ydata=row, p0=[100, -1], bounds=(-np.inf, np.inf))
+          return params[1]
+
+   Compare the performance of
+   :meth:`dask.dataframe.DataFrame.apply` with
+   :meth:`pandas.DataFrame.apply` 
+   for the this example. You will probably see a slowdown due to the parallelisation 
+   overhead. But what if you add a ``time.sleep(0.01)`` inside :meth:`fit_powerlaw` to 
+   emulate a time-consuming calculation? 
+
+   .. callout:: Hints
+      :class: dropdown
+      
+      - You will need to call :meth:`apply` on the dataframe starting from column 1: ``dataframe.iloc[:,1:].apply()``
+      - Remember that both Pandas and Dask have the :meth:`read_csv` function.
+      - Try repartitioning the dataframe into 4 partitions with ``ddf4=ddf.repartition(npartitions=4)``.
+      - You will probably get a warning in your Dask version that `You did not provide metadata`. 
+        To remove the warning, add the ``meta=(None, "float64")`` flag to :meth:`apply`. For the 
+        current data, this does not affect the performance.
+
+   .. callout:: More hints with Pandas code
+      :class: dropdown
+
+      You need to reimplement the highlighted part which creates the
+      dataframe and applies the :func:`fit_powerlaw` function.
+
+      .. literalinclude:: exercise/apply_pd.py
+         :language: ipython
+         :emphasize-lines: 16-17
+
+
+   .. solution::
+
+      .. literalinclude:: exercise/apply_dask.py
+         :language: ipython
+
+
+.. _ex-dask-bag:
+
+1.3. using dask.bag
+^^^^^^^^^^^^^^^^^^^
+
+.. exercise:: Break down the dask.bag computational pipeline
+
+   Revisit the
+   :ref:`word count problem <word-count-problem>`
+   and the implementation with a ``dask.bag`` that we saw above. 
+   
+   - To get a feeling for the computational pipeline, break down the computation into 
+     separate steps and investigate intermediate results using :meth:`.compute`.
+   - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
+     What if you have a larger textfile? You can for example concatenate all texts into 
+     a single file: ``cat data/*.txt > data/all.txt``.
+
 
 Low level interface: delayed
 ----------------------------
@@ -504,7 +637,7 @@ to make them lazy and tasks into a graph which we will run later on parallel har
 
    ``dask.bag`` uses the ``processes`` scheduler
 
-   In case to change the default scheduler, using `dask.config.set` is recommanded:
+   In case to change the default scheduler, using `dask.config.set` is recommended:
 
    .. code-block:: ipython
 
@@ -536,48 +669,8 @@ between the two frameworks:
   graphs for more complex and custom systems.
 
 
-Exercises
----------
-
-.. challenge:: Chunk size
-
-   The following example calculate the mean value of a random generated array. 
-   Run the example and see the performance improvement by using dask.
-
-   .. tabs::
-
-      .. tab:: NumPy
-
-         .. literalinclude:: example/chunk_np.py
-            :language: python
-
-      .. tab:: Dask
-
-         .. literalinclude:: example/chunk_dask.py
-            :language: python
-
-
-   But what happens if we use different chunk sizes?
-   Try out with different chunk sizes:
-   
-   - What happens if the dask chunks=(20000,20000)
-   
-   - What happens if the dask chunks=(250,250)
-
-
-   .. solution:: Choice of chunk size
-
-      The choice is problem dependent, but here are a few things to consider:
-
-      Each chunk of data should be small enough so that it fits comforably in each worker's available memory. 
-      Chunk sizes between 10MB-1GB are common, depending on the availability of RAM. Dask will likely 
-      manipulate as many chunks in parallel on one machine as you have cores on that machine. 
-      So if you have a machine with 10 cores and you choose chunks in the 1GB range, Dask is likely to use at least 
-      10 GB of memory. Additionally, there should be enough chunks available so that each worker always has something to work on.
-
-      On the otherhand, you also want to avoid chunk sizes that are too small as we see in the exercise.
-      Every task comes with some overhead which is somewhere between 200us and 1ms. Very large graphs 
-      with millions of tasks will lead to overhead being in the range from minutes to hours which is not recommended.
+Exercise set 2
+--------------
 
 
 .. challenge:: Dask delay
@@ -588,234 +681,12 @@ Exercises
    .. literalinclude:: example/delay_more.py 
 
 
-   Please add dask.delayed to parallelize the program as much as possible 
+   Please add ``dask.delayed`` to parallelize the program as much as possible 
    and check graph visualizations.
 
    .. solution::
 
       .. literalinclude:: example/delay_more_solution.py 
-
-
-.. challenge:: Testing different schedulers
-
-   We will test different schedulers and compare the performance on a simple task calculating 
-   the mean of a random generated array.
-   
-   Here is the code using NumPy:
-
-   .. literalinclude:: example/dask_gil.py
-      :language: ipython
-      :lines: 1-7
-
-   Here we run the same code using different schedulers from Dask:
-
-   .. tabs::
-
-      .. tab::  ``serial``
-
-	 .. literalinclude:: example/dask_gil.py
-            :language: ipython
-            :lines: 9-12
-
-      .. tab::  ``threads``
-
-	 .. literalinclude:: example/dask_gil_threads.py
-            :language: ipython
-            :lines: 1-10
-
-	 .. literalinclude:: example/dask_gil_threads.py
-            :language: ipython
-            :lines: 12-15
-
-	 .. literalinclude:: example/dask_gil_threads.py
-            :language: ipython
-            :lines: 17-20
-
-	 .. literalinclude:: example/dask_gil_threads.py
-            :language: ipython
-            :lines: 22-25
-
-      .. tab::  ``processes``
-
-	 .. literalinclude:: example/dask_gil_processes.py
-            :language: ipython
-            :lines: 1-10
-
-	 .. literalinclude:: example/dask_gil_processes.py
-            :language: ipython
-            :lines: 12-15
-
-	 .. literalinclude:: example/dask_gil_processes.py
-            :language: ipython
-            :lines: 17-20
-
-	 .. literalinclude:: example/dask_gil_processes.py
-            :language: ipython
-            :lines: 22-25
-
-      .. tab::  ``distributed``
-
-	 .. literalinclude:: example/dask_gil_distributed.py
-            :language: ipython
-            :lines: 1-14
-
-	 .. literalinclude:: example/dask_gil_distributed.py
-            :language: ipython
-            :lines: 16-17
-
-	 .. literalinclude:: example/dask_gil_distributed.py
-            :language: ipython
-            :lines: 19-21
-
-	 .. literalinclude:: example/dask_gil_distributed.py
-            :language: ipython
-            :lines: 23-25
-
-	 .. literalinclude:: example/dask_gil_distributed.py
-            :language: ipython
-            :lines: 27
-
-
-
-   .. solution:: Testing different schedulers
-
-      Comparing profiling from mt_1, mt_2 and mt_4: Using ``threads`` scheduler is limited by the GIL on pure Python code. 
-      In our case, although it is not a pure Python function, it is still limited by GIL, therefore no multi-core speedup
-
-      Comparing profiling from mt_1, mp_1 and dis_1: Except for ``threads``, the other two schedulers copy data between processes 
-      and this can introduce performance penalties, particularly when the data being transferred between processes is large.
-
-      Comparing profiling from serial, mt_1, mp_1 and dis_1: Creating and destroying threads and processes have overheads,
-      ``processes`` have even more overhead than ``threads``
-
-      Comparing profiling from mp_1, mp_2 and mp_4: Running multiple processes is only effective when there is enough computational 
-      work to do i.e. CPU-bound tasks. In this very example, most of the time is actually spent on transferring the data 
-      rather than computing the mean
-
-      Comparing profiling from ``processes`` and ``distributed``: Using ``distributed`` scheduler has advantages over ``processes``, 
-      this is related to better handling of data copying, i.e. ``processes`` scheduler copies data for every task, while 
-      ``distributed`` scheduler copies data for each worker.
-
-
-
-.. challenge:: SVD with large skinny matrix using ``distributed`` scheduler
-
-   We can use dask to compute SVD of a large matrix which does not fit into the memory of a 
-   normal laptop/desktop. While it is computing, you should switch to the Dask dashboard and 
-   watch column "Workers" and "Graph", so you must run this using ``distributed`` scheduler
-
-   .. code-block:: python
-
-       import dask
-       import dask.array as da
-       X = da.random.random((2000000, 100), chunks=(10000, 100))
-       X
-       u, s, v = da.linalg.svd(X)
-       dask.visualize(u, s, v)
-       s.compute()
-
-
-   SVD is only supported for arrays with chunking in one dimension, which requires that the matrix
-   is either *tall-and-skinny* or *short-and-fat*.
-   If chunking in both dimensions is needed, one should use approximate algorithm.
-
-   .. code-block:: python
-
-       import dask
-       import dask.array as da
-       X = da.random.random((10000, 10000), chunks=(2000, 2000))
-       u, s, v = da.linalg.svd_compressed(X, k=5)
-       dask.visualize(u, s, v)
-       s.compute()
-
-
-.. callout:: Memory management
-
-   You may observe that there are different memory categories showing on the dashboard:
-
-   - process: Overall memory used by the worker process, as measured by the OS
-   - managed: Size of data that Dask holds in RAM, but most probably inaccurate, excluding spilled data.
-   - unmanaged: Memory that Dask is not directly aware of, this can be e.g. Python modules,
-     temporary arrays, memory leasks, memory not yet free()'d by the Python memory manager to the OS
-   - unmanaged recent: Unmanaged memory that has appeared within the last 30 seconds whch is not included 
-     in the "unmanaged" memory measure
-   - spilled: Memory spilled to disk
-
-   The sum of managed + unmanaged + unmanaged recent is equal by definition to the process memory.
-
-   When the managed memory exceeds 60% of the memory limit (target threshold), 
-   the worker will begin to dump the least recently used data to disk. 
-   Above 70% of the target memory usage based on process memory measurment (spill threshold), 
-   the worker will start dumping unused data to disk.
-         
-   At 80% process memory load, currently executing tasks continue to run, but no additional tasks 
-   in the worker's queue will be started.
-
-   At 95% process memory load (terminate threshold), all workers will be terminated. Tasks will be cancelled 
-   as well and data on the worker will be lost and need to be recomputed.
-
-
-.. exercise:: Benchmarking dask.dataframes.apply()
-
-   Recall the word-count project that we encountered earlier and the :meth:`scipy.optimize.curve_fit` function. 
-   The :download:`results.csv <data/results.csv>` file contains word counts of the 10 
-   most frequent words in different texts, and we want to fit a power law to the 
-   individual distributions in each row.
-
-   Here are our fitting functions:
-
-   .. code-block:: python
-
-      from scipy.optimize import curve_fit
-
-      def powerlaw(x, A, s):
-          return A * np.power(x, s)
-
-      def fit_powerlaw(row):
-          X = np.arange(row.shape[0]) + 1.0
-          params, cov = curve_fit(f=powerlaw, xdata=X, ydata=row, p0=[100, -1], bounds=(-np.inf, np.inf))
-          return params[1]
-
-   Compare the performance of :meth:`dask.dataframes.apply` with :meth:`pandas.dataframes.apply` 
-   for the this example. You will probably see a slowdown due to the parallelisation 
-   overhead. But what if you add a ``time.sleep(0.01)`` inside :meth:`fit_powerlaw` to 
-   emulate a time-consuming calculation? 
-
-   .. solution:: Hints
-
-      - You will need to call :meth:`apply` on the dataframe starting from column 1: ``dataframe.iloc[:,1:].apply()``
-      - Remember that both Pandas and Dask have the :meth:`read_csv` function.
-      - Try repartitioning the dataframe into 4 partitions with ``ddf4=ddf.repartition(npartitions=4)``.
-      - You will probably get a warning in your Dask version that `You did not provide metadata`. 
-        To remove the warning, add the ``meta=(None, "float64")`` flag to :meth:`apply`. For the 
-        current data, this does not affect the performance.
-
-
-   .. solution::
-
-      .. tabs::
-
-         .. tab:: Pandas
-
-            .. literalinclude:: exercise/apply_pd.py
-               :language: ipython
-
-         .. tab:: Dask
-
-            .. literalinclude:: exercise/apply_dask.py
-               :language: ipython
-
-
-.. exercise:: Break down the dask.bag computational pipeline
-
-   Revisit the word-count problem and the implementation with a ``dask.bag`` that we 
-   saw above. 
-   
-   - To get a feeling for the computational pipeline, break down the computation into 
-     separate steps and investigate intermediate results using :meth:`.compute`.
-   - Benchmark the serial and ``dask.bag`` versions. Do you see any speedup? 
-     What if you have a larger textfile? You can for example concatenate all texts into 
-     a single file: ``cat data/*.txt > data/all.txt``.
 
 
 .. challenge:: Climate simulation data using Xarray and Dask
@@ -830,7 +701,8 @@ Exercises
    https://xarray.pydata.org/en/stable/dask.html#reading-and-writing-data for more details.
 
    Note that the NetCDF files are here https://github.com/ENCCS/hpda-python/tree/main/content/data ,
-   you need to download them to your laptop first, then depending on where you put the files, 
+   you need to ``git clone`` the repository or download the files to your laptop first.
+   Then depending on where you put the files, 
    you may need to adapt the path to the data folder in the Python code.
 
    .. code-block:: ipython
@@ -842,11 +714,12 @@ Exercises
       ds=xr.open_mfdataset('./data/tas*.nc', parallel=True,use_cftime=True)
 
 
-   ``open_mfdataset()`` is for reading multiple files and will chunk each file into a single Dask array by default. 
+   :func:`xarray.open_mfdataset` is for reading multiple files and will chunk each file into a single Dask array by default. 
    One could supply the chunks keyword argument to control the size of the resulting Dask arrays. 
-   Passing the keyword argument ``parallel=True`` to open_mfdataset() will speed up the reading of 
+   Passing the keyword argument ``parallel=True`` to :func:`xarray.open_mfdataset` will speed up the reading of 
    large multi-file datasets by executing those read tasks in parallel using ``dask.delayed``.
 
+   Explore the following operations line-by-line:
 
    .. code-block:: ipython
 
@@ -865,4 +738,6 @@ Exercises
 .. keypoints::
 
    - Dask uses lazy execution
+   - Dask can parallelize and perform out-of-memory computation.
+     That is, handle data that would not fit in the memory if loaded at once.
    - Only use Dask for processing very large amount of data
