@@ -222,7 +222,7 @@ Last step, we can add type annotation to local variables within functions and th
    # 13.8 ms ± 97.8 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 
-Now it is ~ 100 times faster than the original Python implementation, and all we have done is to add type declarations on the Python code!
+Now it is ~ 10 times faster than the original Python implementation, and all we have done is to add type declarations on the Python code!
 We indeed see much less Python interaction in the code from step 1 to step 4.
 
 .. figure:: img/cython_annotate_2.png
