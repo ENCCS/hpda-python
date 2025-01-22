@@ -59,12 +59,18 @@ A full overview of Cython capabilities refers to the `documentation <https://cyt
 
 .. demo:: Demo: Cython
 
-   Consider the following pure Python code which integrates a function:
+   Consider a problem to integrate a function:
 
    .. math:: 
        \int^{b}_{a}(x^2-x)dx
 
-   .. literalinclude:: example/integrate_python.py 
+
+Python: Benchmarking (step 0)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Python code is provided below:
+
+.. literalinclude:: example/integrate_python.py 
 
 We generate a dataframe and apply the :meth:`apply_integrate_f` function on its columns, timing the execution:
 
@@ -79,31 +85,39 @@ We generate a dataframe and apply the :meth:`apply_integrate_f` function on its 
    %timeit apply_integrate_f(df['a'], df['b'], df['N'])
    # 321 ms ± 10.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
+
+Cython: Benchmarking (step 1)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 In order to use Cython, we need to import the Cython extension:
 
 .. code-block:: ipython
 
    %load_ext cython
 
-As a first cythonization step, we add the cython magic command with the 
-``-a, --annotate`` flag, ``%%cython -a``, to the top of the Jupyter code cell.
-The yellow coloring in the output shows us the amount of pure Python:
+As a first cythonization step, we add the cython magic command (``%%cython -a``) on top of Jupyter code cell.
+We start by a simply compiling the Python code using Cython without any changes. The code is shown below:
+
+.. literalinclude:: example/integrate_cython.py 
+
+The yellow coloring in the output shows us the amount of pure Python code:
 
 .. figure:: img/cython_annotate.png
 
-Our task is to remove as much yellow as possible by *static typing*, i.e. explicitly declaring arguments, parameters, variables and functions.
-We can start by simply compiling the code using Cython without any changes:
+Our task is to remove as much yellow as possible by *static typing*, *i.e.* explicitly declaring arguments, parameters, variables and functions.
 
-.. literalinclude:: example/integrate_cython.py 
+We benchmark the Python code just using Cython, and it gives us about 10%-20% increase in performance. 
 
 .. code-block:: ipython
 
    %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
    # 276 ms ± 20.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
-Simply by using Cython and a copy-and-paste gives us about 10% increase in performance. 
 
-Now we can start adding data type annotation to the input variables:
+Cython: Adding data type annotation to input variables (step 2)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Now we can start adding data type annotation to the input variables as highlightbed in the code example below:
 
 .. literalinclude:: example/integrate_cython_dtype0.py 
    :emphasize-lines: 6,9,16
@@ -152,7 +166,6 @@ Now we can start adding data type annotation to the input variables:
 	 np.complex64;  cnp.complex64_t;  float complex
 	 np.complex128; cnp.complex128_t; double complex
 
-
    Differeces between ``import`` (for Python) and ``cimport`` (for Cython) statements
 
       - ``import`` gives access to Python functions or attributes
@@ -165,8 +178,10 @@ Now we can start adding data type annotation to the input variables:
          cimport numpy as np # access to NumPy C API
 
 
-Next step, we can start adding type annotation to functions.
-There are three ways of declaring functions: 
+Cython: Adding data type annotation to functions (step 3)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Next step, we further add type annotation to functions. There are three ways of declaring functions: 
 
 - ``def`` - Python style:
 
@@ -176,16 +191,16 @@ There are three ways of declaring functions:
 
 - ``cdef`` - C style:
 
-Called from Cython and C, but not from Python code.
-Cython treats the function as pure C functions, which can take any type of arguments, 
-including non-Python types, e.g. pointers. It will give you the best performance. 
-However, one should really take care of the ``cdef`` declared functions, 
-since you are actually writing in C.
+   - Called from Cython and C, but not from Python code.
+   - Cython treats functions as pure C functions, which can take any type of arguments, including non-Python types, `e.g.`, pointers.
+   - This usually gives the best performance. 
+   - However, one should really take care of the functions declared by ``cdef`` as these functions are actually writing in C.
 
-- ``cpdef`` - Python/C mixed:
+- ``cpdef`` - C/Python mixed style:
 
-``cpdef`` function combines both ``def`` and ``cdef``. Cython will generate a ``cdef`` function for C types and a ``def`` function for Python types.
-In terms of performance, ``cpdef`` functions may be as fast as those using ``cdef`` and might be as slow as ``def`` declared functions.  
+   - ``cpdef`` function combines both ``cdef`` and ``def``.
+   - Cython will generate a ``cdef`` function for C types and a ``def`` function for Python types.
+   - In terms of performance, ``cpdef`` functions may be as fast as those using ``cdef`` and might be as slow as ``def`` declared functions.  
 
 .. literalinclude:: example/integrate_cython_dtype1.py 
    :emphasize-lines: 6,9,16
@@ -195,7 +210,11 @@ In terms of performance, ``cpdef`` functions may be as fast as those using ``cde
    %timeit apply_integrate_f_cython_dtype1(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
    # 37.2 ms ± 556 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
-Last step, we can add type annotation to the local variables within the functions and the output.
+
+Cython: Adding data type annotation to local variables (step 4)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Last step, we can add type annotation to local variables within functions and the output.
 
 .. literalinclude:: example/integrate_cython_dtype2.py 
    :emphasize-lines: 6,9,10,11,16,20,21
@@ -205,9 +224,9 @@ Last step, we can add type annotation to the local variables within the function
    %timeit apply_integrate_f_cython_dtype2(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
    # 696 µs ± 8.71 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 
-Now it is over 400 times faster than the original Python implementation, and all we have done is to add 
-type declarations! If we add the ``-a`` annotation flag we indeed see much less Python interaction in the 
-code.
+
+Now it is ~ 100 times faster than the original Python implementation, and all we have done is to add type declarations on the Python code!
+We indeed see much less Python interaction in the code from step 1 to step 4.
 
 .. figure:: img/cython_annotate_2.png
 
