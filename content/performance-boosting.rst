@@ -19,20 +19,17 @@ Python: An interpreted language
 
 Python is an interpreted language, meaning the Python interpreter reads and executes your code line by line, directly translating it into actions without generating a separate executable file in advance.
 
-Pros:
+   👍 **Pros:**
+      - dynamic typing (no need to explicitly declare variable types)
+      - rapid prototyping (no write, compile, execute cycle)
+      - cross-platform (assuming interpreters exist for each platform)
+      - automatic memory management (no need to preallocate or deallocate memory as Python uses ``reference counting`` and ``garbage collection`` to handle memory allocation)
+   👎 **Cons:**
+      - - less secure and debuggable (code is exposed and vulnerable to modification or attack by malicious users or hackers)
+      - slower execution (python interpreter translates source code line-by-line into intermediate code during runtime, which adds an extra layer of overhead and complexity)
+      - resource-intensive (interpreted languages consume more memory and CPU power than compiled languages)
 
-- dynamic typing (no need to explicitly declare variable types)
-- rapid prototyping (no write, compile, execute cycle)
-- cross-platform (assuming interpreters exist for each platform)
-- automatic memory management (no need to preallocate or deallocate memory as Python uses ``reference counting`` and ``garbage collection`` to handle memory allocation)
-
-Cons:
-
-- less secure and debuggable (code is exposed and vulnerable to modification or attack by malicious users or hackers)
-- slower execution (python interpreter translates source code line-by-line into intermediate code during runtime, which adds an extra layer of overhead and complexity)
-- resource-intensive (interpreted languages consume more memory and CPU power than compiled languages)
-
-These prons and cons of Python come from the intrinsic interpretion of Python code compared with the compilation of C code.
+These pros and cons of Python come from the intrinsic interpretion of Python code compared with the compilation of C code.
 
 .. figure:: img/c-python-compilation.png
 
@@ -280,7 +277,7 @@ Here is the updated code with the inclusion of the ``@jit`` decorator for the th
    - If you prefer Numba to throw an error for such a case, you can do *e.g.* ``@numba.jit(nopython=True)`` or ``@numba.njit``. 
 
 
-Numba: Adding date type to ``@jit`` decorator (step 1)
+Numba: Adding date type to ``@jit`` decorator (step 2)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We can further add date type, although in this case there is not much performance improvement:
@@ -311,6 +308,7 @@ We can further add date type, although in this case there is not much performanc
    - For simple operations or small data, either Numba or Cython is not going to outperform it. But when things get more complex these frameworks can save the day!
 
 
+
 Exercises
 ---------
 
@@ -333,6 +331,7 @@ Exercises
 
    Add ``@profile`` to the :meth:`word_acf` function, and run ``kernprof``
    from the command line. What lines of this function are the most expensive?
+
 
    .. solution:: 
 
@@ -563,7 +562,7 @@ Exercises
 
 .. exercise:: Static typing
 
-   Consider the following example of calculating the squre of an array.
+   Consider the following example of calculating the square of an array.
    We have a few different versions using Numba. Benchmark them and compare the results.
 
       .. tabs:: 
@@ -627,6 +626,6 @@ See also
 
 .. keypoints::
 
-   - To squeeze the last drop of performance out of your Python code you can 
-     convert performance-critical functions to Numba or Cython
-   - Both Numba and Cython pre-compile Python code to make it run faster.
+   - To squeeze the last drop of performance out of your Python code, you can 
+     convert performance-critical functions to Cython or Numba.
+   - Both Cython and Numba pre-compile Python code to make it run faster.
