@@ -267,7 +267,16 @@ Let us further calculate the sum of the dask array:
    sum_da = ones.sum()
 
 
-So far, it is only a symbolic representation of the array. 
+So far, only a task graph of the computation is prepared. 
+We can visualize the task graph by calling :meth:`visualize`:
+
+.. code-block:: python
+
+   dask.visualize(sum_da)
+   # or 
+   sum_da.visualize()
+
+
 One way to trigger the computation is to call :meth:`compute`:
 
 .. code-block:: python
@@ -275,15 +284,6 @@ One way to trigger the computation is to call :meth:`compute`:
    dask.compute(sum_da)
    # or
    sum_da.compute()
-
-
-We can visualize the symbolic operations by calling :meth:`visualize`:
-
-.. code-block:: python
-
-   dask.visualize(sum_da)
-   # or 
-   sum_da.visualize()
 
 
 You can find additional details and examples here 
@@ -311,16 +311,24 @@ a Dask dataframe:
    import dask.dataframe as dd
 
    url = "https://raw.githubusercontent.com/pandas-dev/pandas/master/doc/data/titanic.csv"
-   # read from Pandas DataFrame
+
    df = pd.read_csv(url, index_col="Name")
+   # read a Dask Dataframe from a Pandas Dataframe
    ddf = dd.from_pandas(df, npartitions=10)
-   # "blocksize=None" means a single chunk is used
+
+Alternatively you can directly read into a Dask dataframe, whilst also modifying
+how the dataframe is partitioned in terms of ``blocksize``::
+
+   # blocksize=None which means a single chunk is used
    df = dd.read_csv(url,blocksize=None).set_index('Name')
    ddf= df.repartition(npartitions=10)
+
    # blocksize="4MB" or blocksize=4e6
    ddf = dd.read_csv(url,blocksize="4MB").set_index('Name')
    ddf.npartitions
-   # blocksize="default" means the chunk is computed based on available memory and cores with a maximum of 64MB
+
+   # blocksize="default" means the chunk is computed based on
+   # available memory and cores with a maximum of 64MB
    ddf = dd.read_csv(url,blocksize="default").set_index('Name')
    ddf.npartitions
 
@@ -356,7 +364,9 @@ specifically the step where we count words in a text.
 
 .. demo:: Demo: Dask version of word-count
 
-   First navigate to the ``word-count-hpda`` directory. The serial version (wrapped in 
+   If you have not already cloned or downloaded ``word-count-hpda`` repository,
+   `get it from here <https://github.com/ENCCS/word-count-hpda>`__.
+   Then, navigate to the ``word-count-hpda`` directory. The serial version (wrapped in 
    multiple functions in the ``source/wordcount.py`` code) looks like this:
 
    .. code-block:: python
@@ -379,7 +389,11 @@ specifically the step where we count words in a text.
               else:
                   counts[word] = 1    
       
-      sorted_counts = sorted(list(counts.items()), key=lambda key_value: key_value[1], reverse=True)
+      sorted_counts = sorted(
+         list(counts.items()),
+         key=lambda key_value: key_value[1],
+         reverse=True
+      )
       
       sorted_counts[:10]
 
@@ -392,15 +406,32 @@ specifically the step where we count words in a text.
       DELIMITERS = ". , ; : ? $ @ ^ < > # % ` ! * - = ( ) [ ] { } / \" '".split()
 
       text = db.read_text(filename, blocksize='1MiB')
-      sorted_counts = text.filter(lambda word: word not in DELIMITERS).str.lower().str.strip().str.split().flatten().frequencies().topk(10,key=1).compute()
+      sorted_counts = (
+         text
+         .filter(lambda word: word not in DELIMITERS)
+         .str.lower()
+         .str.strip()
+         .str.split()
+         .flatten()
+         .frequencies().topk(10,key=1)
+         .compute()
+      )
 
       sorted_counts
 
    The last two steps of the pipeline could also have been done with a dataframe:
 
    .. code-block:: python
+      :emphasize-lines: 9-10
 
-      filtered = text.filter(lambda word: word not in DELIMITERS).str.lower().str.strip().str.split().flatten()
+      filtered = (
+         text
+         .filter(lambda word: word not in DELIMITERS)
+         .str.lower()
+         .str.strip()
+         .str.split()
+         .flatten()
+      )
       ddf = filtered.to_dataframe(columns=['words'])
       ddf['words'].value_counts().compute()[:10]
 
@@ -411,8 +442,8 @@ specifically the step where we count words in a text.
    both parallelisation and the ability to utilize RAM on multiple machines.
 
 
-Low level interfaces: delayed and futures
------------------------------------------
+Low level interface: delayed
+----------------------------
 
 Sometimes problems don't fit into one of the collections like 
 ``dask.array`` or ``dask.dataframe``, they are not as simple as just a big array or dataframe. 
@@ -437,7 +468,7 @@ Let us run the example first, one after the other in sequence:
 
 
 Note that the first two functions ``inc`` and ``dec`` don't depend on each other, 
-we could have called them in parallel. We can call ``dask.delayed`` on these funtions 
+we could have called them in parallel. We can call ``dask.delayed`` on these functions 
 to make them lazy and tasks into a graph which we will run later on parallel hardware.
 
 .. code-block:: ipython
