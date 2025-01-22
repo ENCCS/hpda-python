@@ -81,40 +81,74 @@ Dask provides four different schedulers:
 
 
 Here we will focus on using a ``LocalCluster``, and it is recommended to use 
-a distributed sceduler ``dask.distributed``. It is more sophisticated, offers more features,
+a distributed scheduler ``dask.distributed``. It is more sophisticated, offers more features,
 but requires minimum effort to set up. It can run locally on a laptop and scale up to a cluster. 
-We can start a ``LocalCluster`` scheduler which makes use of all the cores and RAM 
-we have on the machine by: 
 
-.. code-block:: python
-    
-   from dask.distributed import Client, LocalCluster
-   # create a local cluster
-   cluster = LocalCluster()
-   # connect to the cluster we just created
-   client = Client(cluster)
-   client
+.. callout:: Alternative 1: Initializing a Dask ``LocalCluster`` via JupyterLab
+   :class: dropdown
+
+   This makes use of the ``dask-labextension`` which is pre-installed in our conda environment.
+ 
+   #. Start New Dask Cluster from the sidebar and by clicking on ``+ NEW`` button.
+   #. Click on the ``< >`` button to inject the client code into a notebook cell. Execute it.
+   
+
+   |dask-1| |dask-2|
+
+   3. You can scale the cluster for more resources or launch the dashboard.
+
+   |dask-3|
+
+   .. |dask-1| image:: ./img/jlab-dask-1.png
+      :width: 49%
+
+   .. |dask-2| image:: ./img/jlab-dask-2.png
+      :width: 49%
+
+   .. |dask-3| image:: ./img/jlab-dask-3.png
+      :width: 100%
+
+**Alternative 2**: We can also start a ``LocalCluster`` scheduler manually, which makes use of:
+
+.. tabs::
+
+   .. tab:: all resources
+      
+      all the cores and RAM we have on the machine by: 
+
+      .. code-block:: python
+          
+         from dask.distributed import Client, LocalCluster
+         # create a local cluster
+         cluster = LocalCluster()
+         # connect to the cluster we just created
+         client = Client(cluster)
+         client
 
 
-Or you can simply lauch a Client() call which is shorthand for what is described above.
+      Or you can simply lauch a Client() call which is shorthand for what is described above.
 
-.. code-block:: python
+      .. code-block:: python
 
-   from dask.distributed import Client
-   client = Client() # same as Client(processes=True)
-   client
+         from dask.distributed import Client
+         client = Client() # same as Client(processes=True)
+         client
 
+   .. tab:: specified resources
 
-We can also specify the resources to be allocated to a Dask cluster by:
+      which limits the compute resources available as follows:
 
-.. code-block:: python
-    
-   from dask.distributed import Client, LocalCluster
-   # create a local cluster with 
-   # 4 workers 
-   # 1 thread per worker
-   # 4 GiB memory limit for a worker
-   cluster = LocalCluster(n_workers=4,threads_per_worker=1,memory_limit='4GiB')
+      .. code-block:: python
+          
+         from dask.distributed import Client, LocalCluster
+         
+         cluster = LocalCluster(
+            n_workers=4,
+            threads_per_worker=1,
+            memory_limit='4GiB'  # memory limit per worker
+         )
+         client = Client(cluster)
+         client
 
 
 .. note::
@@ -134,6 +168,7 @@ you can modify the number of workers manually or automatically based on workload
    
    cluster.scale(10)  # Sets the number of workers to 10
    cluster.adapt(minimum=1, maximum=10)  # Allows the cluster to auto scale to 10 when tasks are computed
+
 
 
 Dask distributed scheduler also provides live feedback via its interactive dashboard. 
@@ -376,15 +411,14 @@ specifically the step where we count words in a text.
    both parallelisation and the ability to utilize RAM on multiple machines.
 
 
-Dask delayed
-^^^^^^^^^^^^
+Low level interfaces: delayed and futures
+-----------------------------------------
 
 Sometimes problems don't fit into one of the collections like 
 ``dask.array`` or ``dask.dataframe``, they are not as simple as just a big array or dataframe. 
 In these cases, ``dask.delayed`` may be the right choice. If the problem is paralellisable,  
 we can use ``dask.delayed`` which allows users to make function calls lazy 
 and thus can be put into a task graph with dependencies. 
-
 
 Consider the following example. The functions are very simple, and they *sleep* 
 for a prescribed time to simulate real work:
