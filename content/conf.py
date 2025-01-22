@@ -107,11 +107,14 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
 #    #'sphinx': ('https://www.sphinx-doc.org/', None),
     'numpy': ('https://numpy.org/doc/stable/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy-1.15.0/', None),
 #    #'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
-#    #'pandas': ('https://pandas.pydata.org/docs/', None),
+    'pandas': ('https://pandas.pydata.org/docs/', None),
 #    #'matplotlib': ('https://matplotlib.org/', None),
 #    'seaborn': ('https://seaborn.pydata.org/', None),
     'ipython': ('https://ipython.readthedocs.io/en/stable/', None),
+    'dask': ('https://docs.dask.org/en/stable/', None),
+    'xarray': ('https://docs.xarray.dev/en/stable/', None),
 }
 
 # sphinx-hoverxref

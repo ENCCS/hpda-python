@@ -69,6 +69,7 @@ and distributed computing.
    GPU-computing
    parallel-computing_opt
    optimization_opt
+   dask_opt
 
 
 .. toctree::
