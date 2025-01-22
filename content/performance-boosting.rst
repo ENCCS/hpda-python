@@ -25,7 +25,7 @@ Python is an interpreted language, meaning the Python interpreter reads and exec
       - cross-platform (assuming interpreters exist for each platform)
       - automatic memory management (no need to preallocate or deallocate memory as Python uses ``reference counting`` and ``garbage collection`` to handle memory allocation)
    👎 **Cons:**
-      - - less secure and debuggable (code is exposed and vulnerable to modification or attack by malicious users or hackers)
+      - less secure and debuggable (code is exposed and vulnerable to modification or attack by malicious users or hackers)
       - slower execution (python interpreter translates source code line-by-line into intermediate code during runtime, which adds an extra layer of overhead and complexity)
       - resource-intensive (interpreted languages consume more memory and CPU power than compiled languages)
 
@@ -80,7 +80,7 @@ We generate a dataframe and apply the :meth:`apply_integrate_f` function on its 
 		     "N": np.random.randint(100, 1000, (1000))})                
 
    %timeit apply_integrate_f(df['a'], df['b'], df['N'])
-   # 321 ms ± 10.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+   # 194 ms ± 1.65 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
 Cython: Benchmarking (step 1)
@@ -108,7 +108,7 @@ We benchmark the Python code just using Cython, and it gives us about 10%-20% in
 .. code-block:: ipython
 
    %timeit apply_integrate_f_cython(df['a'], df['b'], df['N'])
-   # 276 ms ± 20.2 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+   # 141 ms ± 3.07 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 
 
 Cython: Adding data type annotation to input variables (step 2)
@@ -126,7 +126,7 @@ Now we can start adding data type annotation to the input variables as highlight
    
    # this command works (see the description below)
    %timeit apply_integrate_f_cython_dtype0(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-   # 41.4 ms ± 1.27 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+   # 64.1 ms ± 0.50 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 .. warning::
 
@@ -205,7 +205,7 @@ Next step, we further add type annotation to functions. There are three ways of 
 .. code-block:: ipython
 
    %timeit apply_integrate_f_cython_dtype1(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-   # 37.2 ms ± 556 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+   # 54.9 ms ± 699 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 
 Cython: Adding data type annotation to local variables (step 4)
@@ -219,7 +219,7 @@ Last step, we can add type annotation to local variables within functions and th
 .. code-block:: ipython
 
    %timeit apply_integrate_f_cython_dtype2(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
-   # 696 µs ± 8.71 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+   # 13.8 ms ± 97.8 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 
 Now it is ~ 100 times faster than the original Python implementation, and all we have done is to add type declarations on the Python code!
@@ -261,20 +261,8 @@ Here is the updated code with the inclusion of the ``@jit`` decorator for the th
 
 .. code-block:: ipython
 
-   # try passing Pandas Series 
-   %timeit apply_integrate_f_numba(df['a'],df['b'],df['N'])
-   # 6.02 ms ± 56.5 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)
-
-   # try passing NumPy array
-   %timeit apply_integrate_f_numba(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
-   # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
-
-.. warning:: 
-   
-   - Numba is the best at accelerating functions that apply numerical functions to NumPy arrays.
-   - When used with Pandas, we should pass the underlying NumPy array of :class:`Series` or :class:`DataFrame` (using ``to_numpy()``) to functions.
-   - If you try to ``@jit`` a function that contains unsupported Python or NumPy code, compilation will fall back to the object mode which will mostly likely be very slow.
-   - If you prefer Numba to throw an error for such a case, you can do *e.g.* ``@numba.jit(nopython=True)`` or ``@numba.njit``. 
+   %timeit apply_integrate_f_numba(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+   # 474 µs ± 17 µs per loop (mean ± std. dev. of 7 runs, 1 loops each)
 
 
 Numba: Adding date type to ``@jit`` decorator (step 2)
@@ -287,8 +275,8 @@ We can further add date type, although in this case there is not much performanc
 
 .. code-block:: ipython
 
-   %timeit apply_integrate_f_numba_dtype(df['a'].to_numpy(),df['b'].to_numpy(),df['N'].to_numpy())
-   # 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+   %timeit apply_integrate_f_numba_dtype(df['a'].to_numpy(), df['b'].to_numpy(), df['N'].to_numpy())
+   # 468 µs ± 298 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 
 
 .. callout:: Numba vs Cython
