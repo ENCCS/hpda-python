@@ -42,13 +42,6 @@ This will create a new environment ``pyhpda`` which you need to activate by:
 
    $ conda activate pyhpda
 
-.. To use MPI4Py on your computer you need to install MPI libraries. With conda, these libraries are 
-.. installed automatically when installing the mpi4py package:
-..
-.. .. code-block:: console
-..
-..    $ conda install -c conda-forge mpi4py
-
 Ensure that the Python version is fairly recent:
 
 .. code-block:: console
@@ -62,6 +55,7 @@ Finally, open Jupyter-Lab in your browser:
 
    $ jupyter-lab
 
+If you use VS code, you can come to the installed ``pyhpda`` programming environment via choosing ``Select Kernel`` ar the upper right corner, ``Python Environents`` and you will find the pre-installed ``pyhpda`` programming environment.
 
 
 LUMI
