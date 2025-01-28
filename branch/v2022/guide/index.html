@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instructor’s guide &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="Optional: more on Pandas" href="../pandas-extra/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Installation and HPC access</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient array computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization/">Profiling and optimising</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU computing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Instructor’s guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-teach-this-lesson">Why teach this lesson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#intended-learning-outcomes">Intended learning outcomes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#schedule-for-3-half-day-workshop">Schedule for 3 half-day workshop</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Instructor’s guide</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/guide.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="instructor-s-guide">
+<h1>Instructor’s guide<a class="headerlink" href="#instructor-s-guide" title="Permalink to this heading"></a></h1>
+<section id="why-teach-this-lesson">
+<h2>Why teach this lesson<a class="headerlink" href="#why-teach-this-lesson" title="Permalink to this heading"></a></h2>
+<p>Python has traditionally not been used in high performance computing environments
+due to its inherent performance bottlenecks - i.e. being an interpreted language
+and having an in-built mechanism (the global interpreter lock) which prohibits many
+forms of parallelisation. At the same time, Python is enormously popular across scientific disciplines and
+application domains in both academia in industry, and there are by now a number of mature
+libraries for accelerating and parallelising Python code. Although better performance
+and parallel scalability will invariably be obtained by writing code in traditional HPC
+languages (C and Fortran), teaching researchers and engineers to write performant, parallel
+and GPU-ported code in a high-level language like Python can save substantial development time,
+make HPC resources more accessible to a wider range of researchers, and lead to better
+overall utilisation of available HPC computing power.</p>
+</section>
+<section id="intended-learning-outcomes">
+<h2>Intended learning outcomes<a class="headerlink" href="#intended-learning-outcomes" title="Permalink to this heading"></a></h2>
+<p>By the end of a workshop covering this lesson, learners should:</p>
+<ul class="simple">
+<li><p>Have a good overview of available tools and libraries for improving performance in Python</p></li>
+<li><p>Know what libraries are available for efficiently storing, reading and writing large data</p></li>
+<li><p>Be comfortable working with NumPy arrays and Pandas dataframes</p></li>
+<li><p>Be able to explain why Python code is often slow</p></li>
+<li><p>Understand the concept of vectorisation</p></li>
+<li><p>Understand the importance of measuring performance and profiling code before optimising</p></li>
+<li><p>Be able to describe the difference between “embarrasing”, shared-memory and distributed-memory parallelism</p></li>
+<li><p>Know the basics of parallel workflows, multiprocessing, multithreading and MPI</p></li>
+<li><p>Understand pre-compilation and know basic usage of Numba and Cython</p></li>
+<li><p>Have a mental model of how Dask achieves parallelism</p></li>
+<li><p>Remember key hardware differences between CPUs and GPUs</p></li>
+<li><p>Be able to create simple GPU kernels with Numba</p></li>
+</ul>
+</section>
+<section id="schedule-for-3-half-day-workshop">
+<h2>Schedule for 3 half-day workshop<a class="headerlink" href="#schedule-for-3-half-day-workshop" title="Permalink to this heading"></a></h2>
+<p><strong>Day 1</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Time</p></th>
+<th class="head"><p>Episode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>9:00 - 9:15</p></td>
+<td><p><a class="reference internal" href="../motivation/"><span class="doc">Motivation</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>9:15 - 9:50</p></td>
+<td><p><a class="reference internal" href="../scientific-data/"><span class="doc">Scientific data</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>9:50 - 10:00</p></td>
+<td><p>Break</p></td>
+</tr>
+<tr class="row-odd"><td><p>10:00 - 10:50</p></td>
+<td><p><a class="reference internal" href="../stack/"><span class="doc">Efficient array computing</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>10:50 - 11:00</p></td>
+<td><p>Break</p></td>
+</tr>
+<tr class="row-odd"><td><p>11:00 - 12:20</p></td>
+<td><p><a class="reference internal" href="../parallel-computing/"><span class="doc">Parallel computing</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Day 2:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Time</p></th>
+<th class="head"><p>Episode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>09:00 - 10:20</p></td>
+<td><p><span class="xref std std-doc">performance</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>10:20 - 10:40</p></td>
+<td><p>Break</p></td>
+</tr>
+<tr class="row-even"><td><p>10:40 - 12:00</p></td>
+<td><p><a class="reference internal" href="../dask/"><span class="doc">Dask for scalable analytics</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Day 3:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Time</p></th>
+<th class="head"><p>Episode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>09:00 - 10:00</p></td>
+<td><p><a class="reference internal" href="../GPU-computing/"><span class="doc">GPU computing</span></a> I</p></td>
+</tr>
+<tr class="row-odd"><td><p>10:00 - 10:10</p></td>
+<td><p>Break</p></td>
+</tr>
+<tr class="row-even"><td><p>10:10 - 11:00</p></td>
+<td><p><a class="reference internal" href="../GPU-computing/"><span class="doc">GPU computing</span></a> II</p></td>
+</tr>
+<tr class="row-odd"><td><p>11:00 - 11:10</p></td>
+<td><p>Break</p></td>
+</tr>
+<tr class="row-even"><td><p>11:10 - 12:00</p></td>
+<td><p>Free exercise time</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../pandas-extra/" class="btn btn-neutral float-left" title="Optional: more on Pandas" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
