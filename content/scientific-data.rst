@@ -227,6 +227,8 @@ An overview of common data formats
     - 🟨 : Ok / depends on a case
     - ❌ : Bad
 
+    Adapted from Aalto university's `Python for scientific computing <https://aaltoscicomp.github.io/python-for-scicomp/work-with-data/#what-is-a-data-format>`__.
+
 Some of these formats (e.g. JSON and CSV) are saved as text files (ASCII), thus they are 
 human-readable. This makes them easier to visually check them (e.g. for format errors) and 
 are supported out of the box by many tools. However, they tend to be slower during I/O and

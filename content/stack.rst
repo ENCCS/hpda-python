@@ -362,14 +362,44 @@ Views and copies of arrays
 I/O with NumPy
 ^^^^^^^^^^^^^^
 
-- Numpy provides functions for reading data from file and for writing data
-  into the files
-- Simple text files
+Numpy provides functions for reading from/writing to files. Both ASCII and binary
+formats are supported with the CSV and npy/npz formats:
 
-    - :meth:`numpy.loadtxt`
-    - :meth:`numpy.savetxt`
-    - Data in regular column layout
-    - Can deal with comments and different column delimiters
+.. tabs::
+
+  .. tab:: CSV
+
+    The ``numpy.loadtxt()`` and ``numpy.savetxt()`` functions can be used. They 
+    save in a regular column layout and can deal with different delimiters, 
+    column titles and numerical representations.
+
+      .. code-block:: python
+
+        a = np.array([1, 2, 3, 4])
+        np.savetxt("my_array.csv", a)
+        b = np.loadtxt("my_array.csv")
+        a == b
+        # True
+
+  .. tab:: Binary
+  
+    The npy format is a binary format used to dump arrays of any 
+    shape. Several arrays can be saved into a single npz file, which is 
+    simply a zipped collection of different npy files. All the arrays to 
+    be saved into a npz file can be passed as kwargs to the ``numpy.savez()``
+    function. The data can then be recovered using the ``numpy.load()`` method,
+    which returns a dictionary-like object in which each key points to one of the arrays:
+
+    .. code-block:: python
+
+      a = np.array([1, 2, 3, 4])
+      b = np.array([5, 6, 7, 8])
+
+      np.savez("my_arrays.npz", array_1=a, array_2=b)
+      data = np.load("my_arrays.npz")
+      data['array_1'] == a
+      data['array_2'] == b
+      # Both are true
 
 
 Random numbers
