@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+title:  High-Performance Data Analytics in Python
+message: "If you found this lesson useful, please cite it as below."
+type: software
+authors:
+  - family-names: Fiusco
+    given-names: Francesco
+    orcid: https://orcid.org/0000-0003-0716-465X
+    email: francesco.fiusco@ri.se
+  - family-names: Li
+    given-names: Qiang
+    orcid: https://orcid.org/0000-0002-6390-0343
+    email: qiang.li@liu.se
+  - family-names: Mohanan
+    given-names: Ashwin Vishnu
+    orcid: https://orcid.org/0000-0002-2979-6327
+    email: ashwin.mohanan@ri.se 
+  - family-names: Wikfeldt
+    given-names: Kjartan Thor
+    orcid: https://orcid.org/0000-0002-1655-3676
+    email: thor.wikfeldt@ri.se
+  - given-names: Yonglei
+    family-names: Wang
+    orcid: https://orcid.org/0000-0003-3393-7257
+    email: yonglei@nsc.liu.se
+abstract: ENCCS lesson material on High-Performance Data Analytics in Python
+# TODO: after uploading to Zenodo
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.xxxxxx
+#     description: "The concept DOI containing all editions of this lesson."
+url: https://enccs.github.io/hpda-python/
+repository-code: https://github.com/ENCCS/hpda-python
+version: 2025.01.21
+date-released: 2025-01-21
+license:
+  - CC-BY-4.0
+  - MIT
