@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPU computing &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Optional: more on Pandas" href="../pandas-extra/" />
+    <link rel="prev" title="Dask for scalable analytics" href="../dask/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Installation and HPC access</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient array computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization/">Profiling and optimising</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GPU computing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gpu-intro">GPU Intro</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#moore-s-law">Moore’s law</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#why-use-gpus">Why use GPUs?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-do-gpus-differ-from-cpus">How do GPUs differ from CPUs?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#python-on-gpu">Python on GPU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cupy">CuPy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cudf">cuDF</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pycuda">PyCUDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#numba">Numba</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#numba-for-gpus">Numba for GPUs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#terminology">Terminology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ufunc-gufunc-decorator">ufunc (gufunc) decorator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gpu-programming-model">GPU Programming Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpu-autopsy-volta-gpu">GPU Autopsy. Volta GPU</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#thread-hierarchy">Thread hierarchy</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-and-memory-management">Data and Memory management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-transfer">Data transfer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#memory-hierarchy">Memory hierarchy</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cuda-jit-decorator">CUDA JIT decorator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#optimization">Optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#asynchronous-execution">Asynchronous execution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">GPU computing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/GPU-computing.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gpu-computing">
+<span id="id1"></span><h1>GPU computing<a class="headerlink" href="#gpu-computing" title="Permalink to this heading"></a></h1>
+<div class="admonition-questions questions admonition" id="questions-0">
+<p class="admonition-title">Questions</p>
+<ul class="simple">
+<li><p>Why use GPUs?</p></li>
+<li><p>What is different about GPUs?</p></li>
+<li><p>What is the programming model?</p></li>
+</ul>
+</div>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Understand GPU architecture</p></li>
+<li><p>Understand GPU programming model</p></li>
+<li><p>Understand what types of computation is suitable for GPUs</p></li>
+<li><p>Learn the basics of Numba for GPUs</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>70 min teaching/type-along</p></li>
+<li><p>40 min exercises</p></li>
+</ul>
+</div>
+<section id="gpu-intro">
+<h2>GPU Intro<a class="headerlink" href="#gpu-intro" title="Permalink to this heading"></a></h2>
+<section id="moore-s-law">
+<h3>Moore’s law<a class="headerlink" href="#moore-s-law" title="Permalink to this heading"></a></h3>
+<p>The number of transistors in a dense integrated circuit doubles about every two years.
+More transistors means smaller size of a single element, so higher core frequency can be achieved.
+However, power consumption scales as frequency in third power, so the growth in the core frequency
+has slowed down significantly. Higher performance of a single node has to rely on its more complicated structure.</p>
+<figure class="align-center" id="id2">
+<img alt="../_images/microprocessor-trend-data.png" src="../_images/microprocessor-trend-data.png" />
+<figcaption>
+<p><span class="caption-text">The evolution of microprocessors.
+The number of transistors per chip increase every 2 years or so.
+However it can no longer be explored by the core frequency due to power consumption limits.
+Before 2000, the increase in the single core clock frequency was the major source of the increase in the performance.
+Mid 2000 mark a transition towards multi-core processors.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Achieving performance has been based on two main strategies over the years:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Increase the single processor performance:</p></li>
+<li><p>More recently, increase the number of physical cores.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="why-use-gpus">
+<h3>Why use GPUs?<a class="headerlink" href="#why-use-gpus" title="Permalink to this heading"></a></h3>
+<p>The Graphics Processing Unit (GPU) have been the most common accelerators
+during the last few years. The term <em>GPU</em> sometimes is used interchangeably
+with the term <em>accelerator</em>. GPU provides much higher instruction throughput
+and memory bandwidth than CPU within a similar price and power envelope.</p>
+</section>
+<section id="how-do-gpus-differ-from-cpus">
+<h3>How do GPUs differ from CPUs?<a class="headerlink" href="#how-do-gpus-differ-from-cpus" title="Permalink to this heading"></a></h3>
+<p>CPUs and GPUs were designed with different goals in mind. While the CPU
+is designed to excel at executing a sequence of operations, called a thread,
+as fast as possible and can execute a few tens of these threads in parallel,
+the GPU is designed to excel at executing many thousands of them in parallel.
+GPUs were initially developed for highly-parallel task of graphic processing
+and therefore designed such that more transistors are devoted to data processing
+rather than data caching and flow control. More transistors dedicated to
+data processing is beneficial for highly parallel computations; the GPU can
+hide memory access latencies with computation, instead of relying on large data caches
+and complex flow control to avoid long memory access latencies,
+both of which are expensive in terms of transistors.</p>
+<figure class="align-center" id="id3">
+<img alt="../_images/gpu_vs_cpu.png" src="../_images/gpu_vs_cpu.png" />
+<figcaption>
+<p><span class="caption-text">A comparison of the CPU and GPU architecture.
+CPU (left) has complex core structure and pack several cores on a single chip.
+GPU cores are very simple in comparison, they also share data and control between each other.
+This allows to pack more cores on a single chip, thus achieving very hich compute density.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>CPU</p></th>
+<th class="head"><p>GPU</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>General purpose</p></td>
+<td><p>Highly specialized for parallelism</p></td>
+</tr>
+<tr class="row-odd"><td><p>Good for serial processing</p></td>
+<td><p>Good for parallel processing</p></td>
+</tr>
+<tr class="row-even"><td><p>Great for task parallelism</p></td>
+<td><p>Great for data parallelism</p></td>
+</tr>
+<tr class="row-odd"><td><p>Low latency per thread</p></td>
+<td><p>High-throughput</p></td>
+</tr>
+<tr class="row-even"><td><p>Large area dedicated cache and control</p></td>
+<td><p>Hundreds of floating-point execution units</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="summary">
+<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>GPUs are highly parallel devices that can execute certain parts of the program in many parallel threads.</p></li>
+<li><p>CPU controls the works flow and makes all the allocations and data transfers.</p></li>
+<li><p>In order to use the GPU efficiently, one has to split their the problem  in many parts that can run simultaneously.</p></li>
+</ul>
+</section>
+</section>
+<section id="python-on-gpu">
+<h2>Python on GPU<a class="headerlink" href="#python-on-gpu" title="Permalink to this heading"></a></h2>
+<p>There has been a lot of progress on Pyhton using GPUs, it is still evolving.
+There are a couple of options available to work with GPU, but none of them is perfect.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CUDA is the programming model developed by NVIDIA to work with GPU</p>
+</div>
+<section id="cupy">
+<h3>CuPy<a class="headerlink" href="#cupy" title="Permalink to this heading"></a></h3>
+<p>CuPy is a NumPy/SciPy-compatible data array library used on GPU.
+CuPy has a highly compatible interface with NumPy and SciPy, As stated on its official website,
+“All you need to do is just replace <em>numpy</em> and <em>scipy</em> with <em>cupy</em> and <em>cupyx.scipy</em> in your Python code.”
+If you know NumPy, CuPy is a very easy way to get started on the GPU.</p>
+</section>
+<section id="cudf">
+<h3>cuDF<a class="headerlink" href="#cudf" title="Permalink to this heading"></a></h3>
+<p>RAPIDS is a high level packages collections which implement CUDA functionalities and API with Python bindings.
+cuDF belongs to RAPIDS and is the library for manipulating data frames on GPU.
+cuDF provides a pandas-like API, so if you are familiar with Pandas, you can accelerate your work
+without knowing too much CUDA programming.</p>
+</section>
+<section id="pycuda">
+<h3>PyCUDA<a class="headerlink" href="#pycuda" title="Permalink to this heading"></a></h3>
+<p>PyCUDA is a Python programming environment for CUDA. It allows users to access to NVIDIA’s CUDA API from Python.
+PyCUDA is powerful library but only runs on NVIDIA GPUs. Knowledge of CUDA programming is needed.</p>
+</section>
+<section id="numba">
+<h3>Numba<a class="headerlink" href="#numba" title="Permalink to this heading"></a></h3>
+<p>Same as for CPU, Numba allows users to JIT compile Python code to work on GPU as well.
+This workshop will focus on Numba only.</p>
+</section>
+</section>
+<section id="numba-for-gpus">
+<h2>Numba for GPUs<a class="headerlink" href="#numba-for-gpus" title="Permalink to this heading"></a></h2>
+<section id="terminology">
+<h3>Terminology<a class="headerlink" href="#terminology" title="Permalink to this heading"></a></h3>
+<p>Numba supports GPUs from both Nvidia and AMD, but we will use terminology from Nvidia
+as examples in the rest of the course.</p>
+<p>Several important terms in the topic of GPU programming are listed here:</p>
+<ul class="simple">
+<li><p><em>host</em>: the CPU</p></li>
+<li><p><em>device</em>: the GPU</p></li>
+<li><p><em>host memory</em>: the system main memory of the CPU</p></li>
+<li><p><em>device memory</em>: GPU onboard memory</p></li>
+<li><p><em>kernels</em>: a GPU function launched by the host and executed on the device</p></li>
+<li><p><em>device function</em>: a GPU function executed on the device which can only be
+called from the device (i.e. from a kernel or another device function)</p></li>
+</ul>
+<p>Numba supports GPU programming by directly compiling a restricted subset of Python code
+into kernels and device functions following the execution model.
+Kernels written in Numba appear to have direct access to NumPy arrays.
+NumPy arrays are transferred between the CPU and the GPU automatically.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Kernel declaration</p>
+<p>A kernel function is a GPU function that is meant to be called from CPU code.
+It contains two fundamental characteristics:</p>
+<ul class="simple">
+<li><p>kernels cannot explicitly return a value; all result data must be
+written to an array passed to the function (if computing a scalar,
+you will probably pass a one-element array);</p></li>
+<li><p>kernels explicitly declare their thread hierarchy when called:
+i.e. the number of thread blocks and the number of threads per block
+(note that while a kernel is compiled once, it can be called
+multiple times with different block sizes or grid sizes).</p></li>
+<li><p>Newer GPU devices from NVIDIA support device-side kernel launching;
+this feature is called dynamic parallelism but Numba does not support it currently</p></li>
+</ul>
+</div>
+</section>
+<section id="ufunc-gufunc-decorator">
+<h3>ufunc (gufunc) decorator<a class="headerlink" href="#ufunc-gufunc-decorator" title="Permalink to this heading"></a></h3>
+<p>Using ufuncs (and generalized ufuncs) is the easist way to run on a GPU with Numba,
+and it requires minimal understanding of GPU programming. Numba <code class="docutils literal notranslate"><span class="pre">&#64;vectorize</span></code>
+will produce a ufunc-like object. This object is a close analog but not fully compatible
+with a regular NumPy ufunc. Generating a ufunc for GPU requires the explicit
+type signature and  target attribute.</p>
+<div class="admonition-demo-numba-ufunc demo admonition" id="demo-0">
+<p class="admonition-title">Demo: Numba ufunc</p>
+<p>Let’s revisit our example during the episode of optimization.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">python</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Numba ufunc cpu</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Numba ufunc gpu</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)],</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">f_numba_cpu</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)],</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">f_numba_gpu</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+<p>Let’s benchmark</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">python</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">Numba cpu</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">Numba gpu</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it -r 1
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000000</span><span class="p">):</span>
+    <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="c1"># 6.75 s ± 0 ns per loop (mean ± std. dev. of 1 run, 1 loop each)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> res=f_numba_cpu(x, x)
+<span class="c1"># 734 ms ± 435 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> res=f_numba_gpu(x, x)
+<span class="c1"># 78.4 ms ± 6.71 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+<p>Numba <code class="docutils literal notranslate"><span class="pre">&#64;vectroize</span></code> is limited to scalar arguments in the core function, for multi-dimensional arrays arguments,
+<code class="docutils literal notranslate"><span class="pre">&#64;guvectorize</span></code> is used. Consider the following example which does matrix multiplication.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You should never implement such things like matrix multiplication by yourself,
+there are plenty of existing libraries available.</p>
+</div>
+<div class="admonition-demo-numba-gufunc demo admonition" id="demo-1">
+<p class="admonition-title">Demo:  Numba gufunc</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">python</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">numba gufunc cpu</button><button aria-controls="panel-2-2-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-2" name="2-2" role="tab" tabindex="-1">numba gufunc gpu</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">matmul_cpu</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span><span class="o">=</span><span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="c1">#@numba.guvectorize([&#39;(float64[:,:], float64[:,:], float64[:,:])&#39;], &#39;(m,l),(l,n)-&gt;(m,n)&#39;, target=&#39;cpu&#39;)</span>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">guvectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:])],</span> <span class="s1">&#39;(m,l),(l,n)-&gt;(m,n)&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">matmul_numba_cpu</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span><span class="o">=</span><span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-2" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-2" name="2-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="c1">#@numba.guvectorize([&#39;(float64[:,:], float64[:,:], float64[:,:])&#39;], &#39;(m,l),(l,n)-&gt;(m,n)&#39;, target=&#39;cuda&#39;)</span>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">guvectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:])],</span> <span class="s1">&#39;(m,l),(l,n)-&gt;(m,n)&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">matmul_numba_gpu</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span><span class="o">=</span><span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+</div></div>
+<p>benchmark</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-3-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-3-3-0" name="3-0" role="tab" tabindex="0">Numba gufunc cpu</button><button aria-controls="panel-3-3-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-3-3-1" name="3-1" role="tab" tabindex="-1">Numba gufunc gpu</button></div><div aria-labelledby="tab-3-3-0" class="sphinx-tabs-panel" id="panel-3-3-0" name="3-0" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> matmul_numba_cpu(A,B,C)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-3-1" class="sphinx-tabs-panel" hidden="true" id="panel-3-3-1" name="3-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> matmul_numba_gpu(A,B,C)
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Numba automatically did a lot of things for us:</p>
+<ul class="simple">
+<li><p>Memory was allocated on GPU</p></li>
+<li><p>Data was copied from CPU and GPU</p></li>
+<li><p>The kernel was configured and launched</p></li>
+<li><p>Data was copied back from GPU to CPU</p></li>
+</ul>
+</div>
+<p>Alough it is simple to use ufuncs(gfuncs) to run on GPU, the performance is the price we have to pay.
+In addition, not all functions can be written as ufuncs in practice. To have much more flexibility,
+one needs to write a kernel on GPU or device function, which requires more understanding of the GPU programming.</p>
+</section>
+<section id="gpu-programming-model">
+<h3>GPU Programming Model<a class="headerlink" href="#gpu-programming-model" title="Permalink to this heading"></a></h3>
+<p>Accelerators are a separate main circuit board with the processor, memory, power management, etc.,
+but they can not operate by themselves. They are always part of a system (host) in which
+the CPUs run the operating systems and control the programs execution. This is reflected
+in the programming model. CPU (host) and GPU (device) codes are mixed. CPU acts as a main processor,
+controlling the execution workflow.  The host makes all calls, allocates the memory,
+and  handles the memory transfers between CPU and GPU. GPUs run tens of thousands of threads
+simultaneously on thousands of cores and does not do much of the data management.
+The device code is executed by doing calls to functions (kernels) written specifically
+to take advantage of the GPU. The kernel calls are asynchronous, the control is returned
+to the host after a kernel calls. All kernels are executed sequentially.</p>
+<section id="gpu-autopsy-volta-gpu">
+<h4>GPU Autopsy. Volta GPU<a class="headerlink" href="#gpu-autopsy-volta-gpu" title="Permalink to this heading"></a></h4>
+<figure class="align-center" id="id4">
+<img alt="../_images/volta-architecture.png" src="../_images/volta-architecture.png" />
+<figcaption>
+<p><span class="caption-text">A scheme of NVIDIA Volta GPU.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The NVIDIA GPU  architecture is built upon a number of multithreaded Streaming Multiprocessors (SMs),
+each SM contains a number of compute units. NVIDIA Volta GPU has 80 SMs.</p>
+<p>NVIDIA Volta streaming multiprocessor (SM):</p>
+<ul class="simple">
+<li><p>64 single precision cores</p></li>
+<li><p>32 double precision cores</p></li>
+<li><p>64 integer cores</p></li>
+<li><p>8 Tensore cores</p></li>
+<li><p>128 KB memory block for L1 and shared memory</p>
+<ul>
+<li><p>0 - 96 KB can be set to user managed shared memory</p></li>
+<li><p>The rest is L1</p></li>
+</ul>
+</li>
+<li><p>65536 registers - enables the GPU to run a very large number of threads</p></li>
+</ul>
+<figure class="align-center" id="id5">
+<img alt="../_images/volta-sm-architecture.png" src="../_images/volta-sm-architecture.png" />
+<figcaption>
+<p><span class="caption-text">A scheme of NVIDIA Volta streaming multiprocessor.</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="thread-hierarchy">
+<h4>Thread hierarchy<a class="headerlink" href="#thread-hierarchy" title="Permalink to this heading"></a></h4>
+<p>In order to take advantage of the accelerators it is needed to use parallelism.
+When a kernel is launched,  tens of thousands of threads are created.
+All threads execute the given kernel with each thread executing the same
+instructions but on different data (Single Iinstruction Multiple Data
+parallel programming model). It is therefore crucial  to know which thread
+operates on which array element(s).</p>
+<p>In order to know the thread positioning, we need some information about the hierarchy on a software level.
+When CPU invokes a kernel, all the threads launched in the given kernel are partitioned/grouped
+into the so-called thread blocks and multiple blocks are combined to form a grid.
+The thread blocks of the grid are enumerated and distributed to SMs
+with available execution capacity. Thread blocks are required to execute independently,
+i.e. it must be possible to execute them in any order: in parallel or in series. In other words,
+each thread block can be scheduled on any of the available SM within a GPU, in any order,
+concurrently or sequentially, so that they can be executed on any number of SMs. Because of the design,
+a GPU with more SMs will automatically execute the program in less time than a GPU with fewer SMs.
+However, a thread block can not be splitted among the SMs, but in a SM several blocks can be active
+at any given moment. As thread blocks terminate, new blocks are launched on the vacated SMs.
+Within a thread block, the threads execute concurrently on the same SM, and they can exchange data via
+the so called shared memory and can be explicitly synchronized. The blocks can not interact with other blocks.</p>
+<figure class="align-center">
+<img alt="../_images/thread-hierarchy.png" src="../_images/thread-hierarchy.png" />
+</figure>
+<p>Threads can be identified using a one-dimensional, two-dimensional, or three-dimensional
+thread index through the buit-in <code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.threadIdx</span></code> variable,
+and this provides a natural way to invoke computation across the elements
+in a domain such as a vector, matrix, or volume.  Each block within the grid
+can be identified by a one-dimensional, two-dimensional, or three-dimensional
+unique index accessible within the kernel through the built-in <code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.blockIdx</span></code> variable.
+The dimension of the thread block is accessible within the kernel through the built-in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.blockDim</span></code> variable.  The global index of a thread should be
+computed from its in-block index, the index of execution block and the block size.
+For 1D, it is numba.cuda.threadIdx.x + numba.cuda.blockIdx.x * numba.cuda.blockDim.x.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Compared to an one-dimensional declarations of equivalent sizes,
+using multi-dimensional blocks does not change anything to the efficiency
+or behaviour of generated code, but can help you write your code in a more natural way.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.threadIdx</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.blockIdx</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.blockDim</span></code>
+are special objects provided by the CUDA backend for the sole purpose of knowing the geometry
+of the thread hierarchy and the position of the current thread within that geometry.
+These objects can be 1D, 2D or 3D, depending on how the kernel was invoked. To access
+the value at each dimension, use the <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> attributes of these objects, respectively.</p>
+<p>Numba provides simple solution to calculate thread position by calling <code class="xref py py-attr docutils literal notranslate"><span class="pre">numba.cuda.grid(ndim)</span></code>
+where <em>ndim</em> is the number of dimensions declared when invoking the kernel.</p>
+</div>
+<figure class="align-center" id="id6">
+<img alt="../_images/MappingBlocksToSMs.png" src="../_images/MappingBlocksToSMs.png" />
+<figcaption>
+<p><span class="caption-text">A simple example of the division of threads (green squares) in blocks (cyan rectangles).
+The equally-sized blocks contain four threads each. The thread index starts from zero in each block.
+Hence the “global” thread index should be computed from the thread index, block index and block size.
+This is explained for the thread #3 in block #2 (blue numbers). The thread blocks are mapped to SMs
+for execution, with all threads within a block executing on the same device. The number of threads
+within one block does not have to be equal to the number of execution units within multiprocessor.
+In fact, GPUs can switch between software threads very efficiently, putting threads that
+currently wait for the data on hold and releasing the resources for threads that are ready for computations.
+For efficient GPU utilization, the number of threads per block has to be couple of factors higher than
+the number of computing units on the multiprocessor. Same is true for the number of thread blocks,
+which can and should be higher than the number of available multiprocessor in order to
+use the GPU computational resources efficiently.</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>It is important to notice that the total number of threads in a grid is a multiple of the block size.
+This is not necessary the case for the problem that we are solving: the length of the vectors
+can be non-divisible by selected block size. So we either need to make sure that the threads
+with index large than the size of the vector don’t do anything, or add padding to the vectors.
+The former is a simple solution, i.e. by adding a condition after the global thread index is computed.</p>
+<figure class="align-center" id="id7">
+<img alt="../_images/BlocksAndThreads2.png" src="../_images/BlocksAndThreads2.png" />
+<figcaption>
+<p><span class="caption-text">The total number of threads that are needed for the execution (N) can often not be
+a multiple of the block size and some of the threads will be idling or producing unused data (red blocks).</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unless you are really sure that the block size and grid size are a divisor of your array size,
+you <strong>must</strong> check boundaries.</p>
+</div>
+<p>To obtain the best choice of the thread grid is not a simple task, since it depends on
+the specific implemented algorithm and GPU computing capability. The total number of threads
+is equal to the number of threads per block times the number of blocks per grid.
+The number of thread blocks per grid is usually dictated by the size of the data being processed,
+and it should be large enough to fully utilize the GPU.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>start with 20-100 blocks, the number of blocks is usually chosen to be 2x-4x the number of SMs</p></li>
+<li><p>the CUDA kernel launch overhead does depend on the number of blocks, so we find it best not to launch with very large number of blocks</p></li>
+</ul>
+</div></blockquote>
+<p>The size of the number of threads per block should be a multiple of 32,
+values like 128, 256 or 512 are frequently used</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>it should be lower than 1024 since it determines how many threads share a limited size of the shared memory</p></li>
+<li><p>it must be large than the number of available (single precision, double precision or integer operation) cores in a SM to fully occupy the SM</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="data-and-memory-management">
+<h3>Data and Memory management<a class="headerlink" href="#data-and-memory-management" title="Permalink to this heading"></a></h3>
+<p>With many cores trying to access the memory simultaneously and with little cache available,
+the accelerator can run out of memory very quickly. This makes the data and memory management an essential task on the GPU.</p>
+<section id="data-transfer">
+<h4>Data transfer<a class="headerlink" href="#data-transfer" title="Permalink to this heading"></a></h4>
+<p>Although Numba could transfer data automatically from/to the device, these data transfers are slow,
+sometimes even more than the actual on-device computation.
+Therefore explicitly transfering the data is necessary and should be minimised in real applications.</p>
+<p>Using numba.cuda functions, one can transfer data from/to device. To transfer data from cpu to gpu,
+one could use <code class="docutils literal notranslate"><span class="pre">to_device()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_x</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">d_y</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>the resulting d_x is a <code class="docutils literal notranslate"><span class="pre">DeviceNDArray</span></code>.
+To transfer data on the device back to the host, one can use the <code class="docutils literal notranslate"><span class="pre">copy_to_host()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d_x</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">(</span><span class="n">h_x</span><span class="p">)</span>
+<span class="n">h_y</span> <span class="o">=</span> <span class="n">d_y</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="memory-hierarchy">
+<h4>Memory hierarchy<a class="headerlink" href="#memory-hierarchy" title="Permalink to this heading"></a></h4>
+<figure class="align-center">
+<img alt="../_images/memory-hierarchy.png" src="../_images/memory-hierarchy.png" />
+</figure>
+<p>As shown in the figure,  CUDA threads may access data from different memory spaces
+during kernel execution:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>local memory: Each thread has private local memory.</p></li>
+<li><p>shared memory: Each thread block has shared memory visible to all threads of the thread block and with the same lifetime as the block.</p></li>
+<li><p>global memory: All threads have access to the same global memory.</p></li>
+</ul>
+</div></blockquote>
+<p>Both local and global memory resides in device memory, so memory accesses have high latency and low bandwidth, i.e. slow access time.
+On the other hand, shared memory has much higher bandwidth and much lower latency than local or global memory.
+However, only a limited amount of shared memory can be allocated on the device for better performance. One can think it as a manually-managed data cache.</p>
+</section>
+</section>
+<section id="cuda-jit-decorator">
+<h3>CUDA JIT decorator<a class="headerlink" href="#cuda-jit-decorator" title="Permalink to this heading"></a></h3>
+<p>CUDA Kernel and device functions are created with the <code class="docutils literal notranslate"><span class="pre">numba.cuda.jit</span></code> decorator on Nvidia GPUs.
+We will use Numba function <code class="docutils literal notranslate"><span class="pre">numba.cuda.grid(ndim)</span></code> to calculate the global thread positions.</p>
+<div class="admonition-demo-cuda-kernel demo admonition" id="demo-2">
+<p class="admonition-title">Demo: CUDA kernel</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-4-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-4-4-0" name="4-0" role="tab" tabindex="0">ufunc gpu</button><button aria-controls="panel-4-4-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-4-4-1" name="4-1" role="tab" tabindex="-1">CUDA kernel</button></div><div aria-labelledby="tab-4-4-0" class="sphinx-tabs-panel" id="panel-4-4-0" name="4-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)],</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">f_numba_gpu</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-4-4-1" class="sphinx-tabs-panel" hidden="true" id="panel-4-4-1" name="4-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">math_kernel</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span> <span class="c1"># numba.cuda.jit does not return result yet</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pos</span> <span class="o">&lt;</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">pos</span><span class="p">],</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">pos</span><span class="p">])</span>
+</pre></div>
+</div>
+</div></div>
+<p>benchmark</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-5-5-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-5-5-0" name="5-0" role="tab" tabindex="0">CUDA kernel</button><button aria-controls="panel-5-5-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-5-5-1" name="5-1" role="tab" tabindex="-1">CUDA kernel without data transfer</button></div><div aria-labelledby="tab-5-5-0" class="sphinx-tabs-panel" id="panel-5-5-0" name="5-0" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">blockspergrid</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="o">%</span><span class="k">timeit</span> math_kernel[threadsperblock, blockspergrid](a, b, c); numba.cuda.synchronize()
+<span class="c1"># 103 ms ± 616 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-5-5-1" class="sphinx-tabs-panel" hidden="true" id="panel-5-5-1" name="5-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10000000</span><span class="p">)</span>
+<span class="n">d_a</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">d_b</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">d_c</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">blockspergrid</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="o">%</span><span class="k">timeit</span> math_kernel[threadsperblock, blockspergrid](d_a, d_b, d_c); numba.cuda.synchronize()
+<span class="c1"># 62.3 µs ± 81.2 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="admonition-demo-cuda-kernel-matrix-multiplication demo admonition" id="demo-3">
+<p class="admonition-title">Demo: CUDA kernel matrix multiplication</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-6-6-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-6-6-0" name="6-0" role="tab" tabindex="0">gufunc gpu</button><button aria-controls="panel-6-6-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-6-6-1" name="6-1" role="tab" tabindex="-1">CUDA kernel</button></div><div aria-labelledby="tab-6-6-0" class="sphinx-tabs-panel" id="panel-6-6-0" name="6-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="c1">#@numba.guvectorize([&#39;(float64[:,:], float64[:,:], float64[:,:])&#39;], &#39;(m,l),(l,n)-&gt;(m,n)&#39;, target=&#39;cuda&#39;)</span>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">guvectorize</span><span class="p">([</span><span class="n">numba</span><span class="o">.</span><span class="n">void</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:],</span> <span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:,:])],</span> <span class="s1">&#39;(m,l),(l,n)-&gt;(m,n)&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">matmul_numba_gpu</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">C</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span><span class="o">=</span><span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-6-6-1" class="sphinx-tabs-panel" hidden="true" id="panel-6-6-1" name="6-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">numba.cuda</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">matmul_kernel</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">matmul_kernel2</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">ty</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">bx</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">by</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">bw</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockDim</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">bh</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockDim</span><span class="o">.</span><span class="n">y</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">tx</span> <span class="o">+</span> <span class="n">bx</span> <span class="o">*</span> <span class="n">bw</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">ty</span> <span class="o">+</span> <span class="n">by</span> <span class="o">*</span> <span class="n">bh</span>
+
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+</div></div>
+<p>Benchmark:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-7-7-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-7-7-0" name="7-0" role="tab" tabindex="0">NumPy</button><button aria-controls="panel-7-7-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-7-7-1" name="7-1" role="tab" tabindex="-1">gufunc gpu</button><button aria-controls="panel-7-7-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-7-7-2" name="7-2" role="tab" tabindex="-1">CUDA kernel</button><button aria-controls="panel-7-7-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-7-7-3" name="7-3" role="tab" tabindex="-1">CUDA kernel without data transfer</button></div><div aria-labelledby="tab-7-7-0" class="sphinx-tabs-panel" id="panel-7-7-0" name="7-0" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+    <span class="o">%</span><span class="k">timeit</span> C=np.matmul(A,B)
+<span class="c1"># 4.65 µs ± 45.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-7-7-1" class="sphinx-tabs-panel" hidden="true" id="panel-7-7-1" name="7-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># matmul_numba_gpu.max_blocksize = 32 # may need to set it</span>
+
+<span class="o">%</span><span class="k">timeit</span> matmul_numba_gpu(A, B, C)
+<span class="c1"># 10.9 ms ± 232 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-7-7-2" class="sphinx-tabs-panel" hidden="true" id="panel-7-7-2" name="7-2" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+<span class="n">TPB</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="p">(</span><span class="n">TPB</span><span class="p">,</span> <span class="n">TPB</span><span class="p">)</span>
+<span class="n">blockspergrid_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">threadsperblock</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">blockspergrid_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">threadsperblock</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="c1">#blockspergrid = (16,16)</span>
+
+<span class="o">%</span><span class="k">timeit</span> matmul_kernel[blockspergrid, threadsperblock](A, B, C); numba.cuda.synchronize()
+<span class="c1"># 914 µs ± 869 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-7-7-3" class="sphinx-tabs-panel" hidden="true" id="panel-7-7-3" name="7-3" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+<span class="n">d_A</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">d_B</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">d_C</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+<span class="n">TPB</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="p">(</span><span class="n">TPB</span><span class="p">,</span> <span class="n">TPB</span><span class="p">)</span>
+<span class="n">blockspergrid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> matmul_kernel[blockspergrid, threadsperblock](d_A, d_B, d_C); numba.cuda.synchronize()
+<span class="c1"># 90.9 µs ± 244 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">numba.cuda.synchronize()</span></code> is used after the kernel launch to make sure the profiling is correct.</p>
+<p>There are times when the gufunc kernel uses too many of a GPU’s resources, which can cause the kernel launch to fail.
+The user can explicitly control the maximum size of the thread block by setting the <code class="docutils literal notranslate"><span class="pre">max_blocksize</span></code> attribute on the compiled gufunc object.
+e.g. matmul_numba_gpu.max_blocksize = 32</p>
+</div>
+</section>
+</section>
+<section id="optimization">
+<h2>Optimization<a class="headerlink" href="#optimization" title="Permalink to this heading"></a></h2>
+<p>GPU can be easily misused and which leads to a low performance. One should condiser the following points when programming with GPU:</p>
+<blockquote>
+<div><ul class="simple">
+<li><dl class="simple">
+<dt>Maximize GPU utilization</dt><dd><ul>
+<li><p>input data size to keep GPU busy</p></li>
+<li><p>high arithmetic intensity</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Maximize memory throughput</dt><dd><ul>
+<li><p>minimizing data transfers between the host and the device</p></li>
+<li><p>minimizing redundant data accesses to global memory by using shared memory and cache</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Maximize instruction throughput</dt><dd><ul>
+<li><p>Asynchronous execution</p></li>
+<li><p>data types: 64bit data types (integer and floating point) have a significant cost when running on GPU compared to 32bit.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<section id="asynchronous-execution">
+<h3>Asynchronous execution<a class="headerlink" href="#asynchronous-execution" title="Permalink to this heading"></a></h3>
+<p>Although the evaluation of computation heavy kernels is noticeable quicker on a GPU,
+we still have some room for improvement. A typical GPU program that does not explore
+the task-based parallelism executed sequentially is shown on the figure below:</p>
+<figure class="align-center" id="id8">
+<a class="reference internal image-reference" href="../_images/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUSequential.png"><img alt="../_images/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUSequential.png" src="../_images/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUSequential.png" style="width: 189.6px; height: 380.09999999999997px;" /></a>
+<figcaption>
+<p><span class="caption-text">All the data transfers and two functions are executed sequentially.</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>As a result, the execution timeline looks similar to this:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUSync.png"><img alt="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUSync.png" src="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUSync.png" style="width: 211.5px; height: 204.29999999999998px;" /></a>
+</figure>
+<p>On a GPU, the host to device copy, kernel evaluation and device to host copy require different resources.
+Hence, while the data is being copied, GPU can execute the computational kernel without interfering
+with the data copying. To explore the task-based parallelism, we would like to execute the program as below:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUParallel.png"><img alt="../_images/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUParallel.png" src="../_images/ENCCS-OpenACC-CUDA_TaskParallelism_SchemeGPUParallel.png" style="width: 375.0px; height: 225.6px;" /></a>
+</figure>
+<p>and the resulting execution timeline looks similar to this:</p>
+<figure class="align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUAsync.png"><img alt="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUAsync.png" src="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineGPUAsync.png" style="width: 394.8px; height: 142.2px;" /></a>
+<figcaption>
+<p><span class="caption-text">The execution timeline of the asynchronous GPU program. The different tasks will overlap to each other
+to a certain extent that they do not interfere with each other.
+Note that there are still dependencies between tasks: we can not run the <code class="docutils literal notranslate"><span class="pre">func1(..)</span></code>
+before the <code class="docutils literal notranslate"><span class="pre">data1</span></code> is on the GPU and we can not copy the <code class="docutils literal notranslate"><span class="pre">result1</span></code> to the CPU
+before the kernel is finished. In order to express such sequential dependencies,
+asynchronous executions are used. Tasks that are independent can run simultaneously.</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id10">
+<a class="reference internal image-reference" href="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_SchemeGPUDependency.png"><img alt="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_SchemeGPUDependency.png" src="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_SchemeGPUDependency.png" style="width: 486.49999999999994px; height: 266.7px;" /></a>
+<figcaption>
+<p><span class="caption-text">Adding extra dependency between two tasks.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Let us look at one step further by adding extra dependency between two tasks. Assume that the <code class="docutils literal notranslate"><span class="pre">func2(..)</span></code>
+now needs the result of the <code class="docutils literal notranslate"><span class="pre">func1(..)</span></code> to be evaluated. This is easy to do in the program.</p>
+<figure class="align-center" id="id11">
+<a class="reference internal image-reference" href="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineAsyncDependency.png"><img alt="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineAsyncDependency.png" src="../_images/ENCCS-OpenACC-CUDA_TaskParallelism2_TimelineAsyncDependency.png" style="width: 604.8px; height: 166.25px;" /></a>
+<figcaption>
+<p><span class="caption-text">Adding extra dependency between two tasks.</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Permalink to this heading"></a></h2>
+<div class="admonition-perform-matrix-multiplication-with-single-precision exercise important admonition" id="exercise-0">
+<p class="admonition-title">Perform matrix multiplication with single precision</p>
+<p>In this exercise, we will compare the performance by using different precisions.
+We will run the matrix multiplication CUDA kernel i.e. matmul_kernel using input data with
+double and single precisions. Depending on what generation of GPU you are running on,
+the performance can be quite different.</p>
+<p>One can find more information about different Nvidia GPUs’ throughputs of the arithmetic instructions
+<a class="reference external" href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#maximize-instruction-throughput">here</a></p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-8-8-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-8-8-0" name="8-0" role="tab" tabindex="0">Interactive mode</button><button aria-controls="panel-8-8-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-8-8-1" name="8-1" role="tab" tabindex="-1">Batch mode</button></div><div aria-labelledby="tab-8-8-0" class="sphinx-tabs-panel" id="panel-8-8-0" name="8-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">numba.cuda</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">matmul_kernel</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+
+<span class="c1"># Benchmark</span>
+
+<span class="c1"># first generate double precision input data</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">8192</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># copy them to GPU</span>
+
+<span class="n">d_A</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">d_B</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">d_C</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+<span class="c1"># setup grid and block</span>
+
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">blockspergrid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># benchmark double precision input data</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">matmul_kernel</span><span class="p">[</span><span class="n">blockspergrid</span><span class="p">,</span> <span class="n">threadsperblock</span><span class="p">](</span><span class="n">d_A</span><span class="p">,</span> <span class="n">d_B</span><span class="p">,</span> <span class="n">d_C</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+
+<span class="c1"># then generate single precision input data</span>
+
+<span class="n">d_A32</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="n">d_B32</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="n">d_C32</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+<span class="c1"># benchmark single precision input data</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">matmul_kernel</span><span class="p">[</span><span class="n">blockspergrid</span><span class="p">,</span> <span class="n">threadsperblock</span><span class="p">](</span><span class="n">d_A32</span><span class="p">,</span> <span class="n">d_B32</span><span class="p">,</span> <span class="n">d_C32</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-8-8-1" class="sphinx-tabs-panel" hidden="true" id="panel-8-8-1" name="8-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">numba.cuda</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">matmul_kernel</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+
+<span class="c1"># Benchmark</span>
+
+<span class="c1"># first generate double precision input data</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">8192</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># copy them to GPU</span>
+
+<span class="n">d_A</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">d_B</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">d_C</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+<span class="c1"># setup grid and block</span>
+
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">blockspergrid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># create array to save profiling information</span>
+<span class="n">n_loop</span><span class="o">=</span><span class="mi">20</span>
+<span class="n">test1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_loop</span><span class="p">)</span>
+<span class="n">test2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_loop</span><span class="p">)</span>
+
+
+<span class="c1"># benchmark double precision input data</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loop</span><span class="p">):</span>
+    <span class="n">t_s</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">matmul_kernel</span><span class="p">[</span><span class="n">blockspergrid</span><span class="p">,</span> <span class="n">threadsperblock</span><span class="p">](</span><span class="n">d_A</span><span class="p">,</span> <span class="n">d_B</span><span class="p">,</span> <span class="n">d_C</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+    <span class="n">t_e</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">test1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">t_e</span> <span class="o">-</span> <span class="n">t_s</span>
+
+<span class="c1"># then generate single precision input data</span>
+
+<span class="n">d_A32</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="n">d_B32</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="n">d_C32</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+
+<span class="c1"># benchmark single precision input data</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loop</span><span class="p">):</span>
+    <span class="n">t_s</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">matmul_kernel</span><span class="p">[</span><span class="n">blockspergrid</span><span class="p">,</span> <span class="n">threadsperblock</span><span class="p">](</span><span class="n">d_A32</span><span class="p">,</span> <span class="n">d_B32</span><span class="p">,</span> <span class="n">d_C32</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+    <span class="n">t_e</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">test2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">t_e</span> <span class="o">-</span> <span class="n">t_s</span>
+
+
+<span class="c1"># calculate mean runtime</span>
+
+<span class="n">record</span> <span class="o">=</span> <span class="n">test1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matmul_kernel dtype64 Runtime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average </span><span class="si">{:.5f}</span><span class="s2"> second (except 1st run)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+
+<span class="n">record</span> <span class="o">=</span> <span class="n">test2</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matmul_kernel dtype32 Runtime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average </span><span class="si">{:.5f}</span><span class="s2"> second (except 1st run)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div></div>
+<div class="admonition-test-using-batch-mode solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">TEST USING BATCH MODE!!!</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#SBATCH --job-name=&quot;test&quot;</span>
+<span class="c1">#SBATCH --time=00:10:00</span>
+<span class="c1">#SBATCH --nodes=1</span>
+<span class="c1">#SBATCH --gres=gpu:1</span>
+<span class="c1">#SBATCH --ntasks-per-core=1</span>
+<span class="c1">#SBATCH --ntasks-per-node=1</span>
+<span class="c1">#SBATCH --cpus-per-task=1</span>
+<span class="c1">#SBATCH --partition=gpu</span>
+<span class="c1">#SBATCH --mem=4GB</span>
+<span class="c1">#SBATCH --account=d2021-135-users</span>
+<span class="c1">#SBATCH --reservation=ENCCS-HPDA-Workshop</span>
+
+module<span class="w"> </span>add<span class="w"> </span>Anaconda3/2020.11
+<span class="c1">#conda activate pyhpda</span>
+conda<span class="w"> </span>activate<span class="w"> </span>/ceph/hpc/home/euqiamgl/.conda/envs/pyhpda
+
+python<span class="w"> </span><span class="nv">$1</span><span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$1</span>.out
+
+<span class="nb">exit</span><span class="w"> </span><span class="m">0</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Save the solution in a Python script called <code class="docutils literal notranslate"><span class="pre">sbatch_matmul_dtype.py</span></code></p></li>
+<li><p>Save the above template file <a class="reference download internal" download="" href="../_downloads/c8f50ceaa5b7579d1206d7d8c48bc088/job.sh"><code class="xref download docutils literal notranslate"><span class="pre">job.sh</span></code></a> in the same folder as <code class="docutils literal notranslate"><span class="pre">sbatch_matmul_dtype.py</span></code></p></li>
+<li><p>Submit the job by following the instructions below</p></li>
+<li><p>The output will be written in <em>sbatch_matmul_dtype.py.out</em></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>go<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>directory<span class="w"> </span>where<span class="w"> </span>the<span class="w"> </span>files<span class="w"> </span>job.sh<span class="w"> </span>and<span class="w"> </span>sbatch_matmul_dtype.py<span class="w"> </span>are
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/path/to/somewhere
+<span class="gp">$ </span>sbatch<span class="w"> </span>job.sh<span class="w"> </span>sbatch_matmul_dtype.py
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-perform-matrix-multiplication-with-shared-memory exercise important admonition" id="exercise-1">
+<p class="admonition-title">Perform matrix multiplication with shared memory</p>
+<p>We will start from one implementation of the square matrix multiplication using shared memory.
+This implementation is taken from Numba official document, however there is arguably at least one error in it.
+Try to find where the error is and fix it:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="n">TPB</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">matmul_sm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="c1"># Define an array in the shared memory</span>
+    <span class="c1"># The size and type of the arrays must be known at compile time</span>
+    <span class="n">sA</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">TPB</span><span class="p">,</span> <span class="n">TPB</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">sB</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">TPB</span><span class="p">,</span> <span class="n">TPB</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">ty</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">bpg</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">gridDim</span><span class="o">.</span><span class="n">x</span>    <span class="c1"># blocks per grid</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span>
+
+    <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bpg</span><span class="p">):</span>
+        <span class="n">sA</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">ty</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">TPB</span><span class="p">]</span>
+        <span class="n">sB</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">tx</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">TPB</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
+        <span class="c1"># Wait until all threads finish preloading</span>
+        <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">syncthreads</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">TPB</span><span class="p">):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">sA</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">sB</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span>
+
+        <span class="c1"># Wait until all threads finish computing</span>
+        <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">syncthreads</span><span class="p">()</span>
+
+    <span class="n">C</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+<div class="admonition-hint solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">Hint</p>
+<ul class="simple">
+<li><p>data range check: we require neither x nor y is out of range. The <strong>and</strong> should have been an <strong>or</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numba.cuda.syncthreads()</span></code> in conditional code: __syncthreads() is allowed in conditional code but only if
+the conditional evaluates identically across the entire thread block, otherwise the code execution is
+likely to hang or produce unintended side effects.</p></li>
+</ul>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-2">
+<p class="admonition-title">Solution</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="n">TPB</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">matmul_sm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="c1"># Define an array in the shared memory</span>
+    <span class="c1"># The size and type of the arrays must be known at compile time</span>
+    <span class="n">sA</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">TPB</span><span class="p">,</span> <span class="n">TPB</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">sB</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">TPB</span><span class="p">,</span> <span class="n">TPB</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">ty</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span>
+    <span class="n">bpg</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">gridDim</span><span class="o">.</span><span class="n">x</span>    <span class="c1"># blocks per grid</span>
+
+    <span class="c1"># Each thread computes one element in the result matrix.</span>
+    <span class="c1"># The dot product is chunked into dot products of TPB-long vectors.</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="mf">0.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bpg</span><span class="p">):</span>
+        <span class="c1"># Preload data into shared memory</span>
+        <span class="n">sA</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sB</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ty</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">TPB</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+          <span class="n">sA</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">ty</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">TPB</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tx</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">TPB</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+          <span class="n">sB</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="p">[</span><span class="n">tx</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">TPB</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
+
+        <span class="c1"># Wait until all threads finish preloading</span>
+        <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">syncthreads</span><span class="p">()</span>
+
+        <span class="c1"># Computes partial product on the shared memory</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">TPB</span><span class="p">):</span>
+            <span class="n">tmp</span> <span class="o">+=</span> <span class="n">sA</span><span class="p">[</span><span class="n">tx</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">sB</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">ty</span><span class="p">]</span>
+
+        <span class="c1"># Wait until all threads finish computing</span>
+        <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">syncthreads</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">C</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-benchmark solution important dropdown admonition" id="solution-3">
+<p class="admonition-title">Benchmark</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">numba.cuda</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">8192</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
+
+<span class="n">d_A</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">d_B</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+<span class="n">d_C</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+<span class="n">threadsperblock</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">blockspergrid</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">n_loop</span><span class="o">=</span><span class="mi">20</span>
+<span class="n">test3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_loop</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loop</span><span class="p">):</span>
+    <span class="n">t_s</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">matmul_sm</span><span class="p">[</span><span class="n">blockspergrid</span><span class="p">,</span> <span class="n">threadsperblock</span><span class="p">](</span><span class="n">d_A</span><span class="p">,</span> <span class="n">d_B</span><span class="p">,</span> <span class="n">d_C</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+    <span class="n">t_e</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">test3</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">t_e</span> <span class="o">-</span> <span class="n">t_s</span>
+
+
+<span class="n">record</span> <span class="o">=</span> <span class="n">test3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;matmul_sm Runtime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average </span><span class="si">{:.5f}</span><span class="s2"> second (except 1st run)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-run-this solution important dropdown admonition" id="solution-4">
+<p class="admonition-title">RUN THIS!!!</p>
+<ul class="simple">
+<li><p>Save the solution and add benchmark part as well in a Python script called <code class="docutils literal notranslate"><span class="pre">sbatch_matmul_sm.py</span></code></p></li>
+<li><p>Copy or download <a class="reference download internal" download="" href="../_downloads/c8f50ceaa5b7579d1206d7d8c48bc088/job.sh"><code class="xref download docutils literal notranslate"><span class="pre">job.sh</span></code></a> to the same folder as <code class="docutils literal notranslate"><span class="pre">sbatch_matmul_sm.py</span></code></p></li>
+<li><p>Submit the job by following the instructions below</p></li>
+<li><p>The output will be written in <em>sbatch_matmul_sm.py.out</em></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>go<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>directory<span class="w"> </span>where<span class="w"> </span>job.sh<span class="w"> </span>and<span class="w"> </span>sbatch_matmul_sm.py<span class="w"> </span>are
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/path/to/somewhere
+<span class="gp">$ </span>sbatch<span class="w"> </span>job.sh<span class="w"> </span>sbatch_matmul_sm.py
+</pre></div>
+</div>
+</div>
+</div></blockquote>
+</div>
+<div class="admonition-discrete-laplace-operator exercise important admonition" id="exercise-2">
+<p class="admonition-title">Discrete Laplace Operator</p>
+<p>In this exercise, we will work with the discrete Laplace operator.
+It has a wide applications including numerical analysis, physics problems, image processing and machine learning as well.
+Here we consider a simple two-dimensional implementation with finite-difference formula i.e. the five-point stencil, which reads:</p>
+<div class="math notranslate nohighlight">
+\[u_{out}(i,j) = 0.25*[ u(i-1,j) + u(i+1,j) + u(i,j-1) + u(i,j+1) ]\]</div>
+<p>where <span class="math notranslate nohighlight">\(u(i,j)\)</span> refers to the input at location with
+integer index <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> within the domain.</p>
+<p>You will start with a naive implementation in Python and you should
+optimize it to run on both CPU and GPU using what we learned so far.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-9-9-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-9-9-0" name="9-0" role="tab" tabindex="0">The Laplace code</button><button aria-controls="panel-9-9-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-9-9-1" name="9-1" role="tab" tabindex="-1">Benchmark</button></div><div aria-labelledby="tab-9-9-0" class="sphinx-tabs-panel" id="panel-9-9-0" name="9-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lap2d</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>     
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>             
+            <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-9-9-1" class="sphinx-tabs-panel" hidden="true" id="panel-9-9-1" name="9-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> lap2d(u, unew)
+</pre></div>
+</div>
+</div></div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-5">
+<p class="admonition-title">Solution</p>
+<p>Optimization on CPU</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-10-10-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-10-10-0" name="10-0" role="tab" tabindex="0">numpy</button><button aria-controls="panel-10-10-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-10-10-1" name="10-1" role="tab" tabindex="-1">numba gufunc</button><button aria-controls="panel-10-10-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-10-10-2" name="10-2" role="tab" tabindex="-1">numba JIT</button></div><div aria-labelledby="tab-10-10-0" class="sphinx-tabs-panel" id="panel-10-10-0" name="10-0" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lap2d_numpy</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">unew</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mf">0.25</span><span class="o">*</span><span class="p">(</span><span class="n">u</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">u</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">:])</span>          
+
+
+<span class="c1"># Benchmark</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> lap2d_numpy(u, unew)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-10-10-1" class="sphinx-tabs-panel" hidden="true" id="panel-10-10-1" name="10-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">guvectorize</span><span class="p">([</span><span class="s1">&#39;void(float64[:,:],float64[:,:])&#39;</span><span class="p">],</span><span class="s1">&#39;(m,n)-&gt;(m,n)&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">lap2d_numba_gu_cpu</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>   
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>  
+            <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>   
+
+
+<span class="c1"># Benchmark</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> lap2d_numba_gu_cpu(u, unew)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-10-10-2" class="sphinx-tabs-panel" hidden="true" id="panel-10-10-2" name="10-2" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span> 
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">lap2d_numba_jit_cpu</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>   
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>             
+            <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>     
+
+
+<span class="c1"># Benchmark</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> lap2d_numba_jit_cpu(u, unew)
+</pre></div>
+</div>
+</div></div>
+<p>Optimization on GPU</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-11-11-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-11-11-0" name="11-0" role="tab" tabindex="0">numba gufunc</button><button aria-controls="panel-11-11-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-11-11-1" name="11-1" role="tab" tabindex="-1">numba CUDA kernel</button><button aria-controls="panel-11-11-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-11-11-2" name="11-2" role="tab" tabindex="-1">RUN THIS!!!</button></div><div aria-labelledby="tab-11-11-0" class="sphinx-tabs-panel" id="panel-11-11-0" name="11-0" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">guvectorize</span><span class="p">([</span><span class="s1">&#39;void(float64[:,:],float64[:,:])&#39;</span><span class="p">],</span><span class="s1">&#39;(m,n)-&gt;(m,n)&#39;</span><span class="p">,</span><span class="n">target</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">lap2d_numba_gu_gpu</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>   
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>  
+            <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>   
+
+
+<span class="c1"># Benchmark</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> lap2d_numba_gu_gpu(u, unew)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-11-11-1" class="sphinx-tabs-panel" hidden="true" id="panel-11-11-1" name="11-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">numba.cuda</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">lap2d_cuda</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>     
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+        <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>   
+ 
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">lap2d_cuda2</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>     
+    <span class="n">i</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockDim</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockDim</span><span class="o">.</span><span class="n">y</span>
+
+    <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+        <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+
+<span class="c1"># Benchmark</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> lap2d_cuda[(16,16),(16,16)](u, unew); numba.cuda.synchronize()
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="c1"># Benchmark properly</span>
+<span class="o">%%time</span>it 
+<span class="n">d_u</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+<span class="n">d_unew</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">unew</span><span class="p">)</span>
+<span class="n">lap2d_cuda</span><span class="p">[(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">)](</span><span class="n">d_u</span><span class="p">,</span> <span class="n">d_unew</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+<span class="n">d_unew</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">(</span><span class="n">unew</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-11-11-2" class="sphinx-tabs-panel" hidden="true" id="panel-11-11-2" name="11-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">numba.cuda</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">guvectorize</span><span class="p">([</span><span class="s1">&#39;void(float64[:,:],float64[:,:])&#39;</span><span class="p">],</span><span class="s1">&#39;(m,n)-&gt;(m,n)&#39;</span><span class="p">,</span><span class="n">target</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">lap2d_numba_gu_gpu</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">lap2d_cuda</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+        <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">jit</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">lap2d_cuda2</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">):</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockDim</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">threadIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockIdx</span><span class="o">.</span><span class="n">y</span> <span class="o">*</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">blockDim</span><span class="o">.</span><span class="n">y</span>
+
+    <span class="k">if</span> <span class="n">i</span><span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+        <span class="n">unew</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+
+
+<span class="n">M</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">4096</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">unew</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+
+
+<span class="n">n_loop</span><span class="o">=</span><span class="mi">20</span>
+<span class="n">test1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_loop</span><span class="p">)</span>
+<span class="n">test2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_loop</span><span class="p">)</span>
+<span class="n">test3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_loop</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loop</span><span class="p">):</span>
+    <span class="n">t_s</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">lap2d_numba_gu_gpu</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">)</span>
+    <span class="n">t_e</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">test1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">t_e</span> <span class="o">-</span> <span class="n">t_s</span>
+
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loop</span><span class="p">):</span>
+    <span class="n">t_s</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">lap2d_cuda</span><span class="p">[(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">)](</span><span class="n">u</span><span class="p">,</span> <span class="n">unew</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+    <span class="n">t_e</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">test2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">t_e</span> <span class="o">-</span> <span class="n">t_s</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loop</span><span class="p">):</span>
+    <span class="n">t_s</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">d_u</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">d_unew</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">unew</span><span class="p">)</span>
+    <span class="n">lap2d_cuda</span><span class="p">[(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="mi">16</span><span class="p">,</span><span class="mi">16</span><span class="p">)](</span><span class="n">d_u</span><span class="p">,</span> <span class="n">d_unew</span><span class="p">);</span> <span class="n">numba</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+    <span class="n">d_unew</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">(</span><span class="n">unew</span><span class="p">)</span>
+    <span class="n">t_e</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">test3</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">t_e</span> <span class="o">-</span> <span class="n">t_s</span>
+
+
+
+<span class="n">record</span> <span class="o">=</span> <span class="n">test1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Numba gufunc Runtime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average </span><span class="si">{:.5f}</span><span class="s2"> second (except 1st run)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+
+<span class="n">record</span> <span class="o">=</span> <span class="n">test2</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Numba CUDA without explicit data transfer Runtime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average </span><span class="si">{:.5f}</span><span class="s2"> second (except 1st run)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+
+<span class="n">record</span> <span class="o">=</span> <span class="n">test3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Numba CUDA with explicit data transfer Runtime&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;average </span><span class="si">{:.5f}</span><span class="s2"> second (except 1st run)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Numba gufuncs are easy to use on GPU</p></li>
+<li><p>Always consider input data size, compute complexity,
+host/device data copy and data type when programing with GPU</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../dask/" class="btn btn-neutral float-left" title="Dask for scalable analytics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../pandas-extra/" class="btn btn-neutral float-right" title="Optional: more on Pandas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

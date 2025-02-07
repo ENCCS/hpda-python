@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation and LUMI Access &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_theme.css?v=3234e928" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+      <link rel="stylesheet" type="text/css" href="../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=187304be"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../_static/minipres.js?v=a0d29692"></script>
+      <script src="../_static/js/hoverxref.js"></script>
+      <script src="../_static/js/tooltipster.bundle.min.js"></script>
+      <script src="../_static/js/micromodal.min.js"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Motivation" href="../motivation/" />
+    <link rel="prev" title="High Performance Data Analytics in Python" href="../" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and LUMI Access</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-installation">Local installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-miniforge">Install miniforge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-python-programming-environment-on-personal-computer">Install python programming environment on personal computer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lumi">LUMI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#login-to-lumi-cluster">Login to LUMI cluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-jobs-on-lumi-cluster">Running jobs on LUMI cluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-pyhpda-programming-environment">Using <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> programming environment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient Array Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization/">Benchmarking, profiling and optimizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance Boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for Scalable Analytics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup-eurohpc/">Installation in EuroHPC Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Pandas (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing_opt/">Parallel Computing (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization_opt/">Benchmarking, profiling and optimizing (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask_opt/">Dask (II)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation and LUMI Access</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/hpda-python/blob/main/content/setup.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation-and-lumi-access">
+<h1>Installation and LUMI Access<a class="headerlink" href="#installation-and-lumi-access" title="Link to this heading"></a></h1>
+<p>This page contains instructions for installing the required dependencies on a local computer
+as well as instructions for logging into a EuroHPC system.</p>
+<section id="local-installation">
+<h2>Local installation<a class="headerlink" href="#local-installation" title="Link to this heading"></a></h2>
+<section id="install-miniforge">
+<h3>Install miniforge<a class="headerlink" href="#install-miniforge" title="Link to this heading"></a></h3>
+<p>If you already have a preferred way to manage Python versions and libraries, you can stick to that. If not, we recommend that you install Python3 and all libraries using <a class="reference external" href="https://conda-forge.org/download/">Miniforge</a>, a free minimal installer for the package, dependency and environment manager <a class="reference external" href="https://docs.conda.io/en/latest/index.html">conda</a>.</p>
+<p>Please follow the installation instructions on <a class="reference external" href="https://conda-forge.org/download/">https://conda-forge.org/download/</a> to install Miniforge.</p>
+<p>Make sure that conda is correctly installed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>--version
+<span class="go">conda 24.11.2</span>
+</pre></div>
+</div>
+</section>
+<section id="install-python-programming-environment-on-personal-computer">
+<h3>Install python programming environment on personal computer<a class="headerlink" href="#install-python-programming-environment-on-personal-computer" title="Link to this heading"></a></h3>
+<p>With conda installed, install the required dependencies by running:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>--yes<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/ENCCS/hpda-python/main/content/env/environment.yml
+</pre></div>
+</div>
+<p>This will create a new environment <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> which you need to activate by:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>pyhpda
+</pre></div>
+</div>
+<p>Ensure that the Python version is fairly recent:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>--version
+<span class="go">Python 3.12.8</span>
+</pre></div>
+</div>
+<p>Finally, open Jupyter-Lab in your browser:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>jupyter-lab
+</pre></div>
+</div>
+<p>If you use VS code, you can come to the installed <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> programming environment via choosing <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Kernel</span></code> ar the upper right corner, <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">Environents</span></code> and you will find the pre-installed <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> programming environment.</p>
+</section>
+</section>
+<section id="lumi">
+<h2>LUMI<a class="headerlink" href="#lumi" title="Link to this heading"></a></h2>
+<section id="login-to-lumi-cluster">
+<h3>Login to LUMI cluster<a class="headerlink" href="#login-to-lumi-cluster" title="Link to this heading"></a></h3>
+<p>Follow practical instructions <a class="reference external" href="https://enccs.se/tutorials/2024/02/log-in-to-lumi-cluster/">HERE</a> to get your access to LUMI cluster.</p>
+<ul class="simple">
+<li><p>On <a class="reference external" href="https://enccs.se/tutorials/2024/02/log-in-to-lumi-cluster/">Step 5</a>, you can login to LUMI cluster through terminal.</p></li>
+<li><p>On <a class="reference external" href="https://enccs.se/tutorials/2024/02/log-in-to-lumi-cluster/">Step 6</a>, you can login to LUMI cluster from the web-interface.</p></li>
+</ul>
+</section>
+<section id="running-jobs-on-lumi-cluster">
+<h3>Running jobs on LUMI cluster<a class="headerlink" href="#running-jobs-on-lumi-cluster" title="Link to this heading"></a></h3>
+<p>If you want to run an interactive job asking for 1 node, 1 GPU, and 1 hour:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>salloc<span class="w"> </span>-A<span class="w"> </span>project_465001310<span class="w"> </span>-N<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">1</span>:00:00<span class="w"> </span>-p<span class="w"> </span>standard-g<span class="w"> </span>--gpus-per-node<span class="o">=</span><span class="m">1</span>
+<span class="gp">$ </span>srun<span class="w"> </span>&lt;some-command&gt;
+</pre></div>
+</div>
+<p>Exit interactive allocation with <code class="docutils literal notranslate"><span class="pre">exit</span></code>.</p>
+<p>Interacive terminal session on compute node:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>srun<span class="w"> </span>--account<span class="o">=</span>project_465001310<span class="w"> </span>--partition<span class="o">=</span>standard-g<span class="w"> </span>--nodes<span class="o">=</span><span class="m">1</span><span class="w"> </span>--cpus-per-task<span class="o">=</span><span class="m">1</span><span class="w"> </span>--ntasks-per-node<span class="o">=</span><span class="m">1</span><span class="w"> </span>--gpus-per-node<span class="o">=</span><span class="m">1</span><span class="w"> </span>--time<span class="o">=</span><span class="m">1</span>:00:00<span class="w"> </span>--pty<span class="w"> </span>bash
+<span class="gp">$ </span>&lt;some-command&gt;
+</pre></div>
+</div>
+<p>You can also submit your job with a batch script <code class="docutils literal notranslate"><span class="pre">submit.sh</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash -l</span>
+<span class="c1">#SBATCH --account=project_465001310</span>
+<span class="c1">#SBATCH --job-name=example-job</span>
+<span class="c1">#SBATCH --output=examplejob.o%j</span>
+<span class="c1">#SBATCH --error=examplejob.e%j</span>
+<span class="c1">#SBATCH --partition=standard-g</span>
+<span class="c1">#SBATCH --nodes=1</span>
+<span class="c1">#SBATCH --gpus-per-node=1</span>
+<span class="c1">#SBATCH --ntasks-per-node=1</span>
+<span class="c1">#SBATCH --time=1:00:00</span>
+
+srun<span class="w"> </span>&lt;some_command&gt;
+</pre></div>
+</div>
+<p>Some useful commands are listed below:</p>
+<ul class="simple">
+<li><p>Submit the job: <code class="docutils literal notranslate"><span class="pre">sbatch</span> <span class="pre">submit.sh</span></code></p></li>
+<li><p>Monitor your job: <code class="docutils literal notranslate"><span class="pre">squeue</span> <span class="pre">--me</span></code></p></li>
+<li><p>Kill job: <code class="docutils literal notranslate"><span class="pre">scancel</span> <span class="pre">&lt;JOB_ID&gt;</span></code></p></li>
+</ul>
+</section>
+<section id="using-pyhpda-programming-environment">
+<h3>Using <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> programming environment<a class="headerlink" href="#using-pyhpda-programming-environment" title="Link to this heading"></a></h3>
+<p>We have installed the <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> programming environment on LUMI. You can follow instructions below to activate it.</p>
+<p>Login to LUMI cluster via terminal and then the commands below to check and activate the <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> environment.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>/projappl/project_465001310/miniconda3/bin/conda<span class="w"> </span>init
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>~/.bashrc
+<span class="gp">$ </span>which<span class="w"> </span>conda
+
+<span class="gp"># </span>you<span class="w"> </span>should<span class="w"> </span>get<span class="w"> </span>output<span class="w"> </span>as<span class="w"> </span>shown<span class="w"> </span>below
+<span class="go">/project/project_465001310/miniconda3/condabin/conda</span>
+
+<span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>pyhpda
+<span class="gp">$ </span>which<span class="w"> </span>python
+
+<span class="gp"># </span>you<span class="w"> </span>should<span class="w"> </span>get<span class="w"> </span>output<span class="w"> </span>as<span class="w"> </span>shown<span class="w"> </span>below
+<span class="go">/project/project_465001310/miniconda3/envs/pyhpda/bin/python</span>
+</pre></div>
+</div>
+<p>Login to LUMI cluster via <a class="reference external" href="https://www.lumi.csc.fi/public/">web-interface</a> and then select <code class="docutils literal notranslate"><span class="pre">Jupyter</span></code> (not <code class="docutils literal notranslate"><span class="pre">Jupyter</span> <span class="pre">for</span> <span class="pre">courses</span></code>) icon for an interactive session, and provide the following values in the form to launch the jupyter lab app.</p>
+<ul class="simple">
+<li><p>Project: <cite>project_465001310</cite></p></li>
+<li><p>Partition: <cite>interactive</cite></p></li>
+<li><p>Number of CPU cores: <cite>2</cite></p></li>
+<li><p>Time: <cite>4:00:00</cite></p></li>
+<li><p>Working directory: <cite>/projappl/project_465001310</cite></p></li>
+<li><p>Python: <cite>Custom</cite></p></li>
+<li><p>Path to python: <cite>/project/project_465001310/miniconda3/envs/pyhpda/bin/python</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">check</span></code> for <cite>Enable system installed packages on venv creation</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">check</span></code> for <cite>Enable packages under ~/.local/lib on venv start</cite></p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Launch</span></code> button, wait for minutes until your requested session was created.</p></li>
+<li><p>Click the <code class="docutils literal notranslate"><span class="pre">Connect</span> <span class="pre">to</span> <span class="pre">Jupyter</span></code> button, and then select the Python kernel <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">3</span> <span class="pre">(venv)</span></code> for the created Jupyter notebooks.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../" class="btn btn-neutral float-left" title="High Performance Data Analytics in Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../motivation/" class="btn btn-neutral float-right" title="Motivation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

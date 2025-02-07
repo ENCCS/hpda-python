@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation and HPC access &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Motivation" href="../motivation/" />
+    <link rel="prev" title="High Performance Data Analytics in Python" href="../" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and HPC access</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-installation">Local installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eurohpc-systems">EuroHPC systems</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mpi4py">mpi4py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-jobs">Running jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-jupyter">Running Jupyter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient array computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization/">Profiling and optimising</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU computing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation and HPC access</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/setup.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation-and-hpc-access">
+<h1>Installation and HPC access<a class="headerlink" href="#installation-and-hpc-access" title="Permalink to this heading"></a></h1>
+<p>This page contains instructions for installing the required dependencies on a local computer
+as well as instructions for logging in and using two EuroHPC systems.</p>
+<section id="local-installation">
+<h2>Local installation<a class="headerlink" href="#local-installation" title="Permalink to this heading"></a></h2>
+<p>If you already have a preferred way to manage Python versions and
+libraries, you can stick to that. If not, we recommend that you
+install Python3 and all libraries using
+<a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a>,
+a free minimal installer for the package, dependency and environment manager
+<a class="reference external" href="https://docs.conda.io/en/latest/index.html">conda</a>.</p>
+<p>Please follow the installation instructions on
+<a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a> to install Miniconda3.</p>
+<p>Make sure that both Python and conda are correctly installed:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>--version
+<span class="gp">$ </span><span class="c1"># should give something like Python 3.9.7</span>
+<span class="gp">$ </span>conda<span class="w"> </span>--version
+<span class="gp">$ </span><span class="c1"># should give something like conda 4.10.2</span>
+</pre></div>
+</div>
+<p>With conda installed, install the required dependencies by running:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+</pre></div>
+</div>
+<p>This will create a new environment <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> which you need to activate by:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>pyhpda
+</pre></div>
+</div>
+<p>To use MPI4Py on your computer you need to install MPI libraries. With conda, these libraries are
+installed automatically when installing the mpi4py package:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mpi4py
+</pre></div>
+</div>
+<p>Finally, open Jupyter-Lab in your browser:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>jupyter-lab
+</pre></div>
+</div>
+</section>
+<section id="eurohpc-systems">
+<h2>EuroHPC systems<a class="headerlink" href="#eurohpc-systems" title="Permalink to this heading"></a></h2>
+<p>Here are instructions for accessing the EuroHPC system, setting up the Python environment
+and running jobs. Please follow the instructions for the HPC system that will be used
+during the workshop that you are attending.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-VmVnYQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-0-VmVnYQ==" name="VmVnYQ==" role="tab" tabindex="0">Vega</button><button aria-controls="panel-0-S2Fyb2xpbmE=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-0-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tab" tabindex="-1">Karolina</button></div><div aria-labelledby="tab-0-VmVnYQ==" class="sphinx-tabs-panel group-tab" id="panel-0-VmVnYQ==" name="VmVnYQ==" role="tabpanel" tabindex="0"><p>Thanks to <a class="reference external" href="https://www.izum.si/en/hpc-en/">IZUM</a> in Slovenia we will have an allocation on the
+petascale <a class="reference external" href="https://en-vegadocs.vega.izum.si/">Vega</a> EuroHPC system for the duration of the workshop.
+The sustained and peak performance of Vega is 6.9 petaflops and 10.1 petaflops, respectively.</p>
+<p><strong>Architecture</strong>:</p>
+<p>Vega has both <a class="reference external" href="https://en-vegadocs.vega.izum.si/architecture/">GPU and CPU partititions</a>:</p>
+<ul class="simple">
+<li><p>CPU partition: Each node has two AMD Epyc 7H12 CPUs, each with 64 cores. 768 nodes with 256 GB,
+192 nodes with 1 TB of RAM DDR4-3200, local 1.92 TB M.2 SSD.</p></li>
+<li><p>GPU partition: Each node has 4 GPUs NVidia A100 with 40 GB HBMI2 and two AMD Epyc 7H12 CPUs.
+In total 60 nodes with 512 GB of RAM DDR4-3200, local 1.92 TB M.2 SSD</p></li>
+</ul>
+</div><div aria-labelledby="tab-0-S2Fyb2xpbmE=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-0-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tabpanel" tabindex="0"><p>Thanks to <a class="reference external" href="https://www.it4i.cz/en">IT4I</a> in the Czech Republic we will have an allocation
+on the petascale <a class="reference external" href="https://www.it4i.cz/en/infrastructure/karolina">Karolina supercomputer</a>
+for the duration of the workshop. The peak performance of Karolina is 15.7 petaflops.</p>
+<p><strong>Architecture</strong>:</p>
+<ul class="simple">
+<li><p>720x 2x AMD 7H12, 64 cores, 2,6 GHz, 92,160 cores in total</p></li>
+<li><p>72x 2x AMD 7763, 64 cores, 2,45 GHz, 9,216 cores in total</p></li>
+<li><p>72x 8x NVIDIA A100 GPU, 576 GPU in total</p></li>
+<li><p>32x Intel Xeon-SC 8628, 24 cores, 2,9 GHz, 768 cores in total</p></li>
+<li><p>36x 2x AMD 7H12, 64 cores, 2,6 GHz, 4,608 cores in total</p></li>
+<li><p>2x 2x AMD 7452, 32 cores, 2,35 GHz, 128 cores in total</p></li>
+</ul>
+</div></div>
+<p>Software on the cluster is available through a module system.
+First load the Anaconda module to get access to the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package manager:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-VmVnYQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-1-VmVnYQ==" name="VmVnYQ==" role="tab" tabindex="0">Vega</button><button aria-controls="panel-1-S2Fyb2xpbmE=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-1-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tab" tabindex="-1">Karolina</button></div><div aria-labelledby="tab-1-VmVnYQ==" class="sphinx-tabs-panel group-tab" id="panel-1-VmVnYQ==" name="VmVnYQ==" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="c1">#check available Anaconda modules:</span>
+<span class="gp">$ </span>ml<span class="w"> </span>av<span class="w"> </span>Anaconda3
+<span class="gp">$ </span>ml<span class="w"> </span>add<span class="w"> </span>Anaconda3/2020.11
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-S2Fyb2xpbmE=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-1-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="c1">#check available Anaconda modules:</span>
+<span class="gp">$ </span>ml<span class="w"> </span>av<span class="w"> </span>Anaconda3
+<span class="gp">$ </span>ml<span class="w"> </span>add<span class="w"> </span>Anaconda3/2021.11
+</pre></div>
+</div>
+</div></div>
+<p>To be able to create conda environments in your home directory you need to initialize it.
+The following command adds the necessary configuration to your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> file:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>init<span class="w"> </span>bash
+</pre></div>
+</div>
+<p>You now need to either log in to the cluster again or start a new shell session by typing <code class="docutils literal notranslate"><span class="pre">bash</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>bash
+</pre></div>
+</div>
+<p>Now, either create a new environment with all required dependencies or activate
+a pre-existing environment created in a directory you have access to:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">Create new environment in $HOME</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">Activate existing environment</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>https://raw.githubusercontent.com/ENCCS/HPDA-Python/main/content/env/environment.yml
+</pre></div>
+</div>
+<p>The installation can take several minutes.
+Now activate the environment by:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>pyhpda
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>/path/to/envdir/
+</pre></div>
+</div>
+</div></div>
+<section id="mpi4py">
+<h3>mpi4py<a class="headerlink" href="#mpi4py" title="Permalink to this heading"></a></h3>
+<p>Additional steps are required to use mpi4py since the Python package needs to be
+linked with the system’s MPI libraries.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-VmVnYQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-3-VmVnYQ==" name="VmVnYQ==" role="tab" tabindex="0">Vega</button><button aria-controls="panel-3-S2Fyb2xpbmE=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-3-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tab" tabindex="-1">Karolina</button></div><div aria-labelledby="tab-3-VmVnYQ==" class="sphinx-tabs-panel group-tab" id="panel-3-VmVnYQ==" name="VmVnYQ==" role="tabpanel" tabindex="0"><p>To use mpi4py you need to load a module which contains MPI libraries and then install <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>
+using <code class="docutils literal notranslate"><span class="pre">pip</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ml<span class="w"> </span>add<span class="w"> </span>foss/2020b
+<span class="gp">$ </span><span class="nv">CC</span><span class="o">=</span>gcc<span class="w"> </span><span class="nv">MPICC</span><span class="o">=</span>mpicc<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>mpi4py<span class="w"> </span>--no-binary<span class="o">=</span>mpi4py
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-S2Fyb2xpbmE=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-3-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tabpanel" tabindex="0"><p>To use mpi4py you only need to load a module:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ml<span class="w"> </span>add<span class="w"> </span>mpi4py/3.1.1-gompi-2020b
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="running-jobs">
+<h3>Running jobs<a class="headerlink" href="#running-jobs" title="Permalink to this heading"></a></h3>
+<p>Resources can be allocated both through batch jobs (submitting a script to the scheduler)
+and interactively. You will need to provide a project ID when asking for an allocation.
+To find out what projects you belong to on the cluster, type:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sacctmgr<span class="w"> </span>-p<span class="w"> </span>show<span class="w"> </span>associations<span class="w"> </span><span class="nv">user</span><span class="o">=</span><span class="nv">$USER</span>
+</pre></div>
+</div>
+<p>The second column of the output contains the project ID.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-VmVnYQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-4-VmVnYQ==" name="VmVnYQ==" role="tab" tabindex="0">Vega</button><button aria-controls="panel-4-S2Fyb2xpbmE=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-4-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tab" tabindex="-1">Karolina</button></div><div aria-labelledby="tab-4-VmVnYQ==" class="sphinx-tabs-panel group-tab" id="panel-4-VmVnYQ==" name="VmVnYQ==" role="tabpanel" tabindex="0"><p>Vega uses the SLURM scheduler.
+Use the following command to allocate one interactive node with 8 cores for 1 hour
+in the CPU partition. If there is a reservation on the cluster for the workshop,
+add <code class="docutils literal notranslate"><span class="pre">--reservation=RESERVATIONNAME</span></code> to the command.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>salloc<span class="w"> </span>-N<span class="w"> </span><span class="m">1</span><span class="w"> </span>--ntasks-per-node<span class="o">=</span><span class="m">8</span><span class="w"> </span>--ntasks-per-core<span class="o">=</span><span class="m">1</span><span class="w"> </span>-A<span class="w"> </span>&lt;PROJECT-ID&gt;<span class="w"> </span>--partition<span class="o">=</span>cpu<span class="w">  </span>-t<span class="w"> </span><span class="m">01</span>:00:00
+</pre></div>
+</div>
+<p>To instead book a GPU node, type (again adding reservation flag if relevant):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>salloc<span class="w"> </span>-N<span class="w"> </span><span class="m">1</span><span class="w"> </span>--ntasks-per-node<span class="o">=</span><span class="m">1</span><span class="w"> </span>--ntasks-per-core<span class="o">=</span><span class="m">1</span><span class="w"> </span>-A<span class="w"> </span>&lt;PROJECT-ID&gt;<span class="w"> </span>--partition<span class="o">=</span>gpu<span class="w"> </span>--gres<span class="o">=</span>gpu:1<span class="w"> </span>--cpus-per-task<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">01</span>:00:00
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-4-S2Fyb2xpbmE=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-4-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tabpanel" tabindex="0"><p>Karolina uses the PBS scheduler.
+To allocate one interactive node for
+1 hour on 1 node in the CPU partition and express queue:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qsub<span class="w"> </span>-A<span class="w"> </span>DD-22-28<span class="w"> </span>-q<span class="w"> </span>qexp<span class="w"> </span>-l<span class="w"> </span><span class="nv">walltime</span><span class="o">=</span><span class="m">01</span>:00:00<span class="w"> </span>-I
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="running-jupyter">
+<h3>Running Jupyter<a class="headerlink" href="#running-jupyter" title="Permalink to this heading"></a></h3>
+<p>The following procedure starts a Jupyter-Lab server on a compute node, creates an SSH tunnel from
+your local machine to the compute node, and then connects to the remote Jupyter-Lab server from your
+browser.</p>
+<p>First make sure to follow the above instructions to:</p>
+<ul class="simple">
+<li><p>Allocate an interactive compute node for a sufficiently long time</p></li>
+<li><p>Switch to the pyhpda conda environment.</p></li>
+</ul>
+<p>After allocating an interactive node you will see the name of the node in the output.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-5-VmVnYQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-5-VmVnYQ==" name="VmVnYQ==" role="tab" tabindex="0">Vega</button><button aria-controls="panel-5-S2Fyb2xpbmE=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-5-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tab" tabindex="-1">Karolina</button></div><div aria-labelledby="tab-5-VmVnYQ==" class="sphinx-tabs-panel group-tab" id="panel-5-VmVnYQ==" name="VmVnYQ==" role="tabpanel" tabindex="0"><p>After allocating an interactive node you will see the name of the node in the
+output, e.g. <code class="docutils literal notranslate"><span class="pre">salloc:</span> <span class="pre">Nodes</span> <span class="pre">cn0709</span> <span class="pre">are</span> <span class="pre">ready</span> <span class="pre">for</span> <span class="pre">job</span></code>.</p>
+<p>You now need to ssh to that node, switch to the pyhpda
+conda environment, and start the Jupyter-Lab server on a particular port
+(choose one between 8000 and 9000)
+and IP address (the name of the compute node). Also load a module containing
+OpenMPI to have access to MPI inside Jupyter:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh<span class="w"> </span>cn0709
+<span class="gp">$ </span>conda<span class="w"> </span>activate<span class="w"> </span>pyhpda
+<span class="gp">$ </span>ml<span class="w"> </span>add<span class="w"> </span>foss/2021b
+<span class="gp">$ </span>jupyter-lab<span class="w"> </span>--no-browser<span class="w"> </span>--port<span class="o">=</span><span class="m">8123</span><span class="w"> </span>--ip<span class="o">=</span>cn0709
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-5-S2Fyb2xpbmE=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-5-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tabpanel" tabindex="0"><p>After allocating an interactive node your terminal session will be connected to that node.
+Find out the name of your compute node. Your terminal prompt should show it but you can
+also run the hostname command. Look only at the node name (e.g. cn012) and disregard
+the <code class="docutils literal notranslate"><span class="pre">.karolina.it4i.cz</span></code> part.</p>
+<p>Now start the Jupyter-Lab server on a particular port
+(choose one between 8000 and 9000)
+and IP address (the name of the compute node):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>jupyter-lab<span class="w"> </span>--no-browser<span class="w"> </span>--port<span class="o">=</span><span class="m">8123</span><span class="w"> </span>--ip<span class="o">=</span>cn012
+</pre></div>
+</div>
+</div></div>
+<p>Now create an SSH tunnel <strong>from a new terminal on your local machine</strong> to the correct
+port and IP:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-6-VmVnYQ==" aria-selected="true" class="sphinx-tabs-tab group-tab" id="tab-6-VmVnYQ==" name="VmVnYQ==" role="tab" tabindex="0">Vega</button><button aria-controls="panel-6-S2Fyb2xpbmE=" aria-selected="false" class="sphinx-tabs-tab group-tab" id="tab-6-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tab" tabindex="-1">Karolina</button></div><div aria-labelledby="tab-6-VmVnYQ==" class="sphinx-tabs-panel group-tab" id="panel-6-VmVnYQ==" name="VmVnYQ==" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh<span class="w"> </span>-TN<span class="w"> </span>-f<span class="w"> </span>YourUsername@login.vega.izum.si<span class="w"> </span>-L<span class="w"> </span>localhost:8123:cn0709:8123<span class="w"> </span>-L<span class="w"> </span>localhost:8787:cn0709:8787
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-6-S2Fyb2xpbmE=" class="sphinx-tabs-panel group-tab" hidden="true" id="panel-6-S2Fyb2xpbmE=" name="S2Fyb2xpbmE=" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ssh<span class="w"> </span>-TN<span class="w"> </span>-f<span class="w"> </span>YourUsername@login2.karolina.it4i.cz<span class="w"> </span>-L<span class="w"> </span>localhost:8123:cn012:8123
+</pre></div>
+</div>
+</div></div>
+<p>Go back to the terminal running Jupyter-Lab on the compute node, and copy-paste the URL
+starting with <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> which contains a long token into your local browser.
+If that does not work, try replacing <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> with <code class="docutils literal notranslate"><span class="pre">localhost</span></code>.</p>
+<p>If everything is working as it should, you should now be able to create a new Jupyter notebook in your browser
+which is connected to the compute node and the <code class="docutils literal notranslate"><span class="pre">pyhpda</span></code> conda environment.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../" class="btn btn-neutral float-left" title="High Performance Data Analytics in Python" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../motivation/" class="btn btn-neutral float-right" title="Motivation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

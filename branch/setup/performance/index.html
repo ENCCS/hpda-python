@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optimization &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Dask for scalable analytics" href="../dask/" />
+    <link rel="prev" title="Parallel computing" href="../parallel-computing/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../" class="icon icon-home"> HPDA-Python
+            <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Python software stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#profilers">Profilers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#timeit">Timeit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cprofile">cProfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#line-profiler">Line-profiler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization">Performance optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#algorithm-optimization">Algorithm optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#singular-value-decomposition">Singular Value Decomposition</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cpu-usage-optimization">CPU usage optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#vectorization">Vectorization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-usage-optimization">Memory usage optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#broadcasting">Broadcasting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cache-effects">Cache effects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#temporary-arrays">Temporary arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Numexpr</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-boosting">Performance boosting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cython">Cython</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#numba">Numba</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU computing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home"></a> &raquo;</li>
+      <li>Optimization</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/performance.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="optimization">
+<span id="performance"></span><h1>Optimization<a class="headerlink" href="#optimization" title="Permalink to this headline"></a></h1>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Learn how to benchmark and profile Python code</p></li>
+<li><p>Understand how optimisation can be algorithmic or based on CPU or memory usage</p></li>
+<li><p>Learn how to boost performance using Numba and Cython</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>40 min teaching/type-along</p></li>
+<li><p>40 min exercises</p></li>
+</ul>
+</div>
+<p>Once your code is working reliably, you can start thinking of optimizing it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Always measure the code before you start optimization. Don’t base your optimization
+on theoretical consideration, otherwise you’ll have surprises.</p>
+</div>
+<section id="profilers">
+<h2>Profilers<a class="headerlink" href="#profilers" title="Permalink to this headline"></a></h2>
+<section id="timeit">
+<h3>Timeit<a class="headerlink" href="#timeit" title="Permalink to this headline"></a></h3>
+<p>If you’re using a Jupyter notebook, the best choice will be to use
+<a class="reference external" href="https://docs.python.org/library/timeit.html">timeit</a> to time a small piece of code:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> a ** 2
+<span class="mi">100000</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">5.73</span> <span class="n">us</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For long running calls, using <code class="docutils literal notranslate"><span class="pre">%time</span></code> instead of <code class="docutils literal notranslate"><span class="pre">%timeit</span></code>; it is
+less precise but faster</p>
+</div>
+</section>
+<section id="cprofile">
+<h3>cProfile<a class="headerlink" href="#cprofile" title="Permalink to this headline"></a></h3>
+<p>For more complex code, one can use the <a class="reference external" href="https://docs.python.org/3/library/profile.html">built-in python profilers</a>, <code class="docutils literal notranslate"><span class="pre">cProfile</span></code> or <code class="docutils literal notranslate"><span class="pre">profile</span></code>.</p>
+<p>As a demo, let us consider the following code which simulates a random walk in one dimension
+(we can save it as <code class="docutils literal notranslate"><span class="pre">walk.py</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">step</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="k">return</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">.5</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.</span>
+
+<span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">x_new</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">step</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">x_new</span> <span class="o">&gt;</span> <span class="mf">5e-3</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_new</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">100000</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">walk</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can profile it with <code class="docutils literal notranslate"><span class="pre">cProfile</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$  </span>python -m cProfile -s <span class="nb">time</span> walk.py
+</pre></div>
+</div>
+<p>we use the <code class="docutils literal notranslate"><span class="pre">-s</span></code> switch to sort the results by <code class="docutils literal notranslate"><span class="pre">time</span></code>, other options include
+e.g. function name, cummulative time, etc. However, this will print a lot of
+output which is difficult to read.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$  </span>python -m cProfile -o walk.prof walk.py
+</pre></div>
+</div>
+<p>It’s also possible to write the profile
+to a file with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag and view it with <a class="reference external" href="https://docs.python.org/3/library/profile.html#module-pstats">profile pstats module</a>
+or profile visualisation tools like
+<a class="reference external" href="https://jiffyclub.github.io/snakeviz/">Snakeviz</a>
+or <a class="reference external" href="https://pypi.org/project/profile-viewer/">profile-viewer</a>.</p>
+<p>Similar functionality is available in interactive IPython or Jupyter sessions with the
+magic command <a class="reference external" href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">%%prun</a>.</p>
+</section>
+<section id="line-profiler">
+<h3>Line-profiler<a class="headerlink" href="#line-profiler" title="Permalink to this headline"></a></h3>
+<p>The cProfile tool tells us which function takes most of the time but it does not give us a
+line-by-line breakdown of where time is being spent. For this information, we can use the
+<a class="reference external" href="https://github.com/pyutils/line_profiler/">line_profiler</a> tool.</p>
+<div class="admonition-line-profiling demo admonition" id="demo-0">
+<p class="admonition-title">Line profiling</p>
+<p>For line-profiling source files from the command line, we can add a decorator <code class="docutils literal notranslate"><span class="pre">&#64;profile</span></code>
+to the functions of interests. If we do this for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> function
+in the example above, we can then run the script using the <cite>kernprof.py</cite> program which comes with
+<code class="docutils literal notranslate"><span class="pre">line_profiler</span></code>, making sure to include the switches <code class="docutils literal notranslate"><span class="pre">-l,</span> <span class="pre">--line-by-line</span></code> and <code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--view</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>kernprof.py -l -v walk.py
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">line_profiler</span></code> also works in a Jupyter notebook. First one needs to load the extension:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="o">%</span><span class="k">load_ext</span> line_profiler
+</pre></div>
+</div>
+<p>If the <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> functions are defined in code cells, we can get the line-profiling
+information by:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="o">%</span><span class="k">lprun</span> -f walk -f step walk(10000)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Based on the output, can you spot a mistake which is affecting performance?</p></li>
+</ul>
+<div class="admonition-line-profiling-output solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Line-profiling output</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Wrote profile results to walk.py.lprof</span>
+<span class="go">Timer unit: 1e-06 s</span>
+
+<span class="go">Total time: 0.113249 s</span>
+<span class="go">File: walk.py</span>
+<span class="go">Function: step at line 4</span>
+
+<span class="go">Line #      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="go">==============================================================</span>
+<span class="go">   4                                           @profile</span>
+<span class="go">   5                                           def step():</span>
+<span class="go">   6     99999      57528.0      0.6     50.8      import random</span>
+<span class="go">   7     99999      55721.0      0.6     49.2      return 1. if random.random() &gt; .5 else -1.</span>
+
+<span class="go">Total time: 0.598811 s</span>
+<span class="go">File: walk.py</span>
+<span class="go">Function: walk at line 9</span>
+
+<span class="go">Line #      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="go">==============================================================</span>
+<span class="go">   9                                           @profile</span>
+<span class="go">   10                                           def walk(n):</span>
+<span class="go">   11         1         20.0     20.0      0.0      x = np.zeros(n)</span>
+<span class="go">   12         1          1.0      1.0      0.0      dx = 1. / n</span>
+<span class="go">   13    100000      44279.0      0.4      7.4      for i in range(n - 1):</span>
+<span class="go">   14     99999     433303.0      4.3     72.4          x_new = x[i] + dx * step()</span>
+<span class="go">   15     99999      53894.0      0.5      9.0          if x_new &gt; 5e-3:</span>
+<span class="go">   16                                                       x[i + 1] = 0.</span>
+<span class="go">   17                                                   else:</span>
+<span class="go">   18     99999      67313.0      0.7     11.2              x[i + 1] = x_new</span>
+<span class="go">   19         1          1.0      1.0      0.0      return x</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-the-mistake solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">The mistake</p>
+<p>The mistake is that the <code class="docutils literal notranslate"><span class="pre">random</span></code> module is loaded inside the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> function
+which is called thousands of times! Moving the module import to the top level saves
+considerable time.</p>
+</div>
+</div>
+<div class="admonition-profile-the-word-autocorrelation-code exercise important admonition" id="exercise-0">
+<p class="admonition-title">Profile the word-autocorrelation code</p>
+<p>Revisit the word-autocorrelation code. Add <code class="docutils literal notranslate"><span class="pre">&#64;profile</span></code> to the <code class="xref py py-meth docutils literal notranslate"><span class="pre">word_autocorr()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">word_autocorr_average()</span></code> function, and run <code class="docutils literal notranslate"><span class="pre">kernprof.py</span></code> from the command line.</p>
+<div class="admonition-autocorrelation-py solution important dropdown admonition-no-content admonition" id="solution-2">
+<p class="admonition-title">autocorrelation.py</p>
+</div>
+</div>
+</section>
+</section>
+<section id="performance-optimization">
+<h2>Performance optimization<a class="headerlink" href="#performance-optimization" title="Permalink to this headline"></a></h2>
+<p>Once we have identified the bottlenecks, we need to make the corresponding code go faster.</p>
+<section id="algorithm-optimization">
+<h3>Algorithm optimization<a class="headerlink" href="#algorithm-optimization" title="Permalink to this headline"></a></h3>
+<p>The first thing to look into is the underlying algorithm you chose: is it optimal?
+To answer this question, a good understanding of the maths behind the algorithm helps.
+For certain algorithms, many of the bottlenecks will be linear
+algebra computations. In these cases, using the right function to solve
+the right problem is key. For instance, an eigenvalue problem with a
+symmetric matrix is much easier to solve than with a general matrix. Moreover,
+most often, you can avoid inverting a matrix and use a less costly
+(and more numerically stable) operation. However, it can be as simple as
+moving computation or memory allocation outside a loop, and this happens very often as well.</p>
+<section id="singular-value-decomposition">
+<h4>Singular Value Decomposition<a class="headerlink" href="#singular-value-decomposition" title="Permalink to this headline"></a></h4>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Singular_value_decomposition">Singular Value Decomposition</a> (SVD)
+is quite often used in climate model data analysis.  The computational cost of this algorithm is
+roughly <span class="math notranslate nohighlight">\(n^3\)</span> where  <span class="math notranslate nohighlight">\(n\)</span> is the size of the input matrix.
+However, in most cases, we are not using all the output of the SVD,
+but only the first few rows of its first returned argument. If
+we use the <code class="docutils literal notranslate"><span class="pre">svd</span></code> implementation from scipy, we can ask for an incomplete
+version of the SVD. Note that implementations of linear algebra in
+scipy are richer then those in numpy and should be preferred.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> np.linalg.svd(data)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">14.5</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> linalg.svd(data)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">14.2</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> linalg.svd(data, full_matrices=False)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">295</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> np.linalg.svd(data, full_matrices=False)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">293</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cpu-usage-optimization">
+<h3>CPU usage optimization<a class="headerlink" href="#cpu-usage-optimization" title="Permalink to this headline"></a></h3>
+<section id="vectorization">
+<h4>Vectorization<a class="headerlink" href="#vectorization" title="Permalink to this headline"></a></h4>
+<p>Arithmetic is one place where numpy performance outperforms python list and the reason is that it uses vectorization.
+A lot of the data analysis involves a simple operation being applied to each element of a large dataset.
+In such cases, vectorization is key for better performance.</p>
+<div class="admonition-vectorized-operation-vs-for-loop exercise important admonition" id="exercise-1">
+<p class="admonition-title">vectorized operation vs for loop</p>
+<p>Consider the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">a_dif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">999</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+      <span class="n">a_dif</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Try to vectorize the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop!</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-3">
+<p class="admonition-title">Solution</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>               <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+               <span class="n">a_dif</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-profile-the-word-autocorrelation-code exercise important admonition" id="exercise-2">
+<p class="admonition-title">Profile the word-autocorrelation code</p>
+<p>Use line-profiling on the word-autocorrelation code!</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-4">
+<p class="admonition-title">Solution</p>
+<p>WRITEME</p>
+</div>
+</div>
+<div class="admonition-is-the-meth-word-autocorr-function-efficient exercise important admonition" id="exercise-3">
+<p class="admonition-title">Is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">word_autocorr()</span></code> function efficient?</p>
+<p>Have another look at the <code class="xref py py-meth docutils literal notranslate"><span class="pre">word_autocorr()</span></code> function from the word-count project.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">word_autocorr</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate word-autocorrelation function for given word</span>
+<span class="sd">    in a text. Each word in the text corresponds to one &quot;timestep&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">==</span><span class="n">word</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="n">nwords_chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">nwords_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nwords_total</span><span class="o">-</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/=</span> <span class="n">nwords_chosen</span>
+    <span class="k">return</span> <span class="n">acf</span>
+</pre></div>
+</div>
+<p>Do you think there is any room for improvement? How would you go about optimizing
+this function?</p>
+<div class="admonition-solution solution important dropdown admonition" id="solution-5">
+<p class="admonition-title">Solution</p>
+<p>The function uses a Python object (<code class="docutils literal notranslate"><span class="pre">mask</span></code>) inside a double for-loop,
+which is guaranteed to be suboptimal. There are a number of ways to speed
+it up. One is to use <code class="docutils literal notranslate"><span class="pre">numba</span></code> and just-in-time compilation, as we shall
+see below.</p>
+<p>Another is to find an in-built vectorized NumPy function which can calculate the
+autocorrelation for us! Here’s one way to do it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">word_autocorr_numpy</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate word-autocorrelation function for given word</span>
+<span class="sd">    in a text using numpy.correlate function.</span>
+<span class="sd">    Each word in the text corresponds to one &quot;timestep&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">w</span><span class="o">==</span><span class="n">word</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">nwords_chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">nwords_chosen</span>
+    <span class="k">return</span> <span class="n">acf</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">acf</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">acf</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">timesteps</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>So one should consider use “vectorized” operations whenever possible.
+Not only for performance, sometimes the vectorized function is also convenient.</p>
+<p>Let’s define a simple function f which takes scalars as input only,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>if we pass an array,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt; x = np.ones(10000, dtype=np.int8)</span>
+<span class="go">&gt;&gt;&gt; f(x,x)</span>
+<span class="go">Traceback (most recent call last):</span>
+<span class="go">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+<span class="go">  File &quot;&lt;stdin&gt;&quot;, line 2, in f</span>
+<span class="go">TypeError: only size-1 arrays can be converted to Python scalars</span>
+</pre></div>
+</div>
+<p>In order to pass an numpy array, we could vectorize it.
+For universal functions (or <code class="docutils literal notranslate"><span class="pre">ufunc</span></code> for short),
+NumPy provides the <code class="docutils literal notranslate"><span class="pre">vectorize</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">f_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># benchmark</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">f_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As stated in the NumPy document:
+The vectorize function is provided primarily for convenience, not for performance. The implementation is essentially a for loop.</p>
+</div>
+<p>For high performance vectorization, one choice is to use Numba.
+Adding the decorator in a function, Numba will figure out the rest for you.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">f_numba</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># benchmark</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">f_numba</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="memory-usage-optimization">
+<h3>Memory usage optimization<a class="headerlink" href="#memory-usage-optimization" title="Permalink to this headline"></a></h3>
+<section id="broadcasting">
+<h4>Broadcasting<a class="headerlink" href="#broadcasting" title="Permalink to this headline"></a></h4>
+<p>Basic operations of numpy are elementwise, and the shape of the arrays should be compatible.
+However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
+NumPy expands the arrays such that the operation becomes viable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Broadcasting Rules</p>
+<ul class="simple">
+<li><p>Dimensions match when they are equal, or when either is 1 or None.</p></li>
+<li><p>In the latter case, the dimension of the output array is expanded to the larger of the two.</p></li>
+<li><p>Broadcasted arrays are never physically constructed, which saves memory.</p></li>
+</ul>
+</div>
+<div class="admonition-broadcasting exercise important admonition" id="exercise-4">
+<p class="admonition-title">broadcasting</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">1D</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">2D</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_1d.svg" src="../_images/bc_1d.svg" /></figure>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">]])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_2d_1.svg" src="../_images/bc_2d_1.svg" /></figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>                       <span class="c1"># array([[11, 12, 13],</span>
+                            <span class="c1">#        [14, 15, 16]])</span>
+   <span class="n">XXXXX</span> <span class="n">fixing</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_2d_2.svg" src="../_images/bc_2d_2.svg" /></figure>
+</div></div>
+</div>
+</section>
+<section id="cache-effects">
+<h4>Cache effects<a class="headerlink" href="#cache-effects" title="Permalink to this headline"></a></h4>
+<p>Memory access is cheaper when it is grouped: accessing a big array in a
+continuous way is much faster than random access. This implies amongst
+other things that <strong>smaller strides are faster</strong>:</p>
+<blockquote>
+<div><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mf">1e4</span><span class="p">,</span> <span class="mf">1e4</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> c.sum(axis=0)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">3.89</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> c.sum(axis=1)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">188</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">c</span><span class="o">.</span><span class="n">strides</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="p">(</span><span class="mi">80000</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the reason why Fortran ordering or C ordering may make a big
+difference on operations:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">18</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">]:</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">18</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> np.dot(b, a.T)
+<span class="mi">1</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">194</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> np.dot(b, c)
+<span class="mi">10</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">84.2</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+</div>
+<p>Note that copying the data to work around this effect may not be worth it:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">In</span> <span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="o">%</span><span class="k">timeit</span> c = np.ascontiguousarray(a.T)
+<span class="mi">10</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">106</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+</div>
+<p>Using <a class="reference external" href="http://code.google.com/p/numexpr/">numexpr</a> can be useful to
+automatically optimize code for such effects.</p>
+</div></blockquote>
+</section>
+<section id="temporary-arrays">
+<h4>Temporary arrays<a class="headerlink" href="#temporary-arrays" title="Permalink to this headline"></a></h4>
+<ul class="simple">
+<li><p>In complex expressions, NumPy stores intermediate values in
+temporary arrays</p></li>
+<li><p>Memory consumption can be higher than expected</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+
+<span class="c1"># two temporary arrays will be created</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="c1"># four temporary arrays will be created due to unnecessary parenthesis</span>
+<span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+
+<span class="c1"># solution</span>
+<span class="c1"># apply the operation one by one for really large arrays</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Broadcasting approaches can lead also to hidden temporary arrays</dt><dd><ul>
+<li><p>Input data M x 3 array</p></li>
+<li><p>Output data M x M array</p></li>
+<li><p>There is a temporary M x M x 3 array</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">npy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">X</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h4>Numexpr<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h4>
+<ul>
+<li><p>Evaluation of complex expressions with one operation at a time can lead
+also into suboptimal performance</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Effectively, one carries out multiple <em>for</em> loops in the NumPy C-code</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Numexpr package provides fast evaluation of array expressions</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numexpr</span> <span class="k">as</span> <span class="nn">ne</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">poly</span> <span class="o">=</span> <span class="n">ne</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;((.25*x + .75)*x - 1.5)*x - 2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>By default, numexpr tries to use multiple threads</p></li>
+<li><p>Number of threads can be queried and set with
+<cite>ne.set_num_threads(nthreads)</cite></p></li>
+<li><p>Supported operators and functions:
++,-,*,/,**, sin, cos, tan, exp, log, sqrt</p></li>
+<li><p>Speedups in comparison to NumPy are typically between 0.95 and 4</p></li>
+<li><p>Works best on arrays that do not fit in CPU cache</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="performance-boosting">
+<h2>Performance boosting<a class="headerlink" href="#performance-boosting" title="Permalink to this headline"></a></h2>
+<p>For many user cases, using NumPy or Pandas is sufficient. However, in some computationally heavy applications,
+it is possible to improve the performance by pre-compiling expensive functions.
+<a class="reference external" href="https://cython.org/">Cython</a> and <a class="reference external" href="https://numba.pydata.org/">Numba</a>
+are among the popular choices and both of them have good support for numpy arrays.</p>
+<section id="cython">
+<h3>Cython<a class="headerlink" href="#cython" title="Permalink to this headline"></a></h3>
+<p>Cython is a superset of Python that additionally supports calling C functions and
+declaring C types on variables and class attributes. Under Cython, source code gets
+translated into optimized C/C++ code and compiled as Python extension modules.</p>
+<p>Developers can run the <code class="docutils literal notranslate"><span class="pre">cython</span></code> command-line utility to produce a <code class="docutils literal notranslate"><span class="pre">.c</span></code> file from
+a <code class="docutils literal notranslate"><span class="pre">.py</span></code> file which needs to be compiled with a C compiler to an <code class="docutils literal notranslate"><span class="pre">.so</span></code> library
+which can then be directly imported in a Python program. There is, however, also an easy
+way to use Cython directly from Jupyter notebooks through the <code class="docutils literal notranslate"><span class="pre">%%cython</span></code> magic
+command. We will restrict the discussion here to the Jupyter-way - for a full overview
+of the capabilities refer to the <a class="reference external" href="https://cython.readthedocs.io/en/latest/">documentation</a>.</p>
+<div class="admonition-cython demo admonition" id="demo-1">
+<p class="admonition-title">Cython</p>
+<p>Consider the following pure Python code which integrates a function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">integrate_f</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">f</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="k">def</span> <span class="nf">apply_integrate_f</span><span class="p">(</span><span class="n">col_a</span><span class="p">,</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">col_N</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+
+</pre></div>
+</div>
+<p>We generate a dataframe and apply the <code class="xref py py-meth docutils literal notranslate"><span class="pre">apply_integrate_f()</span></code> function on its columns, timing the execution:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+                  <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+                  <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="p">(</span><span class="mi">1000</span><span class="p">))})</span>
+
+<span class="o">%</span><span class="k">timeit</span> apply_integrate_f(df[&#39;a&#39;], df[&#39;b&#39;], df[&#39;N&#39;])
+<span class="c1"># 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>Now import the Cython extension:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> cython
+</pre></div>
+</div>
+<p>As a first cythonization step we add the cython magic command with the
+<code class="docutils literal notranslate"><span class="pre">-a,</span> <span class="pre">--annotate</span></code> flag, <code class="docutils literal notranslate"><span class="pre">%%cython</span> <span class="pre">-a</span></code>, to the top of the Jupyter code cell.
+The yellow coloring in the output shows us the amount of pure Python:</p>
+<figure class="align-default">
+<img alt="../_images/cython_annotate.png" src="../_images/cython_annotate.png" />
+</figure>
+<p>Our task is to remove as much yellow as possible by explicitly declaring variables and functions.
+We can start by simply compiling the code using Cython without any changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="k">def</span> <span class="nf">f_cython</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">integrate_f_cython</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    	<span class="n">s</span> <span class="o">+=</span> <span class="n">f_cython</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="k">def</span> <span class="nf">apply_integrate_f_cython</span><span class="p">(</span><span class="n">col_a</span><span class="p">,</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">col_N</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f_cython</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">timeit</span> apply_integrate_f_cython(df[&#39;a&#39;], df[&#39;b&#39;], df[&#39;N&#39;])
+<span class="c1"># 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>Now we can start adding data type annotation to the input variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="k">def</span> <span class="nf">f_cython_dtype0</span><span class="p">(</span><span class="n">double</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">integrate_f_cython_dtype0</span><span class="p">(</span><span class="n">double</span> <span class="n">a</span><span class="p">,</span> <span class="n">double</span> <span class="n">b</span><span class="p">,</span> <span class="n">long</span> <span class="n">N</span><span class="p">):</span>   
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">f_cython_dtype0</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="k">def</span> <span class="nf">apply_integrate_f_cython_dtype0</span><span class="p">(</span><span class="n">double</span><span class="p">[:]</span> <span class="n">col_a</span><span class="p">,</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">long</span><span class="p">[:]</span> <span class="n">col_N</span><span class="p">):</span>  
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f_cython_dtype0</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="c1">#this will not work</span>
+<span class="c1">#%timeit apply_integrate_f_cython_dtype0(df[&#39;a&#39;], df[&#39;b&#39;], df[&#39;N&#39;])</span>
+<span class="c1">#but rather</span>
+<span class="o">%</span><span class="k">timeit</span> apply_integrate_f_cython_dtype0(df[&#39;a&#39;].to_numpy(), df[&#39;b&#39;].to_numpy(), df[&#39;N&#39;].to_numpy())
+<span class="c1"># 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You can not pass a Series directly since the Cython definition is specific to an array.
+Instead using the <code class="docutils literal notranslate"><span class="pre">Series.to_numpy()</span></code> to get the underlying NumPy array
+which works nicely with Cython.</p>
+</div>
+<p>Next step, we can start adding type annotation to the functions.
+There are three ways of declaring functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">def</span></code> - Python style:</p></li>
+</ul>
+<p>Declaring the types of arguments and local types (thus return values) can allow Cython
+to generate optimised code which speeds up the execution. If the types are declared then
+a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> will be raised if the function is passed the wrong types.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cdef</span></code> - C style:</p></li>
+</ul>
+<p>Cython treats the function as pure C functions. All types <strong>must</strong> be declared.
+This will give you the best performance but there are a number of consequences.
+One should really take care of the <code class="docutils literal notranslate"><span class="pre">cdef</span></code> declared functions, since you are actually writing in C.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cpdef</span></code> - Python/C mixed:</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">cpdef</span></code> functions combine both <code class="docutils literal notranslate"><span class="pre">def</span></code> and <code class="docutils literal notranslate"><span class="pre">cdef</span></code>: one can use <code class="docutils literal notranslate"><span class="pre">cdef</span></code> for C types and <code class="docutils literal notranslate"><span class="pre">def</span></code> for Python types.
+In terms of performance, <code class="docutils literal notranslate"><span class="pre">cpdef</span></code> functions may be as fast as those using <code class="docutils literal notranslate"><span class="pre">cdef</span></code> and
+might be as slow as <code class="docutils literal notranslate"><span class="pre">def</span></code> declared functions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">cdef</span> <span class="n">f_cython_dtype1</span><span class="p">(</span><span class="n">double</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="n">cpdef</span> <span class="n">integrate_f_cython_dtype1</span><span class="p">(</span><span class="n">double</span> <span class="n">a</span><span class="p">,</span> <span class="n">double</span> <span class="n">b</span><span class="p">,</span> <span class="n">long</span> <span class="n">N</span><span class="p">):</span>   
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">f_cython_dtype1</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="n">cpdef</span> <span class="n">apply_integrate_f_cython_dtype1</span><span class="p">(</span><span class="n">double</span><span class="p">[:]</span> <span class="n">col_a</span><span class="p">,</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">long</span><span class="p">[:]</span> <span class="n">col_N</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f_cython_dtype1</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">timeit</span> apply_integrate_f_cython_dtype1(df[&#39;a&#39;].to_numpy(), df[&#39;b&#39;].to_numpy(), df[&#39;N&#39;].to_numpy())
+<span class="c1"># 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>Last step, we can add type annotation to the local variables within the functions and output.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">cdef</span> <span class="n">double</span> <span class="n">f_cython_dtype2</span><span class="p">(</span><span class="n">double</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="n">cpdef</span> <span class="n">double</span> <span class="n">integrate_f_cython_dtype2</span><span class="p">(</span><span class="n">double</span> <span class="n">a</span><span class="p">,</span> <span class="n">double</span> <span class="n">b</span><span class="p">,</span> <span class="n">long</span> <span class="n">N</span><span class="p">):</span>   
+    <span class="n">cdef</span> <span class="n">double</span> <span class="n">s</span><span class="p">,</span> <span class="n">dx</span>
+    <span class="n">cdef</span> <span class="n">long</span> <span class="n">i</span>
+    
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">f_cython_dtype2</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="n">cpdef</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">apply_integrate_f_cython_dtype2</span><span class="p">(</span><span class="n">double</span><span class="p">[:]</span> <span class="n">col_a</span><span class="p">,</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">long</span><span class="p">[:]</span> <span class="n">col_N</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="n">long</span> <span class="n">n</span><span class="p">,</span><span class="n">i</span>
+    <span class="n">cdef</span> <span class="n">double</span><span class="p">[:]</span> <span class="n">res</span>
+    
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f_cython_dtype2</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">timeit</span> apply_integrate_f_cython_dtype2(df[&#39;a&#39;].to_numpy(), df[&#39;b&#39;].to_numpy(), df[&#39;N&#39;].to_numpy())
+<span class="c1"># 279 ms ± 1.21 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>Now it is over 400 XXX times faster than the original Python implementation, and we haven’t really modified the code.</p>
+</div>
+</section>
+<section id="numba">
+<h3>Numba<a class="headerlink" href="#numba" title="Permalink to this headline"></a></h3>
+<p>An alternative to statically compiling Cython code is to use a dynamic just-in-time (JIT) compiler with <a class="reference external" href="https://numba.pydata.org/">Numba</a>.
+Numba allows you to write a pure Python function which can be JIT compiled to native machine instructions,
+similar in performance to C, C++ and Fortran, by simply adding the decorator <code class="docutils literal notranslate"><span class="pre">&#64;jit</span></code> in your function.
+However, the <code class="docutils literal notranslate"><span class="pre">&#64;jit</span></code> compilation will add overhead to the runtime of the function,
+i.e. the first time a function is run using Numba engine will be slow as Numba will have the function compiled.
+Once the function is JIT compiled and cached, subsequent calls will be fast. So the performance benefits may not be
+realized especially when using small datasets.</p>
+<p>Numba supports compilation of Python to run on either CPU or GPU hardware and is designed to integrate with
+the Python scientific software stack. The optimized machine code is generated by the LLVM compiler infrastructure.</p>
+<div class="admonition-numba demo admonition" id="demo-2">
+<p class="admonition-title">Numba</p>
+<p>Consider the integration example again using Numba this time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">f_numba</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">integrate_f_numba</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">f_numba</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">apply_integrate_f_numba</span><span class="p">(</span><span class="n">col_a</span><span class="p">,</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">col_N</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f_numba</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="c1"># try passing Pandas Series</span>
+<span class="o">%</span><span class="k">timeit</span> apply_integrate_f_numba(df[&#39;a&#39;],df[&#39;b&#39;],df[&#39;N&#39;])
+<span class="c1"># 6.02 ms ± 56.5 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+<span class="c1"># try passing NumPy array</span>
+<span class="o">%</span><span class="k">timeit</span> apply_integrate_f_numba(df[&#39;a&#39;].to_numpy(),df[&#39;b&#39;].to_numpy(),df[&#39;N&#39;].to_numpy())
+<span class="c1"># 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Numba is best at accelerating functions that apply numerical functions to NumPy arrays. When used with Pandas,
+pass the underlying NumPy array of <code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code> (using <code class="docutils literal notranslate"><span class="pre">to_numpy()</span></code>) into the function.
+If you try to &#64;jit a function that contains unsupported Python or NumPy code, compilation will fall back to the object mode
+which will mostly likely be very slow. If you would prefer that Numba throw an error for such a case,
+you can do e.g. <code class="docutils literal notranslate"><span class="pre">&#64;numba.jit(nopython=True)</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;numba.njit</span></code>.</p>
+</div>
+<p>We can further add date type, although in this case there is not much performance improvement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">f_numba_dtype</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span><span class="n">numba</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">integrate_f_numba_dtype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">f_numba_dtype</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">*</span> <span class="n">dx</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:](</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:],</span><span class="n">numba</span><span class="o">.</span><span class="n">float64</span><span class="p">[:],</span><span class="n">numba</span><span class="o">.</span><span class="n">int64</span><span class="p">[:]))</span>
+<span class="k">def</span> <span class="nf">apply_integrate_f_numba_dtype</span><span class="p">(</span><span class="n">col_a</span><span class="p">,</span> <span class="n">col_b</span><span class="p">,</span> <span class="n">col_N</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_N</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">integrate_f_numba_dtype</span><span class="p">(</span><span class="n">col_a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_N</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">res</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">timeit</span> apply_integrate_f_numba_dtype(df[&#39;a&#39;].to_numpy(),df[&#39;b&#39;].to_numpy(),df[&#39;N&#39;].to_numpy())
+<span class="c1"># 625 µs ± 697 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</span>
+</pre></div>
+</div>
+</div>
+<p><strong>WRITEME: use word-count example here</strong></p>
+</section>
+<section id="exercises">
+<h3>Exercises<a class="headerlink" href="#exercises" title="Permalink to this headline"></a></h3>
+<p>Here we have two exercises: the starting point is a Python function. Try to speed it up with
+Numba or Cython (depending on what you find most interesting).</p>
+<div class="admonition-pairwise-distance exercise important admonition" id="exercise-5">
+<p class="admonition-title">Pairwise distance</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">dis_python</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">+=</span> <span class="n">tmp</span> <span class="o">*</span> <span class="n">tmp</span>
+            <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">D</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="o">%</span><span class="k">timeit</span> dis_python(X)
+</pre></div>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-6">
+<p class="admonition-title">Solution</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">numpy</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">cython</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">numba</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">dis_numpy</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">X</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="o">%</span><span class="k">timeit</span> dis_numpy(X)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">cpdef</span> <span class="n">double</span><span class="p">[:,:]</span> <span class="n">dis_cython</span><span class="p">(</span><span class="n">double</span><span class="p">[:,:]</span> <span class="n">X</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">M</span><span class="p">,</span><span class="n">N</span>
+    <span class="n">cdef</span> <span class="n">double</span> <span class="n">d</span><span class="p">,</span><span class="n">tmp</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">+=</span> <span class="n">tmp</span> <span class="o">*</span> <span class="n">tmp</span>
+            <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">D</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="o">%</span><span class="k">timeit</span> dis_cython(X)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">dis_numba</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">+=</span> <span class="n">tmp</span> <span class="o">*</span> <span class="n">tmp</span>
+            <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">D</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="o">%</span><span class="k">timeit</span> dis_numba(X)
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="admonition-bubble-sort exercise important admonition" id="exercise-6">
+<p class="admonition-title">Bubble sort</p>
+<p>To make a long story short, in the worse case the time taken by the Bubblesort algorithm is
+roughly <span class="math notranslate nohighlight">\(O(n^2)\)</span> where  <span class="math notranslate nohighlight">\(n\)</span> is the number of items being sorted.</p>
+<img alt="../_images/Bubble-sort-example-300px.gif" src="../_images/Bubble-sort-example-300px.gif" />
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bs_python</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a_list</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
+<span class="o">%</span><span class="k">timeit</span> bs_python(l)
+</pre></div>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-7">
+<p class="admonition-title">Solution</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">cython</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">numba</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="n">cpdef</span> <span class="n">long</span><span class="p">[:]</span> <span class="n">bs_cython</span><span class="p">(</span><span class="n">long</span><span class="p">[:]</span> <span class="n">a_list</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a_list</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
+<span class="n">l_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> bs_cython(l_arr)
+</pre></div>
+</div>
+<p>We can further improve performance by using more C/C++ features:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">cython</span>
+
+<span class="n">cimport</span> <span class="n">cython</span>
+<span class="kn">from</span> <span class="nn">libc.stdlib</span> <span class="n">cimport</span> <span class="n">malloc</span><span class="p">,</span> <span class="n">free</span>
+
+<span class="n">cpdef</span> <span class="n">bs_clist</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="o">*</span><span class="n">c_list</span>
+    <span class="n">c_list</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">int</span> <span class="o">*&gt;</span><span class="n">malloc</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a_list</span><span class="p">)</span><span class="o">*</span><span class="n">cython</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+    <span class="n">cdef</span> <span class="nb">int</span> <span class="n">N</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> 
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_list</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">c_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">c_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">c_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">c_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">c_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">a_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+    <span class="n">free</span><span class="p">(</span><span class="n">c_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a_list</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
+<span class="o">%</span><span class="k">timeit</span> bs_clist(l)
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span> <span class="nf">bs_numba</span><span class="p">(</span><span class="n">a_list</span><span class="p">):</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_list</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">a_list</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a_list</span>
+</pre></div>
+</div>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
+<span class="c1"># first try using a list as input</span>
+<span class="o">%</span><span class="k">timeit</span> bs_numba(l)
+<span class="c1"># try using a NumPy array</span>
+<span class="n">l_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> bs_numba(l_arr)
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the results depend on what version of Python, Cython, Numba, and NumPy you are using.
+In addition, the different compiler choices used for installing NumPy can account for differences in the results.</p>
+<p>NumPy is really good at what it does. For simple operations or small data, Numba is not going to outperform it,
+but when things get more complex Numba will save the day.</p>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../parallel-computing/" class="btn btn-neutral float-left" title="Parallel computing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../dask/" class="btn btn-neutral float-right" title="Dask for scalable analytics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
