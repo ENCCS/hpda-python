@@ -73,8 +73,6 @@ keywords:
   - numpy
   - pandas
   - dask
-license:
-  - CC-BY-4.0
-  - MIT
+license: CC-BY-4.0
 version: 2025.01.21
 date-released: '2025-01-21'
