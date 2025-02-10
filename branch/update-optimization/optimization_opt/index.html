@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmarking, profiling and optimizing (II) &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_theme.css?v=3234e928" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+      <link rel="stylesheet" type="text/css" href="../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=187304be"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../_static/minipres.js?v=a0d29692"></script>
+      <script src="../_static/js/hoverxref.js"></script>
+      <script src="../_static/js/tooltipster.bundle.min.js"></script>
+      <script src="../_static/js/micromodal.min.js"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Instructor’s Guide" href="../guide/" />
+    <link rel="prev" title="Parallel Computing (II)" href="../parallel-computing_opt/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Installation and LUMI Access</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient Array Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization/">Benchmarking, profiling and optimizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance Boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for Scalable Analytics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup-eurohpc/">Installation in EuroHPC Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Pandas (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing_opt/">Parallel Computing (II)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarking, profiling and optimizing (II)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#profiling">Profiling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scalene">Scalene</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cli-tool">CLI tool</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ipython-magic">IPython magic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#web-interface">Web interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Benchmarking, profiling and optimizing (II)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/hpda-python/blob/main/content/optimization_opt.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="benchmarking-profiling-and-optimizing-ii">
+<h1>Benchmarking, profiling and optimizing (II)<a class="headerlink" href="#benchmarking-profiling-and-optimizing-ii" title="Link to this heading"></a></h1>
+<section id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Link to this heading"></a></h2>
+<section id="scalene">
+<span id="id1"></span><h3>Scalene<a class="headerlink" href="#scalene" title="Link to this heading"></a></h3>
+<p>Scalene is a sampling profiler. In addition to timings , it can also give insight into:</p>
+<ul class="simple">
+<li><p>CPU time spent in Python (interpreted), native (compiled) and system function calls</p></li>
+<li><p>Memory usage and copy</p></li>
+<li><p>GPU utilization</p></li>
+<li><p>Memory leak detection</p></li>
+</ul>
+<p>Moreover, it adds minimal overhead due to profiling. The downside is the results are
+less reproducible, because it is a sampling profiler.</p>
+<p>Scalene can be used as a <a class="hxr-hoverxref hxr-modal reference internal" href="#scalene-cli"><span class="std std-ref">CLI tool</span></a>, or using <a class="hxr-hoverxref hxr-modal reference internal" href="#scalene-ipy"><span class="std std-ref">IPython magic</span></a> or in
+<a class="hxr-hoverxref hxr-modal reference internal" href="#scalene-web"><span class="std std-ref">Web interface</span></a> as an interactive widget. Here are some examples profiling
+<a class="reference download internal" download="" href="../_downloads/29ba0b7fa786ae9bb9e84eb4c820c5e4/walk.py"><code class="xref download docutils literal notranslate"><span class="pre">walk.py</span></code></a> with Scalene.</p>
+<section id="cli-tool">
+<span id="scalene-cli"></span><h4>CLI tool<a class="headerlink" href="#cli-tool" title="Link to this heading"></a></h4>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scalene<span class="w"> </span>--cli<span class="w"> </span>walk.py
+</pre></div>
+</div>
+</section>
+<section id="ipython-magic">
+<span id="scalene-ipy"></span><h4>IPython magic<a class="headerlink" href="#ipython-magic" title="Link to this heading"></a></h4>
+<p>This allows for profiling a specific function. For example to profile just <cite>walk</cite>, we do as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">%</span><span class="k">load_ext</span> scalene
+
+<span class="gp">In [2]: </span><span class="o">%</span><span class="k">run</span> walk.py
+
+<span class="gp">In [3]: </span><span class="o">%</span><span class="k">sc</span>run<span class="w"> </span>--cli<span class="w"> </span>walk<span class="o">(</span>n<span class="o">)</span>
+</pre></div>
+</div>
+<p>Gives the following output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SCRUN MAGIC
+                              /home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py: % of time = 100.00% (1.933s) out of 1.933s.
+       ╷       ╷       ╷       ╷       ╷
+       │Time   │–––––– │–––––– │–––––– │
+  Line │Python │native │system │GPU    │/home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py
+╺━━━━━━┿━━━━━━━┿━━━━━━━┿━━━━━━━┿━━━━━━━┿━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸
+     1 │       │       │       │       │&quot;&quot;&quot;A 1-D random walk.
+     2 │       │       │       │       │
+     3 │       │       │       │       │See also:
+     4 │       │       │       │       │- https://lectures.scientific-python.org/intro/numpy/auto_examples/plot_randomwalk.html
+     5 │       │       │       │       │
+     6 │       │       │       │       │&quot;&quot;&quot;
+     7 │       │       │       │       │import numpy as np
+     8 │       │       │       │       │
+     9 │       │       │       │       │
+    10 │    6% │       │       │       │def step():
+    11 │       │       │       │       │    import random
+    12 │    7% │   64% │  13%  │       │    return 1.0 if random.random() &gt; 0.5 else -1.0
+    13 │       │       │       │       │
+    14 │       │       │       │       │
+    15 │       │       │       │       │def walk(n: int, dx: float = 1.0):
+    16 │       │       │       │       │    &quot;&quot;&quot;The for-loop version.
+    17 │       │       │       │       │
+    18 │       │       │       │       │    Parameters
+    19 │       │       │       │       │    ----------
+    20 │       │       │       │       │    n: int
+    21 │       │       │       │       │        Number of time steps
+    22 │       │       │       │       │
+    23 │       │       │       │       │    dx: float
+    24 │       │       │       │       │        Step size. Default step size is unity.
+    25 │       │       │       │       │
+    26 │       │       │       │       │    &quot;&quot;&quot;
+    27 │       │       │       │       │    xs = np.zeros(n)
+    28 │       │       │       │       │
+    29 │       │       │       │       │    for i in range(n - 1):
+    30 │       │       │       │       │        x_new = xs[i] + dx * step()
+    31 │    7% │       │       │       │        xs[i + 1] = x_new
+    32 │       │       │       │       │
+    33 │       │       │       │       │    return xs
+    34 │       │       │       │       │
+    35 │       │       │       │       │
+    36 │       │       │       │       │def walk_vec(n: int, dx: float = 1.0):
+    37 │       │       │       │       │    &quot;&quot;&quot;The vectorized version of :func:`walk` using numpy functions.&quot;&quot;&quot;
+    38 │       │       │       │       │    import random
+    39 │       │       │       │       │    steps = np.array(random.sample([1, -1], k=n, counts=[10 * n, 10 * n]))
+    40 │       │       │       │       │
+    41 │       │       │       │       │    # steps = np.random.choice([1, -1], size=n)
+    42 │       │       │       │       │
+    43 │       │       │       │       │    dx_steps = dx * steps
+    44 │       │       │       │       │
+    45 │       │       │       │       │    # set initial condition to zero
+    46 │       │       │       │       │    dx_steps[0] = 0
+    47 │       │       │       │       │    # use cumulative sum to replicate time evolution of position x
+    48 │       │       │       │       │    xs = np.cumsum(dx_steps)
+    49 │       │       │       │       │
+    50 │       │       │       │       │    return xs
+    51 │       │       │       │       │
+    52 │       │       │       │       │
+    53 │       │       │       │       │if __name__ == &quot;__main__&quot;:
+    54 │       │       │       │       │    n = 1_000_000
+    55 │       │       │       │       │    _ = walk(n)
+    56 │       │       │       │       │    _ = walk_vec(n)
+    57 │       │       │       │       │
+       │       │       │       │       │
+╶──────┼───────┼───────┼───────┼───────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╴
+       │       │       │       │       │function summary for /home/ashwinmo/Sources/enccs/hpda-python/content/example/walk.py
+    10 │   14% │   69% │   9%  │       │step
+    15 │    7% │       │       │       │walk
+       ╵       ╵       ╵       ╵
+</pre></div>
+</div>
+<p>If you run the magic command in Jupyter you can use <cite>%scrun walk(n)</cite> instead and it should an output similar to the <a class="hxr-hoverxref hxr-modal reference internal" href="#scalene-web"><span class="std std-ref">Web interface</span></a> below.</p>
+</section>
+<section id="web-interface">
+<span id="scalene-web"></span><h4>Web interface<a class="headerlink" href="#web-interface" title="Link to this heading"></a></h4>
+<p>Running</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>scalene<span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p>opens up the following web app:</p>
+<figure class="align-default">
+<img alt="../_images/scalene_web.png" src="../_images/scalene_web.png" />
+</figure>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../parallel-computing_opt/" class="btn btn-neutral float-left" title="Parallel Computing (II)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../guide/" class="btn btn-neutral float-right" title="Instructor’s Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

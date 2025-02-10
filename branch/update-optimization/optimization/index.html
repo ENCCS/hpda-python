@@ -1,0 +1,1094 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmarking, profiling and optimizing &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_theme.css?v=3234e928" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+      <link rel="stylesheet" type="text/css" href="../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=187304be"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../_static/minipres.js?v=a0d29692"></script>
+      <script src="../_static/js/hoverxref.js"></script>
+      <script src="../_static/js/tooltipster.bundle.min.js"></script>
+      <script src="../_static/js/micromodal.min.js"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Performance Boosting" href="../performance-boosting/" />
+    <link rel="prev" title="Parallel Computing" href="../parallel-computing/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Installation and LUMI Access</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient Array Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel Computing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarking, profiling and optimizing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#benchmarking">Benchmarking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time">time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeit">timeit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercise-1">Exercise 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#profiling">Profiling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#deterministic-profilers-vs-sampling-profilers">Deterministic profilers vs. sampling profilers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cprofile">cProfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#line-profiler">Line-profiler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercise-2">Exercise 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization">Performance optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#algorithm-optimization">Algorithm optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#singular-value-decomposition">Singular value decomposition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-fibonacci-sequence">The Fibonacci sequence</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cpu-usage-optimization">CPU usage optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#vectorization">Vectorization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-usage-optimization">Memory usage optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#broadcasting">Broadcasting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cache-effects">Cache effects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#temporary-arrays">Temporary arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#numexpr">Numexpr</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance Boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for Scalable Analytics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup-eurohpc/">Installation in EuroHPC Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Pandas (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing_opt/">Parallel Computing (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization_opt/">Benchmarking, profiling and optimizing (II)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Benchmarking, profiling and optimizing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/hpda-python/blob/main/content/optimization.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="benchmarking-profiling-and-optimizing">
+<span id="performance"></span><h1>Benchmarking, profiling and optimizing<a class="headerlink" href="#benchmarking-profiling-and-optimizing" title="Link to this heading"></a></h1>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Learn how to benchmark and profile Python code</p></li>
+<li><p>Understand how optimization can be algorithmic or based on CPU or memory usage</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>30 min teaching/type-along</p></li>
+<li><p>30 min exercises</p></li>
+</ul>
+</div>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Once your code is working reliably, you can start thinking of optimizing it.</p></li>
+<li><p>Always measure the code before you start optimization. Don’t base your optimization
+on assumptions, otherwise you’ll have surprises.</p></li>
+</ul>
+</div>
+<section id="benchmarking">
+<h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Link to this heading"></a></h2>
+<p>Benchmarking is a method of doing performance analysis for either the end-to-end execution of a whole
+program or a part of a program.</p>
+<section id="time">
+<h3>time<a class="headerlink" href="#time" title="Link to this heading"></a></h3>
+<p>One of the easy way to benchmark is to use the time function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">some_function</span><span class="p">():</span>
+   <span class="o">...</span>
+
+<span class="c1"># start the timer</span>
+<span class="hll"><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span class="c1"># here are the code you would like to measure</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">some_function</span><span class="p">()</span>
+<span class="c1"># stop the</span>
+<span class="hll"><span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span class="hll"><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Runtime: </span><span class="si">{:.4f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+</span></pre></div>
+</div>
+<p>The IPython “magic” command
+<a class="reference external" href="https://ipython.readthedocs.io/en/stable/api/generated/IPython.core.magics.execution.html#IPython.core.magics.execution.ExecutionMagics.time" title="(in IPython v8.31.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">%time</span></code></a>
+can also be used to make a similar benchmark with less effort as follows:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span> some_function()
+</pre></div>
+</div>
+</section>
+<section id="timeit">
+<h3>timeit<a class="headerlink" href="#timeit" title="Link to this heading"></a></h3>
+<p>If you’re using a Jupyter notebook, the best choice will be to use
+<a class="reference external" href="https://docs.python.org/3/library/timeit.html#module-timeit" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">timeit</span></code></a> module or the
+IPython “magic” command
+<a class="reference external" href="https://ipython.readthedocs.io/en/stable/api/generated/IPython.core.magics.execution.html#IPython.core.magics.execution.ExecutionMagics.timeit" title="(in IPython v8.31.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">%timeit</span></code></a>
+to repeatedly time a small piece of code:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="hll"><span class="o">%</span><span class="k">timeit</span> a ** 2
+</span></pre></div>
+</div>
+<p>We will shortly see in an
+One can also use the cell magic
+<a class="reference external" href="https://ipython.readthedocs.io/en/stable/api/generated/IPython.core.magics.execution.html#IPython.core.magics.execution.ExecutionMagics.timeit" title="(in IPython v8.31.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">%timeit</span></code></a>
+to benchmark a full cell containing a block of code.</p>
+</section>
+</section>
+<section id="exercise-1">
+<h2>Exercise 1<a class="headerlink" href="#exercise-1" title="Link to this heading"></a></h2>
+<div class="admonition-exercise exercise important admonition" id="exercise-0">
+<p class="admonition-title">Exercise</p>
+<p>Start with the following code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">square_sum</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+   <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">%time</span> <span class="pre">square_sum(a)</span></code> a couple of times. Do you get the same result?</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">%timeit</span> <span class="pre">square_sum(a)</span></code> a couple of times. Do you get the same result?</p></li>
+<li><p>(optional) execute the following benchmark and
+compare it with output of question number 1.</p></li>
+</ol>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.request</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="o">%</span><span class="k">time</span> urlopen(&quot;https://raw.githubusercontent.com/ENCCS/hpda-python/refs/heads/main/content/data/tas1840.nc&quot;)
+</pre></div>
+</div>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Solution</p>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">%time</span> <span class="pre">square_sum(a)</span></code> a couple of times.</p></li>
+</ol>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">   ...:</span>
+<span class="gp">   ...:</span>
+<span class="gp">   ...: </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">   ...:</span>
+<span class="gp">   ...: </span><span class="k">def</span><span class="w"> </span><span class="nf">square_sum</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+<span class="gp">   ...: </span>   <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="gp">   ...:</span>
+
+<span class="gp">In [2]: </span><span class="o">%</span><span class="k">time</span> square_sum(a)
+<span class="go">CPU times: user 184 μs, sys: 5 μs, total: 189 μs</span>
+<span class="go">Wall time: 155 μs</span>
+<span class="gh">Out[2]: </span><span class="go">np.int64(332833500)</span>
+
+<span class="gp">In [3]: </span><span class="o">%</span><span class="k">time</span> square_sum(a)
+<span class="go">CPU times: user 74 μs, sys: 0 ns, total: 74 μs</span>
+<span class="go">Wall time: 77.7 μs</span>
+<span class="gh">Out[3]: </span><span class="go">np.int64(332833500)</span>
+</pre></div>
+</div>
+<p>We get a rough estimate of how long it takes to execute a function for a given
+input value. While useful, a few sample timings of the function <code class="docutils literal notranslate"><span class="pre">square_sum()</span></code>,
+does not represent a reproducible benchmark.
+Subsequent measurements can result in different runtimes, due to the state of the
+computer such as:</p>
+<ul class="simple">
+<li><p>what background processes are running,</p></li>
+<li><p>hyperthreading,</p></li>
+<li><p>memory and cache usage,</p></li>
+<li><p>CPU’s temperature,</p></li>
+</ul>
+<p>and many more factors, also collectively known as <em>system jitter</em>.</p>
+<ol class="arabic simple" start="2">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">%timeit</span> <span class="pre">square_sum(a)</span></code> a couple of times.</p></li>
+</ol>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="o">%</span><span class="k">timeit</span> square_sum(a)
+<span class="go">1.62 μs ± 55.4 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)</span>
+
+<span class="gp">In [5]: </span><span class="o">%</span><span class="k">timeit</span> square_sum(a)
+<span class="go">1.6 μs ± 46.6 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)</span>
+</pre></div>
+</div>
+<p>By making several measurements, we manage to reduce jitter and the measurement is more
+reliable</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For long running calls, using <code class="docutils literal notranslate"><span class="pre">%time</span></code> instead of <code class="docutils literal notranslate"><span class="pre">%timeit</span></code>; it is
+less precise but faster</p>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>(optional) Comparing benchmarks of <code class="docutils literal notranslate"><span class="pre">%time</span> <span class="pre">square_sum(a)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">%time</span> <span class="pre">urlopen(...)</span></code>.</p></li>
+</ol>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="kn">from</span><span class="w"> </span><span class="nn">urllib.request</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlopen</span>
+
+<span class="gp">In [7]: </span><span class="o">%</span><span class="k">time</span> urlopen(&quot;https://raw.githubusercontent.com/ENCCS/hpda-python/refs/heads/main/content/data/tas1840.nc&quot;)
+<span class="go">CPU times: user 4.66 ms, sys: 974 μs, total: 5.63 ms</span>
+<span class="go">Wall time: 21.4 ms</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;http.client.HTTPResponse at 0x78ea989eed40&gt;</span>
+</pre></div>
+</div>
+<p>In (1) we see that the <em>CPU time</em> and <em>Wall time</em> is comparable which indicates that the
+operation is CPU bound.</p>
+<p>However in (3) we clearly see that <strong>CPU time is lower
+than wall-time</strong>, from which we can deduce that it is not a CPU-bound operation.
+In this particular case, the operation was I/O bound.
+Some common I/O bound operations are network related, or due to
+latency in filesystems or use of inefficient file storage formats.</p>
+</div>
+</section>
+<section id="profiling">
+<h2>Profiling<a class="headerlink" href="#profiling" title="Link to this heading"></a></h2>
+<p>Profilers are applications which attach to the execution of the program, which in our case is done
+by the CPython interpreter and analyze the time taken for different portions of the code.
+Profilers help to identify performance bottlenecks in the code by showing</p>
+<ul class="simple">
+<li><p>wall-time (<a href="#id1"><span class="problematic" id="id2">*</span></a>or start to end time that the user observes),</p></li>
+<li><p>CPU and GPU time, and</p></li>
+<li><p>memory usage patterns</p></li>
+</ul>
+<p>in <strong>function/method/line of code</strong> level granularity.</p>
+<section id="deterministic-profilers-vs-sampling-profilers">
+<h3>Deterministic profilers vs. sampling profilers<a class="headerlink" href="#deterministic-profilers-vs-sampling-profilers" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><em>Deterministic profilers</em> are also called <em>tracing profilers</em>.</p>
+</div>
+<p><strong>Deterministic profilers</strong> record every function call and event in the program,
+logging the exact sequence and duration of events.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>👍 <strong>Pros:</strong></dt><dd><ul class="simple">
+<li><p>Provides detailed information on the program’s execution.</p></li>
+<li><p>Deterministic: Captures exact call sequences and timings.</p></li>
+</ul>
+</dd>
+<dt>👎 <strong>Cons:</strong></dt><dd><ul class="simple">
+<li><p>Higher overhead, slowing down the program.</p></li>
+<li><p>Can generate larger amount of data.</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>Sampling profilers</strong> periodically samples the program’s state (where it is
+and how much memory is used), providing a statistical view of where time is
+spent.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>👍 <strong>Pros:</strong></dt><dd><ul class="simple">
+<li><p>Lower overhead, as it doesn’t track every event.</p></li>
+<li><p>Scales better with larger programs.</p></li>
+</ul>
+</dd>
+<dt>👎 <strong>Cons:</strong></dt><dd><ul class="simple">
+<li><p>Less precise, potentially missing infrequent or short calls.</p></li>
+<li><p>Provides an approximation rather than exact timing.</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<div class="admonition-discussion discussion important admonition" id="discussion-0">
+<p class="admonition-title">Discussion</p>
+<p><em>Analogy</em>: Imagine we want to optimize the Stockholm Länstrafik (SL) metro system
+We wish to detect bottlenecks in the system to improve the service and for this we have
+asked few passengers to help us by tracking their journey.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><strong>Deterministic</strong>:</dt><dd><p>We follow every train and passenger, recording every stop
+and delay. When passengers enter and exit the train, we record the exact time
+and location.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Sampling</strong>:</dt><dd><p>Every 5 minutes the phone notifies the passenger to note
+down their current location. We then use this information to estimate
+the most crowded stations and trains.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<p>In addition to the above distinctions, some profilers can also</p>
+<div class="dropdown callout admonition" id="callout-0">
+<p class="admonition-title">Examples of some profilers</p>
+<p>CPU profilers:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/profile.html">cProfile and profile</a></p></li>
+<li><p><a class="reference external" href="https://kernprof.readthedocs.io/">line_profiler</a></p></li>
+<li><p><a class="reference external" href="https://github.com/benfred/py-spy">py-spy</a></p></li>
+</ul>
+<p>Memory profilers:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/tracemalloc.html">tracemalloc</a></p></li>
+<li><p><a class="reference external" href="https://bloomberg.github.io/memray/index.html">memray</a></p></li>
+</ul>
+<p>Both CPU and memory:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/plasma-umass/scalene">Scalene</a> (see optional course material on <a class="hxr-hoverxref hxr-modal reference internal" href="../optimization_opt/#scalene"><span class="std std-ref">Scalene</span></a>)</p></li>
+</ul>
+</div>
+<p>In the following sections, we will use <a class="hxr-hoverxref hxr-modal reference internal" href="#cprofile"><span class="std std-ref">cProfile</span></a> and <a class="hxr-hoverxref hxr-modal reference internal" href="#line-profiler"><span class="std std-ref">Line-profiler</span></a> to profile a Python program.
+cProfile is a deterministic (tracing) profiler built-in to the Python standard library
+and gives timings in function-level granularity.
+Line profiler is also deterministic and it provides timings in line-of-code granularity for few selected
+functions.</p>
+</section>
+<section id="cprofile">
+<span id="id3"></span><h3>cProfile<a class="headerlink" href="#cprofile" title="Link to this heading"></a></h3>
+<p>As a demo, let us consider the following code which simulates a random walk in one dimension
+(we can save it as <code class="docutils literal notranslate"><span class="pre">walk.py</span></code> or download from <a class="reference download internal" download="" href="../_downloads/29ba0b7fa786ae9bb9e84eb4c820c5e4/walk.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>):</p>
+<div class="highlight-default notranslate" id="walk-py-script"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;A 1-D random walk.</span>
+
+<span class="sd">See also:</span>
+<span class="sd">- https://lectures.scientific-python.org/intro/numpy/auto_examples/plot_randomwalk.html</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">():</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The for-loop version.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n: int</span>
+<span class="sd">        Number of time steps</span>
+
+<span class="sd">    dx: float</span>
+<span class="sd">        Step size. Default step size is unity.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">x_new</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">step</span><span class="p">()</span>
+        <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_new</span>
+
+    <span class="k">return</span> <span class="n">xs</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">walk_vec</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The vectorized version of :func:`walk` using numpy functions.&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">counts</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">n</span><span class="p">]))</span>
+
+    <span class="c1"># steps = np.random.choice([1, -1], size=n)</span>
+
+    <span class="n">dx_steps</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">steps</span>
+
+    <span class="c1"># set initial condition to zero</span>
+    <span class="n">dx_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># use cumulative sum to replicate time evolution of position x</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dx_steps</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xs</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">1_000_000</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">walk</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">walk_vec</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can profile it with <code class="docutils literal notranslate"><span class="pre">cProfile</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$  </span>python<span class="w"> </span>-m<span class="w"> </span>cProfile<span class="w"> </span>-s<span class="w"> </span><span class="nb">time</span><span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-s</span></code> switch sorts the results by <code class="docutils literal notranslate"><span class="pre">time</span></code>. Other options include
+e.g. function name, cumulative time, etc. However, this will print a lot of
+output which is difficult to read.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>cProfile<span class="w"> </span>-o<span class="w"> </span>walk.prof<span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p>It’s also possible to write the profile
+to a file with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag and view it with <a class="reference external" href="https://docs.python.org/3/library/profile.html#module-pstats">profile pstats module</a>
+or profile visualisation tools like
+<a class="reference external" href="https://jiffyclub.github.io/snakeviz/">Snakeviz</a>
+or <a class="reference external" href="https://pypi.org/project/tuna/">tuna</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Similar functionality is available in interactive IPython or Jupyter sessions with the
+magic command <a class="reference external" href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">%%prun</a>.</p>
+</div>
+</section>
+<section id="line-profiler">
+<span id="id4"></span><h3>Line-profiler<a class="headerlink" href="#line-profiler" title="Link to this heading"></a></h3>
+<p>The cProfile tool tells us which function takes most of the time but it does not give us a
+line-by-line breakdown of where time is being spent. For this information, we can use the
+<a class="reference external" href="https://github.com/pyutils/line_profiler/">line_profiler</a> tool.</p>
+<div class="admonition-demo-line-profiling demo admonition" id="demo-0">
+<p class="admonition-title">Demo: line profiling</p>
+<p>For line-profiling source files from the command line, we can add a decorator <code class="docutils literal notranslate"><span class="pre">&#64;profile</span></code>
+to the functions of interests. If we do this for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> function
+in the example above, we can then run the script using the <cite>kernprof.py</cite> program which comes with
+<code class="docutils literal notranslate"><span class="pre">line_profiler</span></code>, making sure to include the switches <code class="docutils literal notranslate"><span class="pre">-l,</span> <span class="pre">--line-by-line</span></code> and <code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--view</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>kernprof<span class="w"> </span>-l<span class="w"> </span>-v<span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">line_profiler</span></code> also works in a Jupyter notebook. First one needs to load the extension:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> line_profiler
+</pre></div>
+</div>
+<p>If the <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> functions are defined in code cells, we can get the line-profiling
+information by:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">lprun</span> -f walk -f step walk(10000)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Based on the output, can you spot a mistake which is affecting performance?</p></li>
+</ul>
+<div class="dropdown callout admonition" id="callout-1">
+<p class="admonition-title">Line-profiling output</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Wrote</span> <span class="n">profile</span> <span class="n">results</span> <span class="n">to</span> <span class="n">walk</span><span class="o">.</span><span class="n">py</span><span class="o">.</span><span class="n">lprof</span>
+<span class="n">Timer</span> <span class="n">unit</span><span class="p">:</span> <span class="mf">1e-06</span> <span class="n">s</span>
+
+<span class="n">Total</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.113249</span> <span class="n">s</span>
+<span class="n">File</span><span class="p">:</span> <span class="n">walk</span><span class="o">.</span><span class="n">py</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">step</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">4</span>
+
+<span class="n">Line</span> <span class="c1">#      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="o">==============================================================</span>
+   <span class="mi">4</span>                                           <span class="nd">@profile</span>
+   <span class="mi">5</span>                                           <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">():</span>
+   <span class="mi">6</span>     <span class="mi">99999</span>      <span class="mf">57528.0</span>      <span class="mf">0.6</span>     <span class="mf">50.8</span>      <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+   <span class="mi">7</span>     <span class="mi">99999</span>      <span class="mf">55721.0</span>      <span class="mf">0.6</span>     <span class="mf">49.2</span>      <span class="k">return</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">.5</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.</span>
+
+<span class="n">Total</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.598811</span> <span class="n">s</span>
+<span class="n">File</span><span class="p">:</span> <span class="n">walk</span><span class="o">.</span><span class="n">py</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">walk</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">9</span>
+
+<span class="n">Line</span> <span class="c1">#      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="o">==============================================================</span>
+   <span class="mi">9</span>                                           <span class="nd">@profile</span>
+   <span class="mi">10</span>                                           <span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+   <span class="mi">11</span>         <span class="mi">1</span>         <span class="mf">20.0</span>     <span class="mf">20.0</span>      <span class="mf">0.0</span>      <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+   <span class="mi">12</span>         <span class="mi">1</span>          <span class="mf">1.0</span>      <span class="mf">1.0</span>      <span class="mf">0.0</span>      <span class="n">dx</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">n</span>
+   <span class="mi">13</span>    <span class="mi">100000</span>      <span class="mf">44279.0</span>      <span class="mf">0.4</span>      <span class="mf">7.4</span>      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+   <span class="mi">14</span>     <span class="mi">99999</span>     <span class="mf">433303.0</span>      <span class="mf">4.3</span>     <span class="mf">72.4</span>          <span class="n">x_new</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">step</span><span class="p">()</span>
+   <span class="mi">15</span>     <span class="mi">99999</span>      <span class="mf">53894.0</span>      <span class="mf">0.5</span>      <span class="mf">9.0</span>          <span class="k">if</span> <span class="n">x_new</span> <span class="o">&gt;</span> <span class="mf">5e-3</span><span class="p">:</span>
+   <span class="mi">16</span>                                                       <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+   <span class="mi">17</span>                                                   <span class="k">else</span><span class="p">:</span>
+   <span class="mi">18</span>     <span class="mi">99999</span>      <span class="mf">67313.0</span>      <span class="mf">0.7</span>     <span class="mf">11.2</span>              <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_new</span>
+   <span class="mi">19</span>         <span class="mi">1</span>          <span class="mf">1.0</span>      <span class="mf">1.0</span>      <span class="mf">0.0</span>      <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-the-mistake solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">The mistake</p>
+<p>The mistake is that the <code class="docutils literal notranslate"><span class="pre">random</span></code> module is loaded inside the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> function
+which is called thousands of times! Moving the module import to the top level saves
+considerable time.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="exercise-2">
+<h2>Exercise 2<a class="headerlink" href="#exercise-2" title="Link to this heading"></a></h2>
+<div class="admonition-exercise exercise important admonition" id="exercise-1">
+<p class="admonition-title">Exercise</p>
+<p>Start by copying in the script <a class="hxr-hoverxref hxr-modal reference internal" href="#walk-py-script"><span class="std std-ref">walk.py</span></a> into Jupyter or
+<code class="xref download docutils literal notranslate"><span class="pre">download</span> <span class="pre">it</span></code> and execute <code class="docutils literal notranslate"><span class="pre">%run</span> <span class="pre">walk.py</span></code></p>
+<ol class="arabic">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">%timeit</span></code> magic command in Jupyter
+to benchmark the functions <code class="docutils literal notranslate"><span class="pre">walk(1_000_000)</span></code> and <code class="docutils literal notranslate"><span class="pre">walk_vec(1_000_000)</span></code>.
+Which is faster?</p></li>
+<li><p>Use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">load_ext</span> <span class="n">line_profiler</span>
+<span class="o">%</span><span class="n">lprun</span> <span class="o">-</span><span class="n">f</span> <span class="n">walk_vec</span> <span class="n">walk_vec</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to apply line-profiler on <code class="docutils literal notranslate"><span class="pre">walk_vec</span></code> function. What is the bottleneck?</p>
+</li>
+<li><p>Modify the following lines to use to change how the <code class="docutils literal notranslate"><span class="pre">steps</span></code> array is initialized.
+Execute it to re-initialize <code class="docutils literal notranslate"><span class="pre">walk_vec</span></code>.
+Redo the above benchmark and profiling. Does it improve the performance?</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">walk_vec</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The vectorized version of :func:`walk` using numpy functions.&quot;&quot;&quot;</span>
+<span class="hll">    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+</span><span class="hll">    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">counts</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">n</span><span class="p">]))</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="c1"># steps = np.random.choice([1, -1], size=n)</span>
+</span>
+    <span class="n">dx_steps</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">steps</span>
+
+    <span class="c1"># set initial condition to zero</span>
+    <span class="n">dx_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># use cumulative sum to replicate time evolution of position x</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dx_steps</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xs</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-2">
+<p class="admonition-title">Solution</p>
+<ol class="arabic">
+<li><p>Benchmarking <code class="docutils literal notranslate"><span class="pre">walk</span></code> and <code class="docutils literal notranslate"><span class="pre">walk_vec</span></code></p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="o">%</span><span class="k">run</span> walk.py
+
+<span class="gp">In [2]: </span><span class="o">%</span><span class="k">timeit</span> walk(1_000_000)
+<span class="go">246 ms ± 2.59 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+
+<span class="gp">In [3]: </span><span class="o">%</span><span class="k">timeit</span> walk_vec(1_000_000)
+<span class="go">397 ms ± 6.38 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>Shows <code class="docutils literal notranslate"><span class="pre">walk_vec</span></code>, although use vectorised operations, is slower.
+Although it is not directly obvious why.</p>
+</li>
+<li><p>Profiling <code class="docutils literal notranslate"><span class="pre">walk_vec</span></code></p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="o">%</span><span class="k">load_ext</span> line_profiler
+
+<span class="gp">In [5]: </span><span class="o">%</span><span class="k">lprun</span> -f walk_vec walk_vec(1_000_000)
+</pre></div>
+</div>
+<p>illustrates how creating the <code class="docutils literal notranslate"><span class="pre">steps</span></code> array consumes more than 99% of the total time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Timer</span> <span class="n">unit</span><span class="p">:</span> <span class="mf">1e-09</span> <span class="n">s</span>
+
+<span class="n">Total</span> <span class="n">time</span><span class="p">:</span> <span class="mf">1.14911</span> <span class="n">s</span>
+<span class="n">File</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ashwinmo</span><span class="o">/</span><span class="n">Sources</span><span class="o">/</span><span class="n">enccs</span><span class="o">/</span><span class="n">hpda</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">content</span><span class="o">/</span><span class="n">example</span><span class="o">/</span><span class="n">walk</span><span class="o">.</span><span class="n">py</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">walk_vec</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">36</span>
+
+<span class="n">Line</span> <span class="c1">#      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="o">==============================================================</span>
+   <span class="mi">36</span>                                           <span class="k">def</span><span class="w"> </span><span class="nf">walk_vec</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+   <span class="mi">37</span>                                               <span class="s2">&quot;&quot;&quot;The vectorized version of :func:`walk` using numpy functions.&quot;&quot;&quot;</span>
+   <span class="mi">38</span>         <span class="mi">1</span>       <span class="mf">3374.0</span>   <span class="mf">3374.0</span>      <span class="mf">0.0</span>      <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+   <span class="mi">39</span>         <span class="mi">1</span> <span class="mf">1145604166.0</span>    <span class="mf">1e+09</span>     <span class="mf">99.7</span>      <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">counts</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">n</span><span class="p">]))</span>
+   <span class="mi">40</span>
+   <span class="mi">41</span>                                               <span class="c1"># steps = np.random.choice([1, -1], size=n)</span>
+   <span class="mi">42</span>
+   <span class="mi">43</span>         <span class="mi">1</span>    <span class="mf">1085779.0</span>    <span class="mf">1e+06</span>      <span class="mf">0.1</span>      <span class="n">dx_steps</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">steps</span>
+   <span class="mi">44</span>
+   <span class="mi">45</span>                                               <span class="c1"># set initial condition to zero</span>
+   <span class="mi">46</span>         <span class="mi">1</span>       <span class="mf">3666.0</span>   <span class="mf">3666.0</span>      <span class="mf">0.0</span>      <span class="n">dx_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+   <span class="mi">47</span>                                               <span class="c1"># use cumulative sum to replicate time evolution of position x</span>
+   <span class="mi">48</span>         <span class="mi">1</span>    <span class="mf">2408374.0</span>    <span class="mf">2e+06</span>      <span class="mf">0.2</span>      <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dx_steps</span><span class="p">)</span>
+   <span class="mi">49</span>
+   <span class="mi">50</span>         <span class="mi">1</span>        <span class="mf">507.0</span>    <span class="mf">507.0</span>      <span class="mf">0.0</span>      <span class="k">return</span> <span class="n">xs</span>
+</pre></div>
+</div>
+<p>This is because <cite>random.sample</cite> is part of the standard library and produces a list.</p>
+</li>
+<li><p>After modifying <code class="docutils literal notranslate"><span class="pre">walk_vec</span></code> function, we see it is much faster.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="o">%</span><span class="k">ed</span> walk.py
+<span class="go">Editing... done. Executing edited code...</span>
+
+<span class="gp">In [8]: </span><span class="o">%</span><span class="k">timeit</span> walk(1_000_000)
+<span class="go">259 ms ± 14.5 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+
+<span class="gp">In [9]: </span><span class="o">%</span><span class="k">timeit</span> walk_vec(1_000_000)
+<span class="go">6.49 ms ± 90.4 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span>
+
+<span class="gp">In [10]: </span><span class="o">%</span><span class="k">lprun</span> -f walk_vec walk_vec(1_000_000)
+</pre></div>
+</div>
+<p>Line-profiler output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Timer</span> <span class="n">unit</span><span class="p">:</span> <span class="mf">1e-09</span> <span class="n">s</span>
+
+<span class="n">Total</span> <span class="n">time</span><span class="p">:</span> <span class="mf">0.0078706</span> <span class="n">s</span>
+<span class="n">File</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">ashwinmo</span><span class="o">/</span><span class="n">Sources</span><span class="o">/</span><span class="n">enccs</span><span class="o">/</span><span class="n">hpda</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">content</span><span class="o">/</span><span class="n">example</span><span class="o">/</span><span class="n">walk</span><span class="o">.</span><span class="n">py</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">walk_vec</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">36</span>
+
+<span class="n">Line</span> <span class="c1">#      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="o">==============================================================</span>
+   <span class="mi">36</span>                                           <span class="k">def</span><span class="w"> </span><span class="nf">walk_vec</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+   <span class="mi">37</span>                                               <span class="s2">&quot;&quot;&quot;The vectorized version of :func:`walk` using numpy functions.&quot;&quot;&quot;</span>
+   <span class="mi">38</span>                                               <span class="c1"># import random</span>
+   <span class="mi">39</span>                                               <span class="c1"># steps = np.array(random.sample([1, -1], k=n, counts=[10 * n, 10 * n]))</span>
+   <span class="mi">40</span>
+   <span class="mi">41</span>         <span class="mi">1</span>    <span class="mf">4323251.0</span>    <span class="mf">4e+06</span>     <span class="mf">54.9</span>      <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+   <span class="mi">42</span>
+   <span class="mi">43</span>         <span class="mi">1</span>    <span class="mf">1142060.0</span>    <span class="mf">1e+06</span>     <span class="mf">14.5</span>      <span class="n">dx_steps</span> <span class="o">=</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">steps</span>
+   <span class="mi">44</span>
+   <span class="mi">45</span>                                               <span class="c1"># set initial condition to zero</span>
+   <span class="mi">46</span>         <span class="mi">1</span>       <span class="mf">2907.0</span>   <span class="mf">2907.0</span>      <span class="mf">0.0</span>      <span class="n">dx_steps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+   <span class="mi">47</span>                                               <span class="c1"># use cumulative sum to replicate time evolution of position x</span>
+   <span class="mi">48</span>         <span class="mi">1</span>    <span class="mf">2401730.0</span>    <span class="mf">2e+06</span>     <span class="mf">30.5</span>      <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dx_steps</span><span class="p">)</span>
+   <span class="mi">49</span>
+   <span class="mi">50</span>         <span class="mi">1</span>        <span class="mf">649.0</span>    <span class="mf">649.0</span>      <span class="mf">0.0</span>      <span class="k">return</span> <span class="n">xs</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</section>
+<section id="performance-optimization">
+<h2>Performance optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h2>
+<p>Once we have identified the bottlenecks, we need to make the corresponding code go faster.
+The specific optimization can vary widely based on the computational load
+(how big or small the data is, and how frequently a function is executed)
+and particular problem at hand. Nevertheless, we present some common methods which can be
+handy to know.</p>
+<section id="algorithm-optimization">
+<h3>Algorithm optimization<a class="headerlink" href="#algorithm-optimization" title="Link to this heading"></a></h3>
+<p>The first thing to look into is the underlying algorithm you chose: is it optimal?
+To answer this question, a good understanding of the maths behind the algorithm helps.
+For certain algorithms, many of the bottlenecks will be linear
+algebra computations. In these cases, using the right function to solve
+the right problem is key. For instance, an eigenvalue problem with a
+symmetric matrix is much easier to solve than with a general matrix. Moreover,
+most often, you can avoid inverting a matrix and use a less costly
+(and more numerically stable) operation. However, it can be as simple as
+moving computation or memory allocation outside a loop, and this happens very often as well.</p>
+<section id="singular-value-decomposition">
+<h4>Singular value decomposition<a class="headerlink" href="#singular-value-decomposition" title="Link to this heading"></a></h4>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Singular_value_decomposition">Singular Value Decomposition</a> (SVD)
+is quite often used in climate model data analysis.  The computational cost of this algorithm is
+roughly <span class="math notranslate nohighlight">\(n^3\)</span> where  <span class="math notranslate nohighlight">\(n\)</span> is the size of the input matrix.
+However, in most cases, we are not using all the output of the SVD,
+but only the first few rows of its first returned argument. If
+we use the <code class="docutils literal notranslate"><span class="pre">svd</span></code> implementation from SciPy, we can ask for an incomplete
+version of the SVD. Note that implementations of linear algebra in
+SciPy are richer then those in NumPy and should be preferred.
+The following example demonstrates the performance benefit for a “slim” array
+(i.e. much larger along one axis):</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">4000</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+<span class="o">%</span><span class="k">timeit</span> np.linalg.svd(data)
+<span class="c1"># 1.09 s ± 19.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="o">%</span><span class="k">timeit</span> linalg.svd(data)
+<span class="c1"># 1.03 s ± 24.9 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+
+<span class="o">%</span><span class="k">timeit</span> linalg.svd(data, full_matrices=False)
+<span class="c1"># 21.2 ms ± 716 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+
+<span class="o">%</span><span class="k">timeit</span> np.linalg.svd(data, full_matrices=False)
+<span class="c1"># 23.8 ms ± 3.06 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+</pre></div>
+</div>
+</section>
+<section id="the-fibonacci-sequence">
+<h4>The Fibonacci sequence<a class="headerlink" href="#the-fibonacci-sequence" title="Link to this heading"></a></h4>
+<p>The <a class="reference external" href="https://en.wikipedia.org/wiki/Fibonacci_sequence">Fibonacci sequence</a> is defined by the recurrence relatioin:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}F[0] &amp;= 0 \text{ , } F[1] =1 \\
+F[n] &amp;= F[n-1] + F[n-2] \text{ for } n &gt; 1\end{split}\]</div>
+</div></blockquote>
+<p>The most straightforward version of the Fibonacci sequence is the one using recursion.
+However, it turns out that it performs very badly. Things can be improved by using the
+iterative version or the cached version.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">Recursion</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">Iteration</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">Cached version</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fib_rec</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="n">fib_rec</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib_rec</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fib_iter</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span>
+    <span class="k">return</span> <span class="n">a</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fib_cached</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">cache</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">fib_cached</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib_cached</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cache</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+    <span class="k">return</span> <span class="n">val</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+</section>
+<section id="cpu-usage-optimization">
+<h3>CPU usage optimization<a class="headerlink" href="#cpu-usage-optimization" title="Link to this heading"></a></h3>
+<section id="vectorization">
+<h4>Vectorization<a class="headerlink" href="#vectorization" title="Link to this heading"></a></h4>
+<p>Arithmetic is one place where NumPy performance outperforms python list and
+the reason is that it uses vectorization. A lot of the data analysis involves
+a simple operation being applied to each element of a large dataset.
+In such cases, vectorization is key for better performance.
+In practice, a vectorised operation means reframing the code in a manner that
+completely avoids a loop and instead uses e.g. slicing to apply the operation
+on the whole array (slice) at one go. For example, the following code for
+calculating the difference of neighbouring elements in an array:</p>
+<p>Consider the following code:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">a_dif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">999</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+    <span class="n">a_dif</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># 564 µs ± 25.2 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>How can the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop be vectorized? We need to use clever indexing to get rid of the loop:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">a_dif</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># 2.12 µs ± 25.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</span>
+</pre></div>
+</div>
+<p>The first brute force approach using a for loop is much slower than the second vectorised form!</p>
+<p>So one should consider using <em>vectorized</em> operations whenever possible, not only for
+performance but also because the vectorized version can be more convenient.</p>
+<p>What if we have a function that only take scalar values as input, but we want to apply it
+element-by-element on an array? We can vectorize the function!
+Let’s define a simple function <code class="docutils literal notranslate"><span class="pre">f</span></code> which takes scalars input:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we pass an array we get an error</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Traceback (most recent call last):</span>
+<span class="c1">#   File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+<span class="c1">#   File &quot;&lt;stdin&gt;&quot;, line 2, in f</span>
+<span class="c1"># TypeError: only size-1 arrays can be converted to Python scalars</span>
+</pre></div>
+</div>
+<p>We could loop over the array:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+
+<span class="c1"># 49.9 ms ± 3.84 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+</pre></div>
+</div>
+<p>However, in order to pass a NumPy array it is better to vectorize the function using <code class="xref py py-meth docutils literal notranslate"><span class="pre">np.vectorize()</span></code>
+which takes a nested sequence of objects or NumPy arrays as inputs and returns a single
+NumPy array or a tuple of NumPy arrays:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">f_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># benchmark</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> f_numpy(x,x)
+<span class="c1"># 4.84 ms ± 75.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span>
+</pre></div>
+</div>
+<p>For high performance vectorization, another choice is to use Numba.
+Adding the decorator in a function, Numba will figure out the rest for you:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">f_numba</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># benchmark</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> f_numba(x,x)
+
+<span class="c1"># 89.2 µs ± 1.74 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</span>
+</pre></div>
+</div>
+<p>We will learn more about Numba in the next episode.</p>
+</section>
+</section>
+<section id="memory-usage-optimization">
+<h3>Memory usage optimization<a class="headerlink" href="#memory-usage-optimization" title="Link to this heading"></a></h3>
+<section id="broadcasting">
+<h4>Broadcasting<a class="headerlink" href="#broadcasting" title="Link to this heading"></a></h4>
+<p>Basic operations of NumPy are elementwise, and the shape of the arrays should be compatible.
+However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
+NumPy expands the arrays such that the operation becomes viable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Broadcasting Rules</p>
+<ul class="simple">
+<li><p>Dimensions match when they are equal, or when either is 1 or None.</p></li>
+<li><p>In the latter case, the dimension of the output array is expanded to the larger of the two.</p></li>
+<li><p>Broadcasted arrays are never physically constructed, which saves memory.</p></li>
+</ul>
+</div>
+<div class="admonition-broadcasting exercise important admonition" id="exercise-2">
+<p class="admonition-title">Broadcasting</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">1D</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">2D</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_1d.svg" src="../_images/bc_1d.svg" />
+</figure>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">]])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_2d_1.svg" src="../_images/bc_2d_1.svg" />
+</figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="c1"># this does not work</span>
+<span class="n">a</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span><span class="n">b</span>
+<span class="c1"># or</span>
+<span class="n">a</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">+</span><span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_2d_2.svg" src="../_images/bc_2d_2.svg" />
+</figure>
+</div></div>
+</div>
+</section>
+<section id="cache-effects">
+<h4>Cache effects<a class="headerlink" href="#cache-effects" title="Link to this heading"></a></h4>
+<p>Memory access is cheaper when it is grouped: accessing a big array in a
+continuous way is much faster than random access. This implies amongst
+other things that <strong>smaller strides are faster</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">c</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># 1 loops, best of 3: 3.89 s per loop</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">c</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># 1 loops, best of 3: 188 ms per loop</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">strides</span>
+<span class="c1"># (80000, 8)</span>
+</pre></div>
+</div>
+<p>This is the reason why Fortran ordering or C ordering may make a big
+difference on operations.</p>
+</section>
+<section id="temporary-arrays">
+<h4>Temporary arrays<a class="headerlink" href="#temporary-arrays" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>In complex expressions, NumPy stores intermediate values in
+temporary arrays</p></li>
+<li><p>Memory consumption can be higher than expected</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+
+<span class="c1"># two temporary arrays will be created</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="c1"># four temporary arrays will be created, and from which two are due to unnecessary parenthesis</span>
+<span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+
+<span class="c1"># solution</span>
+<span class="c1"># apply the operation one by one for really large arrays</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Broadcasting approaches can lead also to hidden temporary arrays</p>
+<ul>
+<li><p>Input data M x 3 array</p></li>
+<li><p>Output data M x M array</p></li>
+<li><p>There is a temporary M x M x 3 array</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">M</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">X</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="numexpr">
+<h4>Numexpr<a class="headerlink" href="#numexpr" title="Link to this heading"></a></h4>
+<ul>
+<li><p>Evaluation of complex expressions with one operation at a time can lead
+also into suboptimal performance</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Effectively, one carries out multiple <em>for</em> loops in the NumPy C-code</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Numexpr package provides fast evaluation of array expressions</p></li>
+</ul>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numexpr</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ne</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="o">%</span><span class="k">timeit</span> y = ((.25*x + .75)*x - 1.5)*x - 2
+<span class="o">%</span><span class="k">timeit</span> y = ne.evaluate(&quot;((.25*x + .75)*x - 1.5)*x - 2&quot;)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>By default, Numexpr tries to use multiple threads</p></li>
+<li><p>Number of threads can be queried and set with
+<code class="docutils literal notranslate"><span class="pre">numexpr.set_num_threads(nthreads)</span></code></p></li>
+<li><p>Supported operators and functions:
++,-,*,/,**, sin, cos, tan, exp, log, sqrt</p></li>
+<li><p>Speedups in comparison to NumPy are typically between 0.95 and 4</p></li>
+<li><p>Works best on arrays that do not fit in CPU cache</p></li>
+</ul>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-1">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Measure and benchmark before you start optimizing</p></li>
+<li><p>Optimization can be to change algorithms, optimize memory usage or add
+vectorization, or to convert performance-critical functions to Numba or Cython</p></li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../parallel-computing/" class="btn btn-neutral float-left" title="Parallel Computing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../performance-boosting/" class="btn btn-neutral float-right" title="Performance Boosting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

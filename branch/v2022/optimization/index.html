@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profiling and optimising &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_lesson.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sphinx_rtd_theme_ext_color_contrast.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/overrides.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/minipres.js"></script>
+        <script src="../_static/tabs.js"></script>
+        <script>let toggleHintShow = 'Click to show';</script>
+        <script>let toggleHintHide = 'Click to hide';</script>
+        <script>let toggleOpenOnPrint = 'true';</script>
+        <script src="../_static/togglebutton.js"></script>
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Performance boosting" href="../performance-boosting/" />
+    <link rel="prev" title="Parallel computing" href="../parallel-computing/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Installation and HPC access</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient array computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing/">Parallel computing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Profiling and optimising</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#profilers">Profilers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#time">time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeit">Timeit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cprofile">cProfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#line-profiler">Line-profiler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization">Performance optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#algorithm-optimization">Algorithm optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#singular-value-decomposition">Singular Value Decomposition</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#cpu-usage-optimization">CPU usage optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#vectorization">Vectorization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-usage-optimization">Memory usage optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#broadcasting">Broadcasting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cache-effects">Cache effects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#temporary-arrays">Temporary arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#numexpr">Numexpr</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for scalable analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU computing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Optional: more on Pandas</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Profiling and optimising</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/HPDA-Python/blob/main/content/optimization.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="profiling-and-optimising">
+<span id="performance"></span><h1>Profiling and optimising<a class="headerlink" href="#profiling-and-optimising" title="Permalink to this heading"></a></h1>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Learn how to benchmark and profile Python code</p></li>
+<li><p>Understand how optimisation can be algorithmic or based on CPU or memory usage</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>20 min teaching/type-along</p></li>
+<li><p>20 min exercises</p></li>
+</ul>
+</div>
+<p>Once your code is working reliably, you can start thinking of optimising it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Always measure the code before you start optimization. Don’t base your optimization
+on theoretical consideration, otherwise you’ll have surprises.</p>
+</div>
+<section id="profilers">
+<h2>Profilers<a class="headerlink" href="#profilers" title="Permalink to this heading"></a></h2>
+<section id="time">
+<h3>time<a class="headerlink" href="#time" title="Permalink to this heading"></a></h3>
+<p>One of the easy way to profile the program is to use the time function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="c1"># start the timer</span>
+<span class="n">start_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="c1"># here are the code you would like to profile</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="c1"># stop the timer</span>
+<span class="n">end_time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Runtime: </span><span class="si">{:.4f}</span><span class="s2"> seconds&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+<span class="c1"># Runtime: 0.0001 seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="timeit">
+<h3>Timeit<a class="headerlink" href="#timeit" title="Permalink to this heading"></a></h3>
+<p>If you’re using a Jupyter notebook, the best choice will be to use
+<a class="reference external" href="https://docs.python.org/library/timeit.html">%timeit</a> to time a small piece of code:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="o">%</span><span class="k">timeit</span> a ** 2
+<span class="c1"># 1.4 µs ± 25.1 ns per loop</span>
+</pre></div>
+</div>
+<p>One can also use the cell magic <code class="docutils literal notranslate"><span class="pre">%%timeit</span></code> to benchmark a full cell.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For long running calls, using <code class="docutils literal notranslate"><span class="pre">%time</span></code> instead of <code class="docutils literal notranslate"><span class="pre">%timeit</span></code>; it is
+less precise but faster</p>
+</div>
+</section>
+<section id="cprofile">
+<h3>cProfile<a class="headerlink" href="#cprofile" title="Permalink to this heading"></a></h3>
+<p>For more complex code, one can use the <a class="reference external" href="https://docs.python.org/3/library/profile.html">built-in python profilers</a>, <code class="docutils literal notranslate"><span class="pre">cProfile</span></code> or <code class="docutils literal notranslate"><span class="pre">profile</span></code>.</p>
+<p>As a demo, let us consider the following code which simulates a random walk in one dimension
+(we can save it as <code class="docutils literal notranslate"><span class="pre">walk.py</span></code> or download from <a class="reference download internal" download="" href="../_downloads/29ba0b7fa786ae9bb9e84eb4c820c5e4/walk.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">step</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="k">return</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">.5</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.</span>
+
+<span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">n</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">x_new</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">step</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">x_new</span> <span class="o">&gt;</span> <span class="mf">5e-3</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_new</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">100000</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">walk</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can profile it with <code class="docutils literal notranslate"><span class="pre">cProfile</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$  </span>python<span class="w"> </span>-m<span class="w"> </span>cProfile<span class="w"> </span>-s<span class="w"> </span><span class="nb">time</span><span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-s</span></code> switch sorts the results by <code class="docutils literal notranslate"><span class="pre">time</span></code>. Other options include
+e.g. function name, cumulative time, etc. However, this will print a lot of
+output which is difficult to read.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python<span class="w"> </span>-m<span class="w"> </span>cProfile<span class="w"> </span>-o<span class="w"> </span>walk.prof<span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p>It’s also possible to write the profile
+to a file with the <code class="docutils literal notranslate"><span class="pre">-o</span></code> flag and view it with <a class="reference external" href="https://docs.python.org/3/library/profile.html#module-pstats">profile pstats module</a>
+or profile visualisation tools like
+<a class="reference external" href="https://jiffyclub.github.io/snakeviz/">Snakeviz</a>
+or <a class="reference external" href="https://pypi.org/project/profile-viewer/">profile-viewer</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Similar functionality is available in interactive IPython or Jupyter sessions with the
+magic command <a class="reference external" href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">%%prun</a>.</p>
+</div>
+</section>
+<section id="line-profiler">
+<h3>Line-profiler<a class="headerlink" href="#line-profiler" title="Permalink to this heading"></a></h3>
+<p>The cProfile tool tells us which function takes most of the time but it does not give us a
+line-by-line breakdown of where time is being spent. For this information, we can use the
+<a class="reference external" href="https://github.com/pyutils/line_profiler/">line_profiler</a> tool.</p>
+<div class="admonition-demo-line-profiling demo admonition" id="demo-0">
+<p class="admonition-title">Demo: line profiling</p>
+<p>For line-profiling source files from the command line, we can add a decorator <code class="docutils literal notranslate"><span class="pre">&#64;profile</span></code>
+to the functions of interests. If we do this for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> function
+in the example above, we can then run the script using the <cite>kernprof.py</cite> program which comes with
+<code class="docutils literal notranslate"><span class="pre">line_profiler</span></code>, making sure to include the switches <code class="docutils literal notranslate"><span class="pre">-l,</span> <span class="pre">--line-by-line</span></code> and <code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--view</span></code>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>kernprof<span class="w"> </span>-l<span class="w"> </span>-v<span class="w"> </span>walk.py
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">line_profiler</span></code> also works in a Jupyter notebook. First one needs to load the extension:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> line_profiler
+</pre></div>
+</div>
+<p>If the <code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> functions are defined in code cells, we can get the line-profiling
+information by:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">lprun</span> -f walk -f step walk(10000)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Based on the output, can you spot a mistake which is affecting performance?</p></li>
+</ul>
+<div class="admonition-line-profiling-output solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Line-profiling output</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Wrote profile results to walk.py.lprof</span>
+<span class="go">Timer unit: 1e-06 s</span>
+
+<span class="go">Total time: 0.113249 s</span>
+<span class="go">File: walk.py</span>
+<span class="go">Function: step at line 4</span>
+
+<span class="go">Line #      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="go">==============================================================</span>
+<span class="go">   4                                           @profile</span>
+<span class="go">   5                                           def step():</span>
+<span class="go">   6     99999      57528.0      0.6     50.8      import random</span>
+<span class="go">   7     99999      55721.0      0.6     49.2      return 1. if random.random() &gt; .5 else -1.</span>
+
+<span class="go">Total time: 0.598811 s</span>
+<span class="go">File: walk.py</span>
+<span class="go">Function: walk at line 9</span>
+
+<span class="go">Line #      Hits         Time  Per Hit   % Time  Line Contents</span>
+<span class="go">==============================================================</span>
+<span class="go">   9                                           @profile</span>
+<span class="go">   10                                           def walk(n):</span>
+<span class="go">   11         1         20.0     20.0      0.0      x = np.zeros(n)</span>
+<span class="go">   12         1          1.0      1.0      0.0      dx = 1. / n</span>
+<span class="go">   13    100000      44279.0      0.4      7.4      for i in range(n - 1):</span>
+<span class="go">   14     99999     433303.0      4.3     72.4          x_new = x[i] + dx * step()</span>
+<span class="go">   15     99999      53894.0      0.5      9.0          if x_new &gt; 5e-3:</span>
+<span class="go">   16                                                       x[i + 1] = 0.</span>
+<span class="go">   17                                                   else:</span>
+<span class="go">   18     99999      67313.0      0.7     11.2              x[i + 1] = x_new</span>
+<span class="go">   19         1          1.0      1.0      0.0      return x</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-the-mistake solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">The mistake</p>
+<p>The mistake is that the <code class="docutils literal notranslate"><span class="pre">random</span></code> module is loaded inside the <code class="xref py py-meth docutils literal notranslate"><span class="pre">step()</span></code> function
+which is called thousands of times! Moving the module import to the top level saves
+considerable time.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="performance-optimization">
+<h2>Performance optimization<a class="headerlink" href="#performance-optimization" title="Permalink to this heading"></a></h2>
+<p>Once we have identified the bottlenecks, we need to make the corresponding code go faster.</p>
+<section id="algorithm-optimization">
+<h3>Algorithm optimization<a class="headerlink" href="#algorithm-optimization" title="Permalink to this heading"></a></h3>
+<p>The first thing to look into is the underlying algorithm you chose: is it optimal?
+To answer this question, a good understanding of the maths behind the algorithm helps.
+For certain algorithms, many of the bottlenecks will be linear
+algebra computations. In these cases, using the right function to solve
+the right problem is key. For instance, an eigenvalue problem with a
+symmetric matrix is much easier to solve than with a general matrix. Moreover,
+most often, you can avoid inverting a matrix and use a less costly
+(and more numerically stable) operation. However, it can be as simple as
+moving computation or memory allocation outside a loop, and this happens very often as well.</p>
+<section id="singular-value-decomposition">
+<h4>Singular Value Decomposition<a class="headerlink" href="#singular-value-decomposition" title="Permalink to this heading"></a></h4>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Singular_value_decomposition">Singular Value Decomposition</a> (SVD)
+is quite often used in climate model data analysis.  The computational cost of this algorithm is
+roughly <span class="math notranslate nohighlight">\(n^3\)</span> where  <span class="math notranslate nohighlight">\(n\)</span> is the size of the input matrix.
+However, in most cases, we are not using all the output of the SVD,
+but only the first few rows of its first returned argument. If
+we use the <code class="docutils literal notranslate"><span class="pre">svd</span></code> implementation from SciPy, we can ask for an incomplete
+version of the SVD. Note that implementations of linear algebra in
+SciPy are richer then those in NumPy and should be preferred.
+The following example demonstrates the performance benefit for a “slim” array
+(i.e. much larger along one axis):</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">4000</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+<span class="o">%</span><span class="k">timeit</span> np.linalg.svd(data)
+<span class="c1"># 1.09 s ± 19.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="o">%</span><span class="k">timeit</span> linalg.svd(data)
+<span class="c1"># 1.03 s ± 24.9 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+
+<span class="o">%</span><span class="k">timeit</span> linalg.svd(data, full_matrices=False)
+<span class="c1"># 21.2 ms ± 716 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+
+<span class="o">%</span><span class="k">timeit</span> np.linalg.svd(data, full_matrices=False)
+<span class="c1"># 23.8 ms ± 3.06 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cpu-usage-optimization">
+<h3>CPU usage optimization<a class="headerlink" href="#cpu-usage-optimization" title="Permalink to this heading"></a></h3>
+<section id="vectorization">
+<h4>Vectorization<a class="headerlink" href="#vectorization" title="Permalink to this heading"></a></h4>
+<p>Arithmetic is one place where NumPy performance outperforms python list and
+the reason is that it uses vectorization. A lot of the data analysis involves
+a simple operation being applied to each element of a large dataset.
+In such cases, vectorization is key for better performance.
+In practice, a vectorised operation means reframing the code in a manner that
+completely avoids a loop and instead uses e.g. slicing to apply the operation
+on the whole array (slice) at one go. For example, the following code for
+calculating the difference of neighbouring elements in an array:</p>
+<p>Consider the following code:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">a_dif</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">999</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+    <span class="n">a_dif</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># 564 µs ± 25.2 µs per loop (mean ± std. dev. of 7 runs, 1 loop each)</span>
+</pre></div>
+</div>
+<p>How can the <code class="docutils literal notranslate"><span class="pre">for</span></code> loop be vectorized? We need to use clever indexing to get rid of the
+loop:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">a_dif</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># 2.12 µs ± 25.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</span>
+</pre></div>
+</div>
+<p>The first brute force approach using a for loop is much slower than the second vectorised form!</p>
+<p>So one should consider using <em>vectorized</em> operations whenever possible, not only for
+performance but also because the vectorized version can be more convenient.</p>
+<p>What if we have a function that only take scalar values as input, but we want to apply it
+element-by-element on an array? We can vectorize the function!
+Let’s define a simple function <code class="docutils literal notranslate"><span class="pre">f</span></code> which takes scalars input:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we pass an array we get an error</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Traceback (most recent call last):</span>
+<span class="c1">#   File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+<span class="c1">#   File &quot;&lt;stdin&gt;&quot;, line 2, in f</span>
+<span class="c1"># TypeError: only size-1 arrays can be converted to Python scalars</span>
+</pre></div>
+</div>
+<p>We could loop over the array:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>it
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+
+<span class="c1"># 49.9 ms ± 3.84 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)</span>
+</pre></div>
+</div>
+<p>However, in order to pass a NumPy array it is better to vectorize the function using <code class="xref py py-meth docutils literal notranslate"><span class="pre">np.vectorize()</span></code>
+which takes a nested sequence of objects or NumPy arrays as inputs and returns a single
+NumPy array or a tuple of NumPy arrays:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">f_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># benchmark</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> f_numpy(x,x)
+<span class="c1"># 4.84 ms ± 75.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)</span>
+</pre></div>
+</div>
+<p>For high performance vectorization, another choice is to use Numba.
+Adding the decorator in a function, Numba will figure out the rest for you:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mf">3.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">f_numba</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># benchmark</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+<span class="o">%</span><span class="k">timeit</span> f_numba(x,x)
+
+<span class="c1"># 89.2 µs ± 1.74 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)</span>
+</pre></div>
+</div>
+<p>We will learn more about Numba in the next episode.</p>
+</section>
+</section>
+<section id="memory-usage-optimization">
+<h3>Memory usage optimization<a class="headerlink" href="#memory-usage-optimization" title="Permalink to this heading"></a></h3>
+<section id="broadcasting">
+<h4>Broadcasting<a class="headerlink" href="#broadcasting" title="Permalink to this heading"></a></h4>
+<p>Basic operations of NumPy are elementwise, and the shape of the arrays should be compatible.
+However, in practice under certain conditions, it is possible to do operations on arrays of different shapes.
+NumPy expands the arrays such that the operation becomes viable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Broadcasting Rules</p>
+<ul class="simple">
+<li><p>Dimensions match when they are equal, or when either is 1 or None.</p></li>
+<li><p>In the latter case, the dimension of the output array is expanded to the larger of the two.</p></li>
+<li><p>Broadcasted arrays are never physically constructed, which saves memory.</p></li>
+</ul>
+</div>
+<div class="admonition-broadcasting exercise important admonition" id="exercise-0">
+<p class="admonition-title">Broadcasting</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">1D</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">2D</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_1d.svg" src="../_images/bc_1d.svg" /></figure>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">]])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_2d_1.svg" src="../_images/bc_2d_1.svg" /></figure>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="c1"># this does not work</span>
+<span class="n">a</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span><span class="n">b</span>
+<span class="c1"># or</span>
+<span class="n">a</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">+</span><span class="n">b</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<img alt="../_images/bc_2d_2.svg" src="../_images/bc_2d_2.svg" /></figure>
+</div></div>
+</div>
+</section>
+<section id="cache-effects">
+<h4>Cache effects<a class="headerlink" href="#cache-effects" title="Permalink to this heading"></a></h4>
+<p>Memory access is cheaper when it is grouped: accessing a big array in a
+continuous way is much faster than random access. This implies amongst
+other things that <strong>smaller strides are faster</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">c</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># 1 loops, best of 3: 3.89 s per loop</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">c</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># 1 loops, best of 3: 188 ms per loop</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">strides</span>
+<span class="c1"># (80000, 8)</span>
+</pre></div>
+</div>
+<p>This is the reason why Fortran ordering or C ordering may make a big
+difference on operations.</p>
+</section>
+<section id="temporary-arrays">
+<h4>Temporary arrays<a class="headerlink" href="#temporary-arrays" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>In complex expressions, NumPy stores intermediate values in
+temporary arrays</p></li>
+<li><p>Memory consumption can be higher than expected</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+
+<span class="c1"># two temporary arrays will be created</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="c1"># four temporary arrays will be created, and from which two are due to unnecessary parenthesis</span>
+<span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+
+<span class="c1"># solution</span>
+<span class="c1"># apply the operation one by one for really large arrays</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">a</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="mf">4.5</span> <span class="o">*</span> <span class="n">b</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Broadcasting approaches can lead also to hidden temporary arrays</p>
+<ul>
+<li><p>Input data M x 3 array</p></li>
+<li><p>Output data M x M array</p></li>
+<li><p>There is a temporary M x M x 3 array</p></li>
+</ul>
+</li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="n">X</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="numexpr">
+<h4>Numexpr<a class="headerlink" href="#numexpr" title="Permalink to this heading"></a></h4>
+<ul>
+<li><p>Evaluation of complex expressions with one operation at a time can lead
+also into suboptimal performance</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Effectively, one carries out multiple <em>for</em> loops in the NumPy C-code</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Numexpr package provides fast evaluation of array expressions</p></li>
+</ul>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numexpr</span> <span class="k">as</span> <span class="nn">ne</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10000000</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="o">%</span><span class="k">timeit</span> y = ((.25*x + .75)*x - 1.5)*x - 2
+<span class="o">%</span><span class="k">timeit</span> y = ne.evaluate(&quot;((.25*x + .75)*x - 1.5)*x - 2&quot;)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>By default, Numexpr tries to use multiple threads</p></li>
+<li><p>Number of threads can be queried and set with
+<code class="docutils literal notranslate"><span class="pre">numexpr.set_num_threads(nthreads)</span></code></p></li>
+<li><p>Supported operators and functions:
++,-,*,/,**, sin, cos, tan, exp, log, sqrt</p></li>
+<li><p>Speedups in comparison to NumPy are typically between 0.95 and 4</p></li>
+<li><p>Works best on arrays that do not fit in CPU cache</p></li>
+</ul>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Measure and benchmark before you start optimizing</p></li>
+<li><p>Optimization can be to change algorithms, optimise memory usage or add
+vectorization, or to convert performance-critical functions to Numba or Cython</p></li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../parallel-computing/" class="btn btn-neutral float-left" title="Parallel computing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../performance-boosting/" class="btn btn-neutral float-right" title="Performance boosting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

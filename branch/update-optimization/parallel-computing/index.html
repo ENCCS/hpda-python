@@ -1,0 +1,1406 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parallel Computing &mdash; HPDA-Python  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_lesson.css?v=e9df6548" />
+      <link rel="stylesheet" type="text/css" href="../_static/term_role_formatting.css?v=4194e21c" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx_rtd_theme_ext_color_contrast.css?v=8e8ea19f" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.custom.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster.bundle.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-shadow.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-punk.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-noir.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-light.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/tooltipster-sideTip-borderless.min.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/micromodal.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/sphinx_rtd_theme.css?v=3234e928" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+      <link rel="stylesheet" type="text/css" href="../_static/overrides.css?v=c88db32d" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=187304be"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=35a8b989"></script>
+      <script src="../_static/minipres.js?v=a0d29692"></script>
+      <script src="../_static/js/hoverxref.js"></script>
+      <script src="../_static/js/tooltipster.bundle.min.js"></script>
+      <script src="../_static/js/micromodal.min.js"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Benchmarking, profiling and optimizing" href="../optimization/" />
+    <link rel="prev" title="Efficient Array Computing" href="../stack/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../" class="icon icon-home">
+            HPDA-Python
+              <img src="../_static/ENCCS.jpg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Preparation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup/">Installation and LUMI Access</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">The lesson</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../motivation/">Motivation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scientific-data/">Scientific Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stack/">Efficient Array Computing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Parallel Computing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-global-interpreter-lock-gil">The Global Interpreter Lock (GIL)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multithreading">Multithreading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#multithreaded-libraries">Multithreaded libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multithreaded-i-o">Multithreaded I/O</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multiprocessing">Multiprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-arguments">Multiple arguments</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mpi">MPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#point-to-point-and-collective-communication">Point-to-point and collective communication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">Exercises</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization/">Benchmarking, profiling and optimizing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../performance-boosting/">Performance Boosting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dask/">Dask for Scalable Analytics</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Optional material</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../setup-eurohpc/">Installation in EuroHPC Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pandas-extra/">Pandas (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GPU-computing/">GPU Computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../parallel-computing_opt/">Parallel Computing (II)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimization_opt/">Benchmarking, profiling and optimizing (II)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guide/">Instructor’s Guide</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../">HPDA-Python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Parallel Computing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ENCCS/hpda-python/blob/main/content/parallel-computing.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="parallel-computing">
+<span id="id1"></span><h1>Parallel Computing<a class="headerlink" href="#parallel-computing" title="Link to this heading"></a></h1>
+<div class="admonition-questions questions admonition" id="questions-0">
+<p class="admonition-title">Questions</p>
+<ul class="simple">
+<li><p>What is the Global Interpreter Lock in Python?</p></li>
+<li><p>How can Python code be parallelised?</p></li>
+</ul>
+</div>
+<div class="admonition-objectives objectives admonition" id="objectives-0">
+<p class="admonition-title">Objectives</p>
+<ul class="simple">
+<li><p>Become familiar with different types of parallelism</p></li>
+<li><p>Learn the basics of parallel workflows, multiprocessing and distributed memory parallelism</p></li>
+</ul>
+</div>
+<div class="admonition-instructor-note instructor-note admonition" id="instructor-note-0">
+<p class="admonition-title">Instructor note</p>
+<ul class="simple">
+<li><p>40 min teaching/type-along</p></li>
+<li><p>40 min exercises</p></li>
+</ul>
+</div>
+<p>The performance of a single CPU core has stagnated over the last ten years
+and most of the speed-up in modern CPUs is coming from using multiple
+CPU cores, i.e. parallel processing. Parallel processing is normally based
+either on multiple threads or multiple processes.</p>
+<p>There are two main models of parallel computing:</p>
+<ul class="simple">
+<li><p><strong>Shared memory parallelism (multithreading):</strong></p>
+<ul>
+<li><p>Parallel threads do separate work and communicate via the same memory and write to shared variables.</p></li>
+<li><p>Multiple threads in a single Python program cannot execute at the same time (see <strong>global interpreter lock</strong> below)</p></li>
+<li><p>Running multiple threads in Python is <em>only effective for certain I/O-bound tasks</em></p></li>
+<li><p>External libraries in other languages (e.g. C) which are called from Python can still use multithreading</p></li>
+</ul>
+</li>
+<li><p><strong>Distributed memory parallelism (multiprocessing):</strong> Different processes manage their own memory segments and
+share data by communicating (e.g. passing messages using Message Passing Interface) as needed.</p>
+<ul>
+<li><p>A process can contain one or more threads</p></li>
+<li><p>Two processes can run on different CPU cores and different computers</p></li>
+<li><p>Processes have more overhead than threads (creating and destroying processes takes more time)</p></li>
+<li><p>Running multiple processes is <em>only effective for compute-bound tasks</em></p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>“Embarrassingly” parallel</strong>: If you can run multiple instances of a program and do not need to synchronize/communicate with other instances,
+i.e. the problem at hand can be easily decomposed into independent tasks or datasets and there is no need to control access to shared resources,
+it is known as an embarrassingly parallel program. A few examples are listed here:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Monte Carlo analysis</p></li>
+<li><p>Ensemble calculations of numerical weather prediction</p></li>
+<li><p>Discrete Fourier transform</p></li>
+<li><p>Convolutional neural networks</p></li>
+<li><p>Applying same model on multiple datasets</p></li>
+</ul>
+</div></blockquote>
+<p><strong>GPU computing</strong>: This framwork takes advantages of the massively parallel compute units available in modern GPUs.
+It is ideal when you need a large number of simple arithmetic operations</p>
+<p><strong>Distributed computing (Spark, Dask)</strong>: Master-worker parallelism. Master builds a graph of task dependencies and schedules to execute tasks in the appropriate order.
+In the next episode we will look at <a class="reference external" href="https://dask.org/">Dask</a>, an array model extension and task scheduler,
+which combines multiprocessing with (embarrassingly) parallel workflows and “lazy” execution.</p>
+</div>
+<p>In the Python world, it is common to see the word <cite>concurrency</cite> denoting any type of simultaneous
+processing, including <em>threads</em>, <em>tasks</em> and <em>processes</em>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Concurrent tasks can be executed in any order but with the same final results</p></li>
+<li><p>Concurrent tasks can be but need not to be executed in parallel</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code> module provides implementation of thread and process-based executors for managing resources pools for running concurrent tasks</p></li>
+<li><p>Concurrency is difficult: Race condition and Deadlock may arise in concurrent programs</p></li>
+</ul>
+</div></blockquote>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Parallel programming requires that we adopt a different mental model compared to serial programming.
+Many things can go wrong and one can get unexpected results or difficult-to-debug
+problems. It is important to understand the possible pitfalls before embarking
+on code parallelisation. For an entertaining take on this, see
+<a class="reference external" href="https://www.youtube.com/watch?v=Bv25Dwe84g0">Raymond Hettinger’s PyCon2016 presentation</a>.</p>
+</div>
+<section id="the-global-interpreter-lock-gil">
+<h2>The Global Interpreter Lock (GIL)<a class="headerlink" href="#the-global-interpreter-lock-gil" title="Link to this heading"></a></h2>
+<p>The designers of the Python language made the choice
+that <strong>only one thread in a process can run actual Python code</strong>
+by using the so-called <strong>global interpreter lock (GIL)</strong>.
+This means that approaches that may work in other languages (C, C++, Fortran),
+may not work in Python without being a bit careful.
+The reason GIL is needed is because part of the Python implementation related to
+the memory management is not thread-safe.
+At first glance, this is bad for parallelism.  But one can avoid GIL through the folowing:</p>
+<ul class="simple">
+<li><p>External libraries (NumPy, SciPy, Pandas, etc), written in C or other
+languages, can release the lock and run multi-threaded.</p></li>
+<li><p>Most input/output tasks release the GIL.</p></li>
+<li><p>There are several Python libraries that side-step the GIL, e.g. by using
+<em>multiprocessing</em> instead of <em>threading</em>.</p></li>
+</ul>
+</section>
+<section id="multithreading">
+<h2>Multithreading<a class="headerlink" href="#multithreading" title="Link to this heading"></a></h2>
+<p>Due to the GIL only one thread can execute Python code at once, and this makes
+threading rather useless for <em>compute-bound</em> problems in pure Python.
+However, multithreading is still relevant in two situations:</p>
+<ul class="simple">
+<li><p>External libraries written in non-Python languages can take advantage of multithreading</p></li>
+<li><p>Multithreading can be useful for running <em>multiple I/O-bound tasks simultaneously</em>.</p></li>
+</ul>
+<section id="multithreaded-libraries">
+<h3>Multithreaded libraries<a class="headerlink" href="#multithreaded-libraries" title="Link to this heading"></a></h3>
+<p>NumPy and SciPy are built on external libraries such as LAPACK, FFTW, BLAS,
+which provide optimized routines for linear algebra, Fourier transforms etc.
+These libraries are written in C, C++ or Fortran and are thus not limited
+by the GIL, so they typically support actual multihreading during the execution.
+It might be a good idea to use multiple threads during calculations
+like matrix operations or frequency analysis.</p>
+<p>Depending on the configuration, NumPy will often use multiple threads by default,
+and one can use the environment variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> to set the number
+of threads manually by executing the following command in a terminal:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span><span class="w"> </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span>&lt;N&gt;
+</pre></div>
+</div>
+<p>After setting this environment variable we continue as usual
+and multithreading will be turned on.</p>
+</section>
+<section id="multithreaded-i-o">
+<h3>Multithreaded I/O<a class="headerlink" href="#multithreaded-i-o" title="Link to this heading"></a></h3>
+<p>This is how an I/O-bound application might look:</p>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/IOBound.png"><img alt="../_images/IOBound.png" src="../_images/IOBound.png" style="width: 694.8000000000001px; height: 214.8px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">From <a class="reference external" href="https://realpython.com/">https://realpython.com/</a>, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The <a class="reference external" href="https://docs.python.org/dev/library/threading.html#">threading library</a>
+provides an API for creating and working with threads. The simplest approach to
+create and manage threads is to use the <code class="docutils literal notranslate"><span class="pre">ThreadPoolExecutor</span></code> class from <code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code> module.
+An example use case could be to download data from multiple websites using
+multiple threads:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">download_all_sites</span><span class="p">(</span><span class="n">sites</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">my_download_function</span><span class="p">,</span> <span class="n">sites</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The speedup gained from multithreading I/O bound problems can be understood from the following image.</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/Threading.png"><img alt="../_images/Threading.png" src="../_images/Threading.png" style="width: 598.5px; height: 268.5px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">From <a class="reference external" href="https://realpython.com/">https://realpython.com/</a>, distributed via a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported licence</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Further details on threading in Python can be found in the <strong>See also</strong> section below.</p>
+</section>
+</section>
+<section id="multiprocessing">
+<h2>Multiprocessing<a class="headerlink" href="#multiprocessing" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> module in Python supports spawning processes using an API
+similar to the <code class="docutils literal notranslate"><span class="pre">threading</span></code> module. It effectively side-steps the GIL by using
+<em>subprocesses</em> instead of threads, where each subprocess is an independent Python
+process. One of the simplest ways to use <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> is via <code class="docutils literal notranslate"><span class="pre">Pool</span></code> objects and
+the parallel <code class="xref py py-meth docutils literal notranslate"><span class="pre">Pool.map()</span></code> function, similarly to what we saw for multithreading above.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">concurrent.futures.ProcessPoolExecutor</span></code> is actually a wrapper for
+<code class="docutils literal notranslate"><span class="pre">multiprocessing.Pool</span></code> to unify the threading and process interfaces.</p>
+</div>
+<section id="multiple-arguments">
+<h3>Multiple arguments<a class="headerlink" href="#multiple-arguments" title="Link to this heading"></a></h3>
+<p>For functions that take multiple arguments one can instead use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">Pool.starmap()</span></code>
+function, and there are other options as well, see below:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0"><code class="docutils literal notranslate"><span class="pre">pool.starmap</span></code></button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">function adapter</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">multiple argument iterables</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">power_n</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span>
+
+<span class="hll"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span>    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+<span class="hll">        <span class="n">res</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">power_n</span><span class="p">,</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)])</span>
+</span>    <span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">power_n</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span>
+
+<span class="hll"><span class="k">def</span><span class="w"> </span><span class="nf">f_</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+</span><span class="hll">    <span class="k">return</span> <span class="n">power_n</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">chunks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+<span class="hll">    <span class="n">res</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">f_</span><span class="p">,</span> <span class="n">chunks</span><span class="p">)</span>
+</span><span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">power_n</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span>
+
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+<span class="hll">    <span class="n">res</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">power_n</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</span><span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+</pre></div>
+</div>
+</div></div>
+<div class="admonition-interactive-environments callout admonition" id="callout-0">
+<p class="admonition-title">Interactive environments</p>
+<p>Functionality within multiprocessing requires that the <code class="docutils literal notranslate"><span class="pre">__main__</span></code> module be
+importable by children processes. This means that some functions may not work
+in the interactive interpreter like Jupyter-notebook.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> has a number of other methods which can be useful for certain
+use cases, including <code class="docutils literal notranslate"><span class="pre">Process</span></code> and <code class="docutils literal notranslate"><span class="pre">Queue</span></code> which make it possible to have direct
+control over individual processes. Refer to the <a class="reference internal" href="#see-also">See also</a> section below for a list
+of external resources that cover these methods.</p>
+<p>At the end of this episode you can turn your attention back to the word-count problem
+and practice using <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> pools of processes.</p>
+</section>
+</section>
+<section id="mpi">
+<h2>MPI<a class="headerlink" href="#mpi" title="Link to this heading"></a></h2>
+<p>The message passing interface (MPI) is a standard workhorse of parallel computing. Nearly
+all major scientific HPC applications use MPI. Like <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>, MPI belongs to the
+distributed-memory paradigm.</p>
+<p>The idea behind MPI is that:</p>
+<ul class="simple">
+<li><p>Tasks have a rank and are numbered 0, 1, 2, 3, …</p></li>
+<li><p>Each task manages its own memory</p></li>
+<li><p>Each task can run multiple threads</p></li>
+<li><p>Tasks communicate and share data by sending messages.</p></li>
+<li><p>Many higher-level functions exist to distribute information to other tasks
+and gather information from other tasks.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">mpi4py</span></code> provides Python bindings for the Message Passing Interface (MPI) standard.
+This is how a hello world MPI program looks like in Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Hello from process </span><span class="si">{}</span><span class="s1"> out of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MPI.COMM_WORLD</span></code> is the <cite>communicator</cite> - a group of processes that can talk to each other</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Get_rank</span></code> returns the individual rank (0, 1, 2, …) for each task that calls it</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Get_size</span></code> returns the total number of ranks.</p></li>
+</ul>
+<p>To run this code with a specific number of processes we use the <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> command which
+comes with the MPI library:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">4</span><span class="w"> </span>python<span class="w"> </span>hello.py
+
+<span class="gp"># </span>Hello<span class="w"> </span>from<span class="w"> </span>process<span class="w"> </span><span class="m">1</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">4</span>
+<span class="gp"># </span>Hello<span class="w"> </span>from<span class="w"> </span>process<span class="w"> </span><span class="m">0</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">4</span>
+<span class="gp"># </span>Hello<span class="w"> </span>from<span class="w"> </span>process<span class="w"> </span><span class="m">2</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">4</span>
+<span class="gp"># </span>Hello<span class="w"> </span>from<span class="w"> </span>process<span class="w"> </span><span class="m">3</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">4</span>
+</pre></div>
+</div>
+<section id="point-to-point-and-collective-communication">
+<h3>Point-to-point and collective communication<a class="headerlink" href="#point-to-point-and-collective-communication" title="Link to this heading"></a></h3>
+<p>The MPI standard contains a <a class="reference external" href="https://mpi4py.readthedocs.io/en/stable/index.html">lot of functionality</a>,
+but in principle one can get away with only point-to-point communication (<code class="docutils literal notranslate"><span class="pre">MPI.COMM_WORLD.send</span></code> and
+<code class="docutils literal notranslate"><span class="pre">MPI.COMM_WORLD.recv</span></code>). However, collective communication can sometimes require less effort as you
+will learn in an exercise below.
+In any case, it is good to have a mental model of different communication patterns in MPI.</p>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/send-recv.png"><img alt="../_images/send-recv.png" src="../_images/send-recv.png" style="width: 525.0px; height: 162.0px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">send</span></code> and <code class="docutils literal notranslate"><span class="pre">recv</span></code>: blocking point-to-point communication between two ranks.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-right" id="id6">
+<a class="reference internal image-reference" href="../_images/gather.png"><img alt="../_images/gather.png" src="../_images/gather.png" style="width: 240.0px; height: 198.4px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">gather</span></code>: all ranks send data to rank <code class="docutils literal notranslate"><span class="pre">root</span></code>.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="../_images/scatter.png"><img alt="../_images/scatter.png" src="../_images/scatter.png" style="width: 240.0px; height: 198.4px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">scatter</span></code>: data on rank 0 is split into chunks and sent to other ranks</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-left" id="id8">
+<a class="reference internal image-reference" href="../_images/broadcast.png"><img alt="../_images/broadcast.png" src="../_images/broadcast.png" style="width: 240.0px; height: 198.4px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">bcast</span></code>: broadcast message to all ranks</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id9">
+<a class="reference internal image-reference" href="../_images/reduction.png"><img alt="../_images/reduction.png" src="../_images/reduction.png" style="width: 309.0px; height: 163.0px;" />
+</a>
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">reduce</span></code>: ranks send data which are reduced on rank <code class="docutils literal notranslate"><span class="pre">root</span></code></span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">send/recv</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">broadcast</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">gather</button><button aria-controls="panel-1-1-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-3" name="1-3" role="tab" tabindex="-1">scatter</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="c1"># All ranks other than 0 should send a message</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Hello World, I&#39;m rank </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
+<span class="hll">    <span class="n">comm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Rank 0 will receive each message and print them</span>
+    <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_ranks</span><span class="p">):</span>
+<span class="hll">        <span class="n">message</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span>        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+<span class="c1"># Rank 0 will broadcast message to all other ranks</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">send_message</span> <span class="o">=</span> <span class="s2">&quot;Hello World from rank 0&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">send_message</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="hll"><span class="n">receive_message</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">bcast</span><span class="p">(</span><span class="n">send_message</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> received message: </span><span class="si">{</span><span class="n">receive_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+<span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+<span class="c1"># Use gather to send all messages to rank 0</span>
+<span class="n">send_message</span> <span class="o">=</span> <span class="s2">&quot;Hello World, I&#39;m rank </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
+<span class="hll"><span class="n">receive_message</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">send_message</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_ranks</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">receive_message</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-3" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-3" name="1-3" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">sendbuf</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">sendbuf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello World from rank 0 to rank </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">sendbuf</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="hll"><span class="n">recvbuf</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">sendbuf</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> received message: </span><span class="si">{</span><span class="n">recvbuf</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+<p>In addition to the lower-case methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">send()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">recv()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">broadcast()</span></code> etc., there
+are also <em>upper-case</em> methods <code class="xref py py-meth docutils literal notranslate"><span class="pre">Send()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">Recv()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">Broadcast()</span></code>. These work with
+<em>buffer-like</em> objects (including strings and NumPy arrays) which have known memory location and size.
+Upper-case methods are faster and are strongly recommended for large numeric data.</p>
+</section>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<div class="admonition-multithreading-numpy exercise important admonition" id="exercise-0">
+<p class="admonition-title">Multithreading NumPy</p>
+<p>Here is a piece of code which does a symmetrical matrix inversion of size 4000 by 4000.
+To run it, we can save it in a file named <cite>omp_test.py</cite> or download from <a class="reference download internal" download="" href="../_downloads/fa12034be4aa763ead435ee5e89e5785/omp_test.py"><code class="xref download docutils literal notranslate"><span class="pre">here</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">4000</span><span class="p">,</span><span class="mi">4000</span><span class="p">))</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span>
+<span class="n">time_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="n">time_end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time spent for inverting A is&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">time_end</span> <span class="o">-</span> <span class="n">time_start</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let us test it with 1 and 4 threads:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">export</span><span class="w"> </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">1</span>
+<span class="gp">$ </span>python<span class="w"> </span>omp_test.py
+
+<span class="gp">$ </span><span class="nb">export</span><span class="w"> </span><span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">4</span>
+<span class="gp">$ </span>python<span class="w"> </span>omp_test.py
+</pre></div>
+</div>
+</div>
+<div class="admonition-i-o-bound-vs-cpu-bound exercise important admonition" id="exercise-1">
+<p class="admonition-title">I/O-bound vs CPU-bound</p>
+<p>In this exercise, we will simulate an I/O-bound process uing the <code class="xref py py-meth docutils literal notranslate"><span class="pre">sleep()</span></code> function.
+Typical I/O-bounded processes are disk accesses, network requests etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">ProcessPoolExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">func_io_bound</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="o">%%</span><span class="n">time</span>
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_worker</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func_io_bound</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">])</span>
+
+
+<span class="o">%%</span><span class="n">time</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_worker</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func_io_bound</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>When the problem is compute intensive:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">ProcessPoolExecutor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">func_cpu_bound</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">sum</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))))</span>
+    <span class="k">return</span> <span class="nb">sum</span>
+
+
+<span class="n">n</span><span class="o">=</span><span class="mi">1000000</span>
+
+<span class="o">%%</span><span class="n">time</span>
+<span class="n">func_cpu_bound</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="o">%%</span><span class="n">time</span>
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_worker</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func_cpu_bound</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">])</span>
+
+<span class="o">%%</span><span class="n">time</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_worker</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func_cpu_bound</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-race-condition exercise important admonition" id="exercise-2">
+<p class="admonition-title">Race condition</p>
+<p>Race condition is considered a common issue for multi-threading/processing applications,
+which occurs when two or more threads attempt to access the shared data and
+try to modify it at the same time. Try to run the example using different number <code class="docutils literal notranslate"><span class="pre">n</span></code> to see the differences.
+Think about how we can solve this problem.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">ProcessPoolExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Value</span>
+
+<span class="c1"># define a function to increment the value by 1</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inc</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="n">val</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="c1"># using a large number to see the problem</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100000</span>
+
+<span class="c1"># create a shared data and initialize it to 0</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+<span class="c1"># create a shared data and initialize it to 0</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-0">
+<p class="admonition-title">Solution</p>
+<ul class="simple">
+<li><p>locking resources: explicitly using locks</p></li>
+<li><p>duplicating resources: making copys of data to each threads/processes so that they do not need to share</p></li>
+</ul>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">locking</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">duplicating</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">ProcessPoolExecutor</span>
+<span class="hll"><span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Value</span><span class="p">,</span> <span class="n">Lock</span>
+</span>
+<span class="hll"><span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+</span>
+<span class="c1"># adding lock</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inc</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+<span class="hll">    <span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+</span>    <span class="n">val</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="hll">    <span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</span>
+
+<span class="c1"># define a large number</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100000</span>
+
+<span class="c1"># create a shared data and initialize it to 0</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+<span class="c1"># create a shared data and initialize it to 0</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
+
+
+<span class="c1"># define a function to increment the value by 1</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inc</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">ident</span> <span class="o">%</span> <span class="mi">4</span>
+    <span class="n">arr</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="c1"># define a large number</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100000</span>
+
+<span class="c1"># create a shared data and initialize it to 0</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">Array</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">inc</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">arr</span><span class="p">[:],</span><span class="nb">sum</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="admonition-compute-numerical-integrals exercise important admonition" id="exercise-3">
+<p class="admonition-title">Compute numerical integrals</p>
+<p>The primary objective of this exercise is to compute integrals <span class="math notranslate nohighlight">\(\int_0^1 x^{3/2} \, dx\)</span> numerically.
+One approach to integration is by establishing a grid along the x-axis. Specifically, the integration range
+is divided into ‘n’ segments or bins. Below is a basic serial code.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="c1"># Grid size</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100000000</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">integration_serial</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">mysum</span> <span class="o">=</span> <span class="mf">0.0</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">mysum</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">h</span> <span class="o">*</span> <span class="n">mysum</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="n">integration_serial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Integral value is </span><span class="si">%e</span><span class="s2">, Error is </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">integral</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">integral</span> <span class="o">-</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span><span class="p">)))</span>  <span class="c1"># The correct integral value is 2/5</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time spent: </span><span class="si">%.2f</span><span class="s2"> sec&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endtime</span><span class="o">-</span><span class="n">starttime</span><span class="p">))</span>
+
+<span class="c1"># 13.63 sec</span>
+</pre></div>
+</div>
+<p>Think about how to parallelize the code using multithreading and multiprocessing.</p>
+<div class="admonition-full-source-code solution important dropdown admonition" id="solution-1">
+<p class="admonition-title">Full source code</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="c1"># Grid size</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100000000</span>
+<span class="c1"># Number of threads</span>
+<span class="n">numthreads</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">integration_concurrent</span><span class="p">(</span><span class="n">threadindex</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">numthreads</span><span class="o">=</span><span class="n">numthreads</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>  
+    <span class="n">mysum</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">workload</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="n">numthreads</span>
+    <span class="n">begin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">workload</span><span class="o">*</span><span class="n">threadindex</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">workload</span><span class="o">*</span><span class="p">(</span><span class="n">threadindex</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">mysum</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">h</span> <span class="o">*</span> <span class="n">mysum</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using </span><span class="si">{</span><span class="n">numthreads</span><span class="si">}</span><span class="s2"> threads&quot;</span><span class="p">)</span>
+    <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">numthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="n">partial_integrals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">integration_concurrent</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">numthreads</span><span class="p">)))</span>
+
+    <span class="n">integral</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">partial_integrals</span><span class="p">)</span>
+    <span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Integral value is </span><span class="si">%e</span><span class="s2">, Error is </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">integral</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">integral</span> <span class="o">-</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span><span class="p">)))</span>  <span class="c1"># The correct integral value is 2/5</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time spent: </span><span class="si">%.2f</span><span class="s2"> sec&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endtime</span><span class="o">-</span><span class="n">starttime</span><span class="p">))</span>
+
+
+<span class="c1"># 50.17 sec </span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="c1"># Grid size</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100000000</span>
+<span class="n">nprocs</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">integration_process</span><span class="p">(</span><span class="n">pool_index</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">numprocesses</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>  
+    <span class="n">mysum</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">workload</span> <span class="o">=</span> <span class="n">n</span> <span class="o">/</span> <span class="n">numprocesses</span>
+
+    <span class="n">begin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">workload</span> <span class="o">*</span> <span class="n">pool_index</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">workload</span> <span class="o">*</span> <span class="p">(</span><span class="n">pool_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">begin</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">h</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">mysum</span> <span class="o">+=</span> <span class="n">x</span> <span class="o">**</span> <span class="p">(</span><span class="mi">3</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">h</span> <span class="o">*</span> <span class="n">mysum</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using </span><span class="si">{</span><span class="n">nprocs</span><span class="si">}</span><span class="s2"> processes&quot;</span><span class="p">)</span>
+
+    <span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">nprocs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">partial_integrals</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">integration_process</span><span class="p">,</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">nprocs</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprocs</span><span class="p">)])</span>
+
+    <span class="n">integral</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">partial_integrals</span><span class="p">)</span>
+    <span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Integral value is </span><span class="si">%e</span><span class="s2">, Error is </span><span class="si">%e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">integral</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">integral</span> <span class="o">-</span> <span class="mi">2</span><span class="o">/</span><span class="mi">5</span><span class="p">)))</span>  <span class="c1"># The correct integral value is 2/5</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time spent: </span><span class="si">%.2f</span><span class="s2"> sec&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">endtime</span> <span class="o">-</span> <span class="n">starttime</span><span class="p">))</span>
+
+<span class="c1"># 3.53 sec</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-word-autocorrelation-example-project exercise important admonition" id="exercise-4">
+<p class="admonition-title">Word-autocorrelation example project</p>
+<p>Inspired by a study of <a class="reference external" href="https://www.scirp.org/journal/paperinformation.aspx?paperid=92643">dynamic correlations of words in written text</a>,
+we decide to investigate autocorrelations (ACFs) of words in our database of book texts
+in the <a class="reference external" href="https://github.com/enccs/word-count-hpda">word-count project</a>.
+Many of the exercises below are based on working with the following
+word-autocorrelation code, so let us get familiar with it.</p>
+<div class="admonition-full-source-code solution important dropdown admonition" id="solution-2">
+<p class="admonition-title">Full source code</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wordcount</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_word_counts</span><span class="p">,</span> <span class="n">load_text</span><span class="p">,</span> <span class="n">DELIMITERS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove delimiters, split lines into words and remove whitespaces, </span>
+<span class="sd">    and make lowercase. Return list of all words in the text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">clean_text</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">purge</span> <span class="ow">in</span> <span class="n">DELIMITERS</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">purge</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>    
+        <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">clean_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">clean_text</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate word-autocorrelation function for given word </span>
+<span class="sd">    in a text. Each word in the text corresponds to one &quot;timestep&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">==</span><span class="n">word</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="n">nwords_chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">nwords_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nwords_total</span><span class="o">-</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/=</span> <span class="n">nwords_chosen</span>      
+    <span class="k">return</span> <span class="n">acf</span>
+    
+<span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate an average word-autocorrelation function </span>
+<span class="sd">    for a list of words in a text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">acf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span><span class="p">):</span>
+    <span class="c1"># load book text and preprocess it</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">load_text</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+    <span class="n">clean_text</span> <span class="o">=</span> <span class="n">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c1"># load precomputed word counts and select top words</span>
+    <span class="n">word_count</span> <span class="o">=</span> <span class="n">load_word_counts</span><span class="p">(</span><span class="n">wc_book</span><span class="p">)</span>
+    <span class="n">top_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">word_count</span><span class="p">[:</span><span class="n">nwords</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">wc_book</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>    
+
+    <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">timesteps</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span> <span class="o">=</span> <span class="n">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span><span class="p">)</span>
+
+    <span class="c1"># compute average autocorrelation and time the execution</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">acf_ave</span> <span class="o">=</span> <span class="n">ave_word_acf</span><span class="p">(</span><span class="n">top_words</span><span class="p">,</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>        
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;serial time: </span><span class="si">{</span><span class="n">t1</span><span class="o">-</span><span class="n">t0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">101</span><span class="p">),</span> <span class="n">acf_ave</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>The script takes three command-line arguments: the path of a datafile (book text),
+the path to the processed word-count file, and the output filename for the
+computed autocorrelation function.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">__main__</span></code> block calls the <code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code> function to preprocess the text
+(remove delimiters etc.) and load the pre-computed word-count results.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">word_acf()</span></code> computes the word ACF in a text for a given word using simple
+for-loops (you will learn to speed it up later).</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ave_word_acf()</span></code> loops over a list of words and computes their average ACF.</p></li>
+</ul>
+<p>To run this code for one book e.g. <em>pg99.txt</em>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ENCCS/word-count-hpda.git
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>word-count-hpda
+<span class="gp">$ </span>python<span class="w"> </span>source/wordcount.py<span class="w"> </span>data/pg99.txt<span class="w"> </span>processed_data/pg99.dat
+<span class="gp">$ </span>python<span class="w"> </span>source/autocorrelation.py<span class="w"> </span>data/pg99.txt<span class="w"> </span>processed_data/pg99.dat<span class="w"> </span>results/acf_pg99.dat
+</pre></div>
+</div>
+<p>It will print out the time it took to calculate the ACF.</p>
+</div>
+<div class="admonition-parallelize-word-autocorrelation-code-with-multiprocessing exercise important admonition" id="exercise-5">
+<p class="admonition-title">Parallelize word-autocorrelation code with multiprocessing</p>
+<p>A serial version of the code is available in the
+<a class="reference external" href="https://github.com/ENCCS/word-count-hpda/blob/main/source/autocorrelation.py">source/autocorrelation.py</a>
+script in the word-count repository. The full script can be viewed above,
+but we focus on the <code class="xref py py-meth docutils literal notranslate"><span class="pre">word_acf()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">ave_word_acf()</span></code> functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate word-autocorrelation function for given word </span>
+<span class="sd">    in a text. Each word in the text corresponds to one &quot;timestep&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">==</span><span class="n">word</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="n">nwords_chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">nwords_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nwords_total</span><span class="o">-</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/=</span> <span class="n">nwords_chosen</span>      
+    <span class="k">return</span> <span class="n">acf</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate an average word-autocorrelation function </span>
+<span class="sd">    for a list of words in a text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">acf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Think about what this code is doing and try to find a good place to parallelize it using
+a pool of processes.</p></li>
+<li><p>With or without having a look at the hints below, try to parallelize
+the code using <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> and use <code class="xref py py-meth docutils literal notranslate"><span class="pre">time.time()</span></code> to measure the speedup when running
+it for one book.</p></li>
+<li><p><strong>Note</strong>: You will not be able to use Jupyter for this task due to the above-mentioned limitation of <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>.</p></li>
+</ul>
+<div class="admonition-hints solution important dropdown admonition" id="solution-3">
+<p class="admonition-title">Hints</p>
+<p>The most time-consuming parts of this code is the double-loop inside
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">word_acf()</span></code> (you can confirm this in an exercise in the next episode).
+This function is called 16 times in the <code class="xref py py-meth docutils literal notranslate"><span class="pre">ave_word_acf()</span></code>
+function, once for each word in the top-16 list. This looks like a perfect place to use a multiprocessing
+pool of processes!</p>
+<p>We would like to do something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">word_autocorr</span><span class="p">,</span> <span class="n">words</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, there’s an issue with this because <code class="xref py py-meth docutils literal notranslate"><span class="pre">word_acf()</span></code> takes 3 arguments <code class="docutils literal notranslate"><span class="pre">(word,</span> <span class="pre">text,</span> <span class="pre">timesteps)</span></code>.
+We could solve this using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">Pool.starmap()</span></code> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">word_acf</span><span class="p">,</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="mi">10</span><span class="o">*</span><span class="p">[</span><span class="n">text</span><span class="p">],</span> <span class="mi">10</span><span class="o">*</span><span class="p">[</span><span class="n">timestep</span><span class="p">])]</span>
+</pre></div>
+</div>
+<p>But this might be somewhat inefficient because <code class="docutils literal notranslate"><span class="pre">10*[text]</span></code> might take up quite a lot of memory.
+One workaround is to use the <code class="docutils literal notranslate"><span class="pre">partial</span></code> method from <code class="docutils literal notranslate"><span class="pre">functools</span></code> which returns a new function with
+partial application of the given arguments:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="n">word_acf_partial</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">word_autocorr</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">word_acf_partial</span><span class="p">,</span> <span class="n">words</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-4">
+<p class="admonition-title">Solution</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wordcount</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_word_counts</span><span class="p">,</span> <span class="n">load_text</span><span class="p">,</span> <span class="n">DELIMITERS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove delimiters, split lines into words and remove whitespaces, </span>
+<span class="sd">    and make lowercase. Return list of all words in the text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">clean_text</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">purge</span> <span class="ow">in</span> <span class="n">DELIMITERS</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">purge</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>    
+        <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">clean_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">clean_text</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate word-autocorrelation function for given word </span>
+<span class="sd">    in a text. Each word in the text corresponds to one &quot;timestep&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">==</span><span class="n">word</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="n">nwords_chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">nwords_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nwords_total</span><span class="o">-</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/=</span> <span class="n">nwords_chosen</span>      
+    <span class="k">return</span> <span class="n">acf</span>
+    
+<span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate an average word-autocorrelation function </span>
+<span class="sd">    for a list of words in a text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">acf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf_pool</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate an average word-autocorrelation function </span>
+<span class="sd">    for a list of words in a text using multiprocessing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">word_acf_partial</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">word_acf</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">Pool</span><span class="p">(</span><span class="n">nproc</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">word_acf_partial</span><span class="p">,</span> <span class="n">words</span><span class="p">)</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">acf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span><span class="p">):</span>
+    <span class="c1"># load book text and preprocess it</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">load_text</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+    <span class="n">clean_text</span> <span class="o">=</span> <span class="n">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c1"># load precomputed word counts and select top words</span>
+    <span class="n">word_count</span> <span class="o">=</span> <span class="n">load_word_counts</span><span class="p">(</span><span class="n">wc_book</span><span class="p">)</span>
+    <span class="n">top_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">word_count</span><span class="p">[:</span><span class="n">nwords</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">book</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">wc_book</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>    
+
+    <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">timesteps</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span> <span class="o">=</span> <span class="n">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span><span class="p">)</span>
+
+    <span class="c1"># compute average autocorrelation and time the execution</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">acf_ave</span> <span class="o">=</span> <span class="n">ave_word_acf</span><span class="p">(</span><span class="n">top_words</span><span class="p">,</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>        
+    <span class="n">nproc</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">acf_pool_ave</span> <span class="o">=</span> <span class="n">ave_word_acf_pool</span><span class="p">(</span><span class="n">top_words</span><span class="p">,</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">nproc</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>        
+
+    <span class="c1"># assert that multiprocessing solution gives correct results</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">acf_ave</span><span class="p">,</span> <span class="n">acf_pool_ave</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;serial time: </span><span class="si">{</span><span class="n">t1</span><span class="o">-</span><span class="n">t0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parallel map time: </span><span class="si">{</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">101</span><span class="p">),</span> <span class="n">acf_ave</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition-write-an-mpi-version-of-word-autocorrelation exercise important admonition" id="exercise-6">
+<p class="admonition-title">Write an MPI version of word-autocorrelation</p>
+<p>Just like with <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code>, the most natural MPI solution parallelizes over
+the words used to compute the word-autocorrelation.
+For educational purposes, both point-to-point and collective communication
+implementations will be demonstrated here.</p>
+<p>Start by importing mpi4py (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">mpi4py</span> <span class="pre">import</span> <span class="pre">MPI</span></code>) at the top of the script.</p>
+<p>Here is a new function which takes care of managing MPI tasks.
+The problem needs to be split up between <code class="docutils literal notranslate"><span class="pre">N</span></code> ranks, and the method needs to be general
+enough to handle cases where the number of words is not a multiple of the number of ranks.
+Below we see a standard algorithm to accomplish this. The function also calls
+two functions which implement point-to-point and collective communication, respectively, to collect
+individual results to one rank which computes the average</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">mpi_acf</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="n">timesteps</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># initialize MPI</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+    <span class="c1"># load book text and preprocess it</span>
+    <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span> <span class="o">=</span> <span class="n">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span><span class="p">)</span>
+    
+    <span class="c1"># distribute words among MPI tasks</span>
+<span class="hll">    <span class="n">count</span> <span class="o">=</span> <span class="n">nwords</span> <span class="o">//</span> <span class="n">n_ranks</span>
+</span><span class="hll">    <span class="n">remainder</span> <span class="o">=</span> <span class="n">nwords</span> <span class="o">%</span> <span class="n">n_ranks</span>
+</span>    <span class="c1"># first &#39;remainder&#39; ranks get &#39;count + 1&#39; tasks each</span>
+<span class="hll">    <span class="k">if</span> <span class="n">rank</span> <span class="o">&lt;</span> <span class="n">remainder</span><span class="p">:</span>
+</span><span class="hll">        <span class="n">first</span> <span class="o">=</span> <span class="n">rank</span> <span class="o">*</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="hll">        <span class="n">last</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+</span>    <span class="c1"># remaining &#39;nwords - remainder&#39; ranks get &#39;count&#39; task each</span>
+<span class="hll">    <span class="k">else</span><span class="p">:</span>
+</span><span class="hll">        <span class="n">first</span> <span class="o">=</span> <span class="n">rank</span> <span class="o">*</span> <span class="n">count</span> <span class="o">+</span> <span class="n">remainder</span>
+</span><span class="hll">        <span class="n">last</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="n">count</span> 
+</span>    <span class="c1"># each rank gets unique words</span>
+    <span class="n">my_words</span> <span class="o">=</span> <span class="n">top_words</span><span class="p">[</span><span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;My rank number is </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> and first, last = </span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># use collective function</span>
+    <span class="n">acf_tot</span> <span class="o">=</span> <span class="n">ave_word_acf_gather</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">my_words</span><span class="p">,</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+    <span class="c1"># use p2p function</span>
+    <span class="c1">#acf_tot = ave_word_acf_p2p(comm, my_words, clean_text, timesteps)</span>
+
+    <span class="c1"># only rank 0 has the averaged data</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">acf_tot</span> <span class="o">/</span> <span class="n">nwords</span>
+</pre></div>
+</div>
+<div class="admonition-what-type-of-communication-can-we-use discussion important admonition" id="discussion-0">
+<p class="admonition-title">What type of communication can we use?</p>
+<p>The end result should be an average of all the word-autocorrelation functions.
+What type of communication can be used to collect the results on one rank which
+computes the average and prints it to file?</p>
+</div>
+<p>Study the two “faded” MPI function implementations below, one using point-to-point communication and the other using
+collective communication. Try to figure out what you should replace the <code class="docutils literal notranslate"><span class="pre">____</span></code> with.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-3-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-3-3-0" name="3-0" role="tab" tabindex="0">Point-to-point</button><button aria-controls="panel-3-3-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-3-3-1" name="3-1" role="tab" tabindex="-1">Collective</button></div><div aria-labelledby="tab-3-3-0" class="sphinx-tabs-panel" id="panel-3-3-0" name="3-0" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf_p2p</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">my_words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+    <span class="c1"># each rank computes its own set of acfs</span>
+    <span class="n">my_acfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">____</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_words</span><span class="p">):</span>
+        <span class="n">my_acfs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">____</span> <span class="o">==</span> <span class="n">____</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># append own results</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_acfs</span><span class="p">)</span>
+        <span class="c1"># receive data from other ranks and append to results</span>
+        <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">____</span><span class="p">):</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comm</span><span class="o">.</span><span class="n">____</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span>
+        <span class="c1"># compute total</span>
+        <span class="n">acf_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">____</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="n">acf_tot</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">acf_tot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># send data</span>
+        <span class="n">comm</span><span class="o">.</span><span class="n">____</span><span class="p">(</span><span class="n">my_acfs</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">____</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-3-1" class="sphinx-tabs-panel" hidden="true" id="panel-3-3-1" name="3-1" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf_gather</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">my_words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+    <span class="c1"># each rank computes its own set of acfs</span>
+    <span class="n">my_acfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">____</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_words</span><span class="p">):</span>
+        <span class="n">my_acfs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+    <span class="c1"># gather results on rank 0</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">____</span><span class="p">(</span><span class="n">____</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># loop over ranks and results. result is a list of lists of ACFs</span>
+    <span class="k">if</span> <span class="n">____</span> <span class="o">==</span> <span class="n">____</span><span class="p">:</span>
+        <span class="n">acf_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_ranks</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="n">acf_tot</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">acf_tot</span>
+</pre></div>
+</div>
+</div></div>
+<p>After implementing one or both of these functions, run your code and time the result for different number of tasks!</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">time</span><span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span>&lt;N&gt;<span class="w"> </span>python<span class="w"> </span>source/autocorrelation.py<span class="w"> </span>data/pg58.txt<span class="w"> </span>processed_data/pg58.dat<span class="w"> </span>results/pg58_acf.csv
+</pre></div>
+</div>
+<div class="admonition-solution solution important dropdown admonition" id="solution-5">
+<p class="admonition-title">Solution</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">wordcount</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_word_counts</span><span class="p">,</span> <span class="n">load_text</span><span class="p">,</span> <span class="n">DELIMITERS</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove delimiters, split lines into words and remove whitespaces, </span>
+<span class="sd">    and make lowercase. Return list of all words in the text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">clean_text</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">purge</span> <span class="ow">in</span> <span class="n">DELIMITERS</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">purge</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>    
+        <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">word</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">clean_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">clean_text</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate word-autocorrelation function for given word </span>
+<span class="sd">    in a text. Each word in the text corresponds to one &quot;timestep&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">==</span><span class="n">word</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="n">nwords_chosen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">nwords_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nwords_total</span><span class="o">-</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">t</span><span class="p">]</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">/=</span> <span class="n">nwords_chosen</span>      
+    <span class="k">return</span> <span class="n">acf</span>
+    
+<span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate an average word-autocorrelation function </span>
+<span class="sd">    for a list of words in a text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">words</span><span class="p">):</span>
+        <span class="n">acf</span><span class="p">[</span><span class="n">n</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">acf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf_p2p</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">my_words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+    <span class="c1"># each rank computes its own set of acfs</span>
+    <span class="n">my_acfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">my_words</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_words</span><span class="p">):</span>
+        <span class="n">my_acfs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># append own results</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_acfs</span><span class="p">)</span>
+        <span class="c1"># receive data from other ranks and append to results</span>
+        <span class="k">for</span> <span class="n">sender</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_ranks</span><span class="p">):</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comm</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">sender</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span>
+        <span class="c1"># compute total </span>
+        <span class="n">acf_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_ranks</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="n">acf_tot</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">acf_tot</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># send data</span>
+        <span class="n">comm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">my_acfs</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ave_word_acf_gather</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">my_words</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span> 
+    <span class="c1"># each rank computes its own set of acfs</span>
+    <span class="n">my_acfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">my_words</span><span class="p">),</span> <span class="n">timesteps</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">my_words</span><span class="p">):</span>
+        <span class="n">my_acfs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">word_acf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+    <span class="c1"># gather results on rank 0</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">my_acfs</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># loop over ranks and results. result is a list of lists of ACFs</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">acf_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_ranks</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+                <span class="n">acf_tot</span> <span class="o">+=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">acf_tot</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span><span class="p">):</span>
+    <span class="c1"># load book text and preprocess it</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">load_text</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+    <span class="n">clean_text</span> <span class="o">=</span> <span class="n">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c1"># load precomputed word counts and select top words</span>
+    <span class="n">word_count</span> <span class="o">=</span> <span class="n">load_word_counts</span><span class="p">(</span><span class="n">wc_book</span><span class="p">)</span>
+    <span class="n">top_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">word_count</span><span class="p">[:</span><span class="n">nwords</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">mpi_acf</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="n">timesteps</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># initialize MPI</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">n_ranks</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+    <span class="c1"># load book text and preprocess it</span>
+    <span class="n">clean_text</span><span class="p">,</span> <span class="n">top_words</span> <span class="o">=</span> <span class="n">setup</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="n">nwords</span><span class="p">)</span>
+    
+    <span class="c1"># distribute words among MPI tasks</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">nwords</span> <span class="o">//</span> <span class="n">n_ranks</span>
+    <span class="n">remainder</span> <span class="o">=</span> <span class="n">nwords</span> <span class="o">%</span> <span class="n">n_ranks</span>
+    <span class="c1"># first &#39;remainder&#39; ranks get &#39;count + 1&#39; tasks each</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">&lt;</span> <span class="n">remainder</span><span class="p">:</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">rank</span> <span class="o">*</span> <span class="p">(</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># remaining &#39;nwords - remainder&#39; ranks get &#39;count&#39; task each</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">rank</span> <span class="o">*</span> <span class="n">count</span> <span class="o">+</span> <span class="n">remainder</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="n">count</span> 
+    <span class="c1"># each rank gets unique words</span>
+    <span class="n">my_words</span> <span class="o">=</span> <span class="n">top_words</span><span class="p">[</span><span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;My rank number is </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> and first, last = </span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">last</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># use collective function</span>
+    <span class="n">acf_tot</span> <span class="o">=</span> <span class="n">ave_word_acf_gather</span><span class="p">(</span><span class="n">comm</span><span class="p">,</span> <span class="n">my_words</span><span class="p">,</span> <span class="n">clean_text</span><span class="p">,</span> <span class="n">timesteps</span><span class="p">)</span>
+
+    <span class="c1"># use p2p function</span>
+    <span class="c1">#acf_tot = ave_word_acf_p2p(comm, my_words, clean_text, timesteps)</span>
+
+    <span class="c1"># only rank 0 has the averaged data</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">acf_tot</span> <span class="o">/</span> <span class="n">nwords</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># load book text and preprocess it</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">wc_book</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>    
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">mpi_acf</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">wc_book</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">acf</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">nsteps</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">acf</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="see-also">
+<span id="id2"></span><h2>See also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://wiki.python.org/moin/GlobalInterpreterLock">More on the global interpreter lock</a></p></li>
+<li><p><a class="reference external" href="https://realpython.com/python-concurrency/">RealPython concurrency overview</a></p></li>
+<li><p><a class="reference external" href="https://realpython.com/intro-to-python-threading/">RealPython threading tutorial</a></p></li>
+<li><p>Parallel programming in Python with multiprocessing,
+<a class="reference external" href="https://www.kth.se/blogs/pdc/2019/02/parallel-programming-in-python-multiprocessing-part-1/">part 1</a>
+and <a class="reference external" href="https://www.kth.se/blogs/pdc/2019/03/parallel-programming-in-python-multiprocessing-part-2/">part 2</a></p></li>
+<li><p>Parallel programming in Python with mpi4py, <a class="reference external" href="https://www.kth.se/blogs/pdc/2019/08/parallel-programming-in-python-mpi4py-part-1/">part 1</a>
+and <a class="reference external" href="https://www.kth.se/blogs/pdc/2019/11/parallel-programming-in-python-mpi4py-part-2/">part 2</a></p></li>
+<li><p><a class="reference external" href="https://ipyparallel.readthedocs.io/en/latest/">ipyparallel documentation</a></p></li>
+<li><p><a class="reference external" href="https://blog.jupyter.org/ipython-parallel-in-2021-2945985c032a">IPython Parallel in 2021</a></p></li>
+<li><p><a class="reference external" href="https://github.com/DaanVanHauwermeiren/ipyparallel-tutorial">ipyparallel tutorial</a></p></li>
+</ul>
+<div class="admonition-keypoints keypoints admonition" id="keypoints-0">
+<p class="admonition-title">Keypoints</p>
+<ul class="simple">
+<li><p>Beaware of GIL and its impact on performance</p></li>
+<li><p>Use threads for I/O-bound tasks and multiprocessing for compute-bound tasks</p></li>
+<li><p>Make it right before trying to make it fast</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../stack/" class="btn btn-neutral float-left" title="Efficient Array Computing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../optimization/" class="btn btn-neutral float-right" title="Benchmarking, profiling and optimizing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, ENCCS and individual contributors..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
