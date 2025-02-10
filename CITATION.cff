@@ -26,13 +26,13 @@ authors:
     given-names: Kjartan Thor
     orcid: 'https://orcid.org/0000-0002-1655-3676'
     email: thor.wikfeldt@ri.se
-# identifiers:
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.14844443
+    description: Citeable archive in Zenodo
 #   - type: url
 #     value: 'https://enccs.github.io/hpda-python/'
 #     description: Rendered course material in HTML
-#   - type: doi
-#     value: 10.1234/zenodo.xxxxx
-#     description: Citeable archive in Zenodo
 repository-code: 'https://github.com/ENCCS/hpda-python'
 url: 'https://enccs.github.io/hpda-python/'
 abstract: >-
@@ -74,5 +74,5 @@ keywords:
   - pandas
   - dask
 license: CC-BY-4.0
-version: 2025.01.21
-date-released: '2025-01-21'
+version: 2025.02.10
+date-released: '2025-02-10'

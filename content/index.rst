@@ -1,6 +1,9 @@
 High Performance Data Analytics in Python
 =========================================
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.14844443.svg
+  :target: https://doi.org/10.5281/zenodo.14844443
+
 Scientists, engineers and professionals from many sectors are seeing an enormous 
 growth in the size and number of datasets relevant to their domains. 
 Professional titles have emerged to describe specialists working with data, 
