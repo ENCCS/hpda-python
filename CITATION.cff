@@ -1,38 +1,80 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
 cff-version: 1.2.0
-title:  High-Performance Data Analytics in Python
-message: "If you found this lesson useful, please cite it as below."
+title: High-Performance Data Analytics in Python
+message: 'If you found this lesson useful, please cite it as below.'
 type: software
 authors:
   - family-names: Fiusco
     given-names: Francesco
-    orcid: https://orcid.org/0000-0003-0716-465X
+    orcid: 'https://orcid.org/0000-0003-0716-465X'
     email: francesco.fiusco@ri.se
   - family-names: Li
     given-names: Qiang
-    orcid: https://orcid.org/0000-0002-6390-0343
+    orcid: 'https://orcid.org/0000-0002-6390-0343'
     email: qiang.li@liu.se
   - family-names: Mohanan
     given-names: Ashwin Vishnu
-    orcid: https://orcid.org/0000-0002-2979-6327
-    email: ashwin.mohanan@ri.se 
+    orcid: 'https://orcid.org/0000-0002-2979-6327'
+    email: ashwin.mohanan@ri.se
   - family-names: Wikfeldt
     given-names: Kjartan Thor
-    orcid: https://orcid.org/0000-0002-1655-3676
+    orcid: 'https://orcid.org/0000-0002-1655-3676'
     email: thor.wikfeldt@ri.se
-  - given-names: Yonglei
-    family-names: Wang
-    orcid: https://orcid.org/0000-0003-3393-7257
+  - family-names: Wang
+    given-names: Yonglei
+    orcid: 'https://orcid.org/0000-0003-3393-7257'
     email: yonglei@nsc.liu.se
-abstract: ENCCS lesson material on High-Performance Data Analytics in Python
-# TODO: after uploading to Zenodo
 # identifiers:
+#   - type: url
+#     value: 'https://enccs.github.io/hpda-python/'
+#     description: Rendered course material in HTML
 #   - type: doi
-#     value: 10.5281/zenodo.xxxxxx
-#     description: "The concept DOI containing all editions of this lesson."
-url: https://enccs.github.io/hpda-python/
-repository-code: https://github.com/ENCCS/hpda-python
-version: 2025.01.21
-date-released: 2025-01-21
+#     value: 10.1234/zenodo.xxxxx
+#     description: Citeable archive in Zenodo
+repository-code: 'https://github.com/ENCCS/hpda-python'
+url: 'https://enccs.github.io/hpda-python/'
+abstract: >-
+  ENCCS lesson material on High-Performance Data Analytics
+  in Python. Scientists, engineers and professionals from
+  many sectors are seeing an enormous growth in the size and
+  number of datasets relevant to their domains. Professional
+  titles have emerged to describe specialists working with
+  data, such as data scientists and data engineers, but also
+  other experts are finding it necessary to learn tools and
+  techniques to work with big data. Typical tasks include
+  preprocessing, analysing, modeling and visualising data.
+
+  Python is an industry-standard programming language for
+  working with data on all levels of the data analytics
+  pipeline. This is in large part because of the rich
+  ecosystem of libraries ranging from generic numerical
+  libraries to special-purpose and/or domain-specific
+  packages, often supported by large developer communities
+  and stable funding sources.
+
+  This lesson is meant to give an overview of working with
+  research data in Python using general libraries for
+  storing, processing, analysing and sharing data. The focus
+  is on high performance. After covering tools for
+  performant processing on single workstations the focus
+  shifts to profiling and optimising, parallel and
+  distributed computing.
+keywords:
+  - python
+  - HPDA
+  - big data
+  - array computing
+  - parallel computing
+  - benchmarking
+  - profiling
+  - optimizing
+  - numpy
+  - pandas
+  - dask
 license:
   - CC-BY-4.0
   - MIT
+version: 2025.01.21
+date-released: '2025-01-21'
