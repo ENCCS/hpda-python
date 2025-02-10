@@ -26,6 +26,7 @@ authors:
     given-names: Kjartan Thor
     orcid: 'https://orcid.org/0000-0002-1655-3676'
     email: thor.wikfeldt@ri.se
+doi: 10.5281/zenodo.14844443
 identifiers:
   - type: doi
     value: 10.5281/zenodo.14844443
