@@ -18,14 +18,14 @@ authors:
     given-names: Ashwin Vishnu
     orcid: 'https://orcid.org/0000-0002-2979-6327'
     email: ashwin.mohanan@ri.se
-  - family-names: Wikfeldt
-    given-names: Kjartan Thor
-    orcid: 'https://orcid.org/0000-0002-1655-3676'
-    email: thor.wikfeldt@ri.se
   - family-names: Wang
     given-names: Yonglei
     orcid: 'https://orcid.org/0000-0003-3393-7257'
     email: yonglei@nsc.liu.se
+  - family-names: Wikfeldt
+    given-names: Kjartan Thor
+    orcid: 'https://orcid.org/0000-0002-1655-3676'
+    email: thor.wikfeldt@ri.se
 # identifiers:
 #   - type: url
 #     value: 'https://enccs.github.io/hpda-python/'
